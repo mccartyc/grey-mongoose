@@ -1,0 +1,13 @@
+.container {
+    text-align: center;
+    padding: 50px;
+  }
+  .nav {
+    margin-top: 20px;
+  }
+  .link {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #007BFF;
+  }
+  
