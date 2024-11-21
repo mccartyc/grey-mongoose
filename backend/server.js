@@ -1,23 +1,22 @@
+// File: backend/server.js
+
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+const { connectDB } = require('./config/db'); // Import the database connection
+require('dotenv').config(); // Load .env variables
+
 const app = express();
-require('dotenv').config();
+const PORT = process.env.PORT || 5001;
 
-app.use(cors());
-app.use(bodyParser.json());
+// Middleware
+app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// Connect to MongoDB
+connectDB();
 
-// Define routes here
+// Routes
 app.use('/api/users', require('./routes/userRoutes'));
-// Add other routes...
 
-app.listen(5000, () => {
-    console.log('Server running on port 5000');
-  });
-  
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
