@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ["admin", "therapist", "user"], default: "user" }, // User roles
+  role: { type: String, enum: ["admin", "therapist", "client"], default: "therapist" }, // User roles
   tenant: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant
   createdAt: { type: Date, default: Date.now },
 });
