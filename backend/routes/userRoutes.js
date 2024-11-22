@@ -1,25 +1,17 @@
-const express = require('express');
-const { register, login } = require('../controllers/authController');
-const { registerValidation, loginValidation } = require('../validations/userValidation');
-const { validationResult } = require('express-validator');
+const express = require("express");
 const router = express.Router();
 
-// Register route
-router.post('/register', registerValidation, (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-}, register);
-
-// Login route
-router.post('/login', loginValidation, (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-}, login);
+// POST: Create a new user
+router.post("/api/users", (req, res) => {
+    const { name } = req.body;
+    // Save the user to your database and return the created user
+    res.status(201).json({ _id: "user_id", name });
+  });
+  
+  // GET: Get all users
+router.get("/api/users", (req, res) => {
+  // Fetch all users from your database
+  res.status(200).json([{ _id: "user_id1", name: "User 1" }]);
+});
 
 module.exports = router;
