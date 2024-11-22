@@ -7,6 +7,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -51,56 +52,96 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
     }
   };
 
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString(); // Format the date to the user's local time
+  };
+
+  const filteredTenants = tenants.filter((tenant) =>
+    tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tenant.tenantId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    formatTimestamp(tenant.createdAt).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+  const handleNextStep = () => { 
+    console.log('Selected Tenant ID:', selectedTenantId); 
+    onNext(selectedTenantId); 
+  };
+
   return (
-    <div>
-      <h2>Select or Create Tenant</h2>
-      <button onClick={() => setShowForm(true)} className="btn create-btn">Create New</button>
+    <div className="tenant-step">
       {showForm && (
-        <div className="popup-form">
-          <form onSubmit={handleCreateTenant}>
-            <label>
-              Tenant Name:
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-            </label>
-            <button type="submit">Create Tenant</button>
-          </form>
-          {message && <p>{message}</p>}
+        <div className="overlay">
+          <div className="popup-form">
+            <form className="form-group" onSubmit={handleCreateTenant}>
+              <h3>Create New Tenant</h3>
+              <label>
+                Tenant Name:
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+              </label>
+              <div className="button-container">
+                <button onClick={() => setShowForm(false)} className="btn close-btn">Close</button>
+                <button type="submit" className="btn primary-btn">Create Tenant</button>
+              </div>
+            </form>
+            {message && <p>{message}</p>}
+          </div>
         </div>
       )}
-      <table className="tenant-table">
-        <thead>
-          <tr>
-            <th>Tenant ID</th>
-            <th>Tenant Name</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tenants.map((tenant) => (
-            <tr
-              key={tenant.tenantId}
-              className={selectedTenantId === tenant.tenantId ? 'selected' : ''}
-              onClick={() => handleSelectTenant(tenant)}
-            >
-              <td>{tenant.tenantId}</td>
-              <td>{tenant.name}</td>
-              <td>
-                <span
-                  role="img"
-                  aria-label="delete"
-                  className="trash-icon"
-                  onClick={(event) => handleDeleteTenant(tenant.tenantId, event)}
-                >
-                  🗑️
-                </span>
-              </td>
+      <div className={`content-container ${showForm ? 'blur-background' : ''}`}>
+        <div className="header-container">
+          <h2>Select or Create Tenant</h2>
+          <div className="right-button-container">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button onClick={() => setShowForm(true)} className="btn create-btn">Create New</button>
+          </div>
+        </div>
+        <table className="tenant-table">
+          <thead>
+            <tr>
+              <th>Tenant Name</th>
+              <th>Tenant ID</th>
+              <th>Created Timestamp</th>
+              <th className="action-column">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={onNext} disabled={!selectedTenantId}>
-        Next
-      </button>
+          </thead>
+          <tbody>
+            {filteredTenants.map((tenant) => (
+              <tr
+                key={tenant.tenantId}
+                className={selectedTenantId === tenant.tenantId ? 'selected' : ''}
+                onClick={() => handleSelectTenant(tenant)}
+              >
+                <td>{tenant.name}</td>
+                <td>{tenant.tenantId}</td>
+                <td>{formatTimestamp(tenant.createdAt)}</td>
+                <td className="action-cell">
+                  <span
+                    role="img"
+                    aria-label="delete"
+                    className="trash-icon"
+                    onClick={(event) => handleDeleteTenant(tenant.tenantId, event)}
+                  >
+                    🗑️
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="right-button-container">
+          <button className="btn create-btn" onClick={handleNextStep} disabled={!selectedTenantId}>
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require('uuid');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  userId: { type: String, default: uuidv4, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["admin", "therapist", "client"], default: "therapist" }, // User roles
   tenant: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant

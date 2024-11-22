@@ -18,30 +18,42 @@ const Admin = () => {
     setStep((prevStep) => prevStep - 1);
   };
 
-  return (
-    <div className="admin-page">
-      <AdminNavbar />
-      <div className="admin-container">
-        {step === 1 && (
-          <TenantStep
-            onNext={handleNextStep}
-            onSelectTenant={(tenant) => setSelectedTenant(tenant)}
-          />
-        )}
-        {step === 2 && (
+  const renderStepComponent = () => {
+    switch (step) {
+      case 1:
+        return <TenantStep onNext={handleNextStep} onSelectTenant={setSelectedTenant} />;
+      case 2:
+        return (
           <UserStep
+            selectedTenant={selectedTenant}
             onNext={handleNextStep}
             onPrevious={handlePreviousStep}
-            onSelectUser={(user) => setSelectedUser(user)}
+            onSelectUser={setSelectedUser}
           />
-        )}
-        {step === 3 && (
+        );
+      case 3:
+        return (
           <ClientStep
             onPrevious={handlePreviousStep}
             selectedTenant={selectedTenant}
             selectedUser={selectedUser}
           />
-        )}
+        );
+      default:
+        return <TenantStep onNext={handleNextStep} onSelectTenant={setSelectedTenant} />;
+    }
+  };
+
+  return (
+    <div className="admin-page">
+      <AdminNavbar />
+      <div className="admin-container">
+        <div className="progress-bar">
+          <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>1. Tenant</div>
+          <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>2. User</div>
+          <div className={`progress-step ${step >= 3 ? 'active' : ''}`}>3. Client</div>
+        </div>
+        <div className="step-content">{renderStepComponent()}</div>
       </div>
     </div>
   );

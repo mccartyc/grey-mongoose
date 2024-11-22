@@ -7,7 +7,6 @@ const AdminNavbar = () => {
     <nav className="navbar">
       <div className="navbar-brand">MindCloud Admin</div>
       <div className="navbar-links">
-        <Link to="/admin" className="nav-link">Dashboard</Link>
         <Link to="/admin/settings" className="nav-link">Settings</Link>
         <Link to="/" className="nav-link">Logout</Link>
       </div>
