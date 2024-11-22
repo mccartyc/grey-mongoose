@@ -7,7 +7,7 @@ const tenantSchema = new mongoose.Schema({
   name: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, default: true, required: true },
-  deactiveAt: { type: Date, required: false }
+  deactivatedAt: { type: Date}
 });
 
 const Tenant = mongoose.model('Tenant', tenantSchema);

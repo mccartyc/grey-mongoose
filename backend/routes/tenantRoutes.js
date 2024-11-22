@@ -23,22 +23,30 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:tenantId/deactivate', async (req, res) => {
-  const { tenantId } = req.params;
-  try {
-    const tenant = await Tenant.findOneAndUpdate(
-      { tenantId },
-      { isActive: false, deactivatedAt: new Date() },
-      { new: true }
-    );
-    if (!tenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+    const { tenantId } = req.params;
+    try {
+      const updateData = { isActive: false, deactivatedAt: new Date() };
+      console.log('Update Data:', updateData); // Log the update data
+  
+      const tenant = await Tenant.findOneAndUpdate(
+        { tenantId },
+        updateData,
+        { new: true }
+      );
+  
+      if (!tenant) {
+        console.log(`Tenant with ID ${tenantId} not found`); // Log if tenant not found
+        return res.status(404).json({ error: 'Tenant not found' });
+      }
+  
+      console.log('Deactivated Tenant:', tenant); // Log the deactivated tenant
+      res.status(200).json(tenant);
+    } catch (error) {
+      console.error('Error Deactivating Tenant:', error);
+      res.status(400).json({ error: 'Failed to deactivate tenant' });
     }
-    res.status(200).json(tenant);
-  } catch (error) {
-    console.error('Error Deactivating Tenant:', error);
-    res.status(400).json({ error: 'Failed to deactivate tenant' });
-  }
-});
+  });
+  
 
 router.get('/', async (req, res) => {
   try {
