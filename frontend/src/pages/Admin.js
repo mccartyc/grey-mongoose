@@ -45,7 +45,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="admin-page">
+    <div className="home-container">
       <AdminNavbar />
       <div className="admin-container">
         <div className="progress-bar">
