@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["admin", "therapist", "client"], default: "therapist" }, // User roles
   tenant: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant
   createdAt: { type: Date, default: Date.now },
+  isActive: { type: Boolean, required: true, default: true } // Field to indicate if user is active
 });
 
 // Encrypt password before saving

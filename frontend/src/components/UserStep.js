@@ -65,6 +65,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     onSelectUser(user);
   };
 
+
   const handleDeleteUser = async (userId, event) => {
     event.stopPropagation(); // Prevent row selection when clicking delete
     try {

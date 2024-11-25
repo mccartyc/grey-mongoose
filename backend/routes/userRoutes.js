@@ -45,6 +45,32 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.put('/:userId/deactivate', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const updateData = { isActive: false, deactivatedAt: new Date() };
+    console.log('Update Data:', updateData); // Log the update data
+
+    const user = await User.findOneAndUpdate(
+      { userId },
+      updateData,
+      { new: true }
+    );
+
+    if (!user) {
+      console.log(`User with ID ${userId} not found`); // Log if tenant not found
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    console.log('Deactivated User:', user); // Log the deactivated tenant
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error Deactivating Tenant:', error);
+    res.status(400).json({ error: 'Failed to deactivate user' });
+  }
+});
+
+
 // GET: Get all users for a specific tenant
 router.get("/", async (req, res) => {
   const { tenantId } = req.query;
@@ -55,13 +81,15 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    const users = await User.find({ tenant: tenantId });
-    console.log("Users fetched successfully:", users);
+    // Filter users by tenantId and isActive field
+    const users = await User.find({ tenant: tenantId, isActive: true });
+    console.log("Active users fetched successfully:", users);
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Server error" });
   }
+
 });
 
 module.exports = router;
