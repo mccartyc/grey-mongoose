@@ -1,17 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const { protect } = require("../middleware/authMiddleware");
 const User = require("../models/Users"); // Ensure this path is correct
 const bcrypt = require("bcryptjs");
 
 // POST: Create a new user
 router.post("/", async (req, res) => {
-  const { name, email, password, role, tenantId } = req.body;
+  const { firstname, lastname, email, password, role, tenantId } = req.body;
 
-  console.log("Request to create user:", { name, email, password, role, tenantId });
+  console.log("Request to create user:", { firstname, lastname, email, password, role, tenantId });
 
   // Check if all required fields are provided
-  if (!name || !email || !password || !tenantId) {
+  if (!firstname || !lastname || !email || !password || !tenantId) {
     console.error("Validation error: All fields are required");
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -29,7 +30,8 @@ router.post("/", async (req, res) => {
 
     // Create the new user
     const newUser = new User({
-      name,
+      firstname,
+      lastname,
       email,
       password: hashedPassword,
       role,

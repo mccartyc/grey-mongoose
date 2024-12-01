@@ -9,13 +9,22 @@ require('dotenv').config(); // Load .env variables
 
 const app = express();
 
+// Middleware
+app.use(express.json());
+
 // Enable CORS
+
 app.use(cors());
 
 const PORT = process.env.PORT || 5001;
 
-// Middleware
-app.use(express.json());
+// Allow requests from the frontend
+app.use(cors({
+  origin: "http://localhost:3000", // Your frontend URL
+  credentials: true, // Allow cookies and authorization headers
+}));
+
+// app.use(cors());
 
 // Connect to MongoDB
 connectDB();
@@ -25,8 +34,14 @@ connectDB();
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/users', userRoutes);
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+// Export app for testing
+module.exports = app;
