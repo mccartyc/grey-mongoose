@@ -5,6 +5,7 @@ import "../styles/styles.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState('');
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e) => {
@@ -50,6 +51,7 @@ const Login = () => {
       <p className="form-footer">
         Don't have an account? <a href="/register" className="form-link">Register</a>
       </p>
+      {error && <p className="form-error">{error}</p>}
       {message && <p className="form-message">{message}</p>}
     </div>
   );
