@@ -5,6 +5,10 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Register from './pages/Register';
 import Dashboard from "./pages/Dashboard";
+import Clients from "./pages/Clients";
+import Calendar from "./pages/Calendar";
+import Invoicing from "./pages/Invoicing";
+import Sessions from "./pages/Sessions";
 
 const App = () => (
   <Router>
@@ -15,6 +19,10 @@ const App = () => (
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/clients" element={<Clients />} />
+      <Route path="/sessions" element={<Sessions />} />
+      <Route path="/calendar" element={<Calendar />} />
+      <Route path="/invoicing" element={<Invoicing />} />
 
     </Routes>
   </Router>

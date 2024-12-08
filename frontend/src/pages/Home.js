@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/HomeNavbar";
 import Button from "../components/Button";
 import Carousel from "../components/Carousel";
 import "../styles/styles.css";

@@ -4,19 +4,19 @@ import TopNavBar from '../components/TopNavBar';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
 
-const Dashboard = () => {
+const Clients = () => {
   return (
     <div className="home-container">
       <TopNavBar />
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
-          <h1>Dashboard</h1>
-          <p>Welcome to your Dashboard! Use the side navigation to access different sections.</p>
+          <h1>Clients</h1>
+          <p>Welcome to your Clients! Use the side navigation to access different sections.</p>
         </div>
       </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default Clients;

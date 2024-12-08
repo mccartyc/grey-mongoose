@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import AdminNavbar from '../components/AdminNavbar';
+import TopNavBar from '../components/TopNavBar';
+import SideNavBar from '../components/SideNavBar';
 import TenantStep from '../components/TenantStep';
 import UserStep from '../components/UserStep';
 import ClientStep from '../components/ClientStep';
@@ -46,14 +47,17 @@ const Admin = () => {
 
   return (
     <div className="home-container">
-      <AdminNavbar />
-      <div className="admin-container">
-        <div className="progress-bar">
-          <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>1. Tenant</div>
-          <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>2. User</div>
-          <div className={`progress-step ${step >= 3 ? 'active' : ''}`}>3. Client</div>
-        </div>
+      <TopNavBar />
+      <div className="main-content">
+        <SideNavBar />
+        <div className="content-area">
+          <div className="progress-bar">
+            <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>1. Tenant</div>
+            <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>2. User</div>
+            <div className={`progress-step ${step >= 3 ? 'active' : ''}`}>3. Client</div>
+          </div>
         <div className="step-content">{renderStepComponent()}</div>
+        </div>
       </div>
     </div>
   );
