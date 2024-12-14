@@ -1,20 +1,45 @@
-// src/components/SideNavBar.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { FaBrain, FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaAngleDoubleLeft, FaAngleDoubleRight, FaUserCog, FaRegClipboard } from 'react-icons/fa';
 import '../styles/styles.css';
-import { FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaUserCog, FaRegClipboard } from 'react-icons/fa';
+
+const user = {
+  firstName: 'John',
+  lastName: 'Doe',
+};
 
 const SideNavBar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  // Initialize collapsed state from localStorage or default to false
+  const [collapsed, setCollapsed] = useState(() => {
+    return localStorage.getItem('sidebarCollapsed') === 'true';
+  });
 
+  // Toggle function to handle sidebar collapse and persist state
   const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+    setCollapsed((prev) => {
+      const newState = !prev;
+      localStorage.setItem('sidebarCollapsed', newState);
+      return newState;
+    });
   };
+
+  useEffect(() => {
+    // Sync collapsed state with localStorage on component mount
+    const savedState = localStorage.getItem('sidebarCollapsed') === 'true';
+    setCollapsed(savedState);
+  }, []);
 
   return (
     <div className={`side-navbar ${collapsed ? 'collapsed' : ''}`}>
+      <div className="brand">
+        <FaBrain className="brand-icon" />
+        {!collapsed && <span className="brand-name">MindCloud</span>}
+      </div>
+      <div className="user-name">
+        {collapsed ? <p>  </p> : <p>Hi, {`${user.firstName} ${user.lastName}`}!</p>}
+      </div>
       <div className="toggle-btn" onClick={toggleSidebar}>
-        <FaBars />
+        {collapsed ? <FaAngleDoubleRight /> : <FaAngleDoubleLeft />}
       </div>
       <ul className="nav-links">
         <li>
@@ -48,8 +73,6 @@ const SideNavBar = () => {
           </NavLink>
         </li>
       </ul>
-
-      {/* Admin and Logout Links at the Bottom */}
       <div className="bottom-links">
         <ul className="nav-links">
           <li>
@@ -71,4 +94,3 @@ const SideNavBar = () => {
 };
 
 export default SideNavBar;
-

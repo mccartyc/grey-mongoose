@@ -6,8 +6,6 @@ import '../styles/styles.css';
 
 const Clients = () => {
   return (
-    <div className="home-container">
-      <TopNavBar />
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
@@ -15,7 +13,6 @@ const Clients = () => {
           <p>Welcome to your Clients! Use the side navigation to access different sections.</p>
         </div>
       </div>
-    </div>
   );
 };
 

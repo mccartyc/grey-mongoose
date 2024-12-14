@@ -7,7 +7,6 @@ import '../styles/styles.css';
 const Sessions = () => {
   return (
     <div className="home-container">
-      <TopNavBar />
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">

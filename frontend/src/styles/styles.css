@@ -6,10 +6,10 @@ body, h1, h2, h3, p, a, ul, li {
 }
 
 body {
-  font-family: "Arial", sans-serif;
-  background-color: #f8f9fa; /* Light neutral background */
-  color: #49274A; /* Primary text color */
-  line-height: 1.6;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f5f7;
+  color: #333;
+  margin: 0;
 }
 
 
@@ -52,7 +52,7 @@ a {
   align-items: center;
   gap: 10px;
   height: 40px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 .header-container { 
   display: flex; 
@@ -269,7 +269,7 @@ a {
 }
 
 .admin-tab:hover {
-  background-color: #B9E5E8;
+  background-color: #dfd8de;
   color: #49274A;
 }
 
@@ -349,7 +349,7 @@ a {
 }
 
 .form-group input:focus {
-  border-color: #7AB2D3;
+  border-color: #dfd8de;
   outline: none;
 }
 
@@ -361,7 +361,7 @@ a {
 }
 
 .form-footer .form-link {
-  color: #7AB2D3;
+  color: #dfd8de;
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -386,8 +386,8 @@ a {
 
 /*Buttons*/
 .btn {
-  padding: 10px 15px;
-  background-color: #007bff;
+  padding: 15px;
+  background-color: #49274A;
   color: white;
   border: none;
   border-radius: 4px;
@@ -396,7 +396,7 @@ a {
 }
 
 .btn:hover {
-  background-color: #0056b3;
+  background-color: #7AB2D3;
 }
 
 
@@ -412,7 +412,7 @@ a {
   margin-top: 20px; }
 
 .primary-btn:hover {
-  background-color: #49274A;
+  background-color: #7AB2D3;
 }
 
 .secondary-btn {
@@ -422,7 +422,7 @@ a {
 }
 
 .secondary-btn:hover {
-  background-color: #49274A;
+  background-color: #7AB2D3;
   color: #fff;
 }
 
@@ -437,9 +437,21 @@ a {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+.next-btn {
+  display: inline-block;
+  align-items: right;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: #49274A;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
 .create-btn:hover {
-  background-color: #49274A;
+  background-color: #7AB2D3;
 }
 
 .close-btn {
@@ -474,11 +486,11 @@ a {
 }
 
 .tenant-table tr:hover {
-  background-color: #e7f3ff;
+  background-color: #dfd8de;
 }
 
 .tenant-table tr.selected {
-  background-color: #b3d9ff;
+  background-color: #b6abb5;
 }
 
 .trash-icon {
@@ -515,7 +527,7 @@ a {
   height: 60px; /* Ensure a fixed height */
   align-items: center;
   padding-left: 20px;
-  background-color: #49274A;
+  background-color: #525869;
   color: #fff;
   position: sticky;
   top: 0;
@@ -526,6 +538,9 @@ a {
 .navbar-brand {
   font-size: 1.8rem;
   font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .navbar-links {
@@ -535,46 +550,93 @@ a {
 
 /* Side Navigation Bar */
 .side-navbar {
-  width: 200px;
   background-color: #49274A;
   color: #fff;
+  width: 250px;
   height: 100vh;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, padding 0.3s ease; 
   display: flex;
   flex-direction: column;
+  padding: 20px;
   position: fixed;
-  left: 0;
-  top: 60px; /* Position below the top navbar */
-  overflow: hidden;
 }
 
 .side-navbar.collapsed {
-  width: 60px;
+  width: 45px;
+}
+
+/* When the navbar is collapsed */
+.side-navbar.collapsed .navbar-brand {
+  display: none; /* Hide name */
+  transition: padding 0.3s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.brand-icon {
+  font-size: 2rem;
+  color: #B9E5E8;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+/* User name styles */
+.user-name {
+  font-size: 10pt;
+  height: 1mm;
+  margin-bottom: 20px;
+  color: #ccc;
+  transition: opacity 1s ease;
+}
+
+.side-navbar.collapsed .user-name {
+  font-size: 10pt;
+  height: 1mm;
+  margin-bottom: 20px;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.side-navbar.collapsed .navbar-logo {
+  display: block; /* Show logo */
+  transition: padding 0.7s ease;
 }
 
 .toggle-btn {
-  padding: 15px;
-  background-color: #49274A;
-  color: #fff;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   font-size: 1.5rem;
+  color: #B9E5E8;
+  margin-bottom: 20px;
+  transition: padding 0.7s ease;
 }
 
+
+
 .bottom-links {
+  margin-top: auto;
   list-style: none;
   padding: 0;
   margin-bottom: 20px; /* Add some margin from the bottom */
 }
 
-.nav-links li, 
-.bottom-links li {
+.nav-links {
   list-style: none;
   padding: 0;
-  margin: 0;
   flex-grow: 1;
+}
+
+.nav-links li, 
+.bottom-links li {
+  margin-bottom: 15px;
 }
 
 .nav-links li,
@@ -582,6 +644,7 @@ a {
   display: flex;
   align-items: center;
   margin: 10px 0;
+  transition: padding 0.3s ease;
 }
 
 .nav-links a,
@@ -589,17 +652,17 @@ a {
   display: flex;
   align-items: center;
   color: #fff;
-  width: 100%;
-  padding: 10px 15px;
-  text-decoration: none;
+  padding: 10px;
+  border-radius: 6px;
   transition: background-color 0.3s ease;
 }
 
 /* Active link styling */
 .nav-links li a.active-link {
-  background-color: #4A6A8A; /* Change to desired active background color */
-  color: #FFD700;           /* Highlight text color (optional) */
-  font-weight: bold;        /* Optional: make the text bold */
+  background-color: #B9E5E8;
+  color: #49274A;
+  font-weight: bold;
+  width: 100%;
 }
 
 .nav-links a:hover,
@@ -611,11 +674,12 @@ a {
 /* Icon Styles */
 .nav-icon {
   font-size: 1.5rem;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 .side-navbar.collapsed .nav-icon {
   margin-right: 0;
+  transition: padding 0.3s ease;
 }
 
 .nav-text {
@@ -625,26 +689,30 @@ a {
 
 /* Logout Link */
 .logout {
-  margin-top: auto;
+  margin-top: 10px;
+}
+
+.logout a {
+  color: #fff;
+}
+
+.logout a:hover {
+  background-color: #FFB5B5;
 }
 
 /* Adjust Content When Sidebar is Collapsed */
 .content-area {
-  margin-left: 200px;
+  margin-left: 285px;
   transition: margin-left 0.3s ease;
-}
-
-.side-navbar.collapsed + .content-area {
-  margin-left: 60px;
-}
-
-
-/* Content Area */
-.content-area {
   flex: 1;
   padding: 20px;
   background-color: #fff;
   border-left: 1px solid #ddd;
+  height: 100vh;
+}
+
+.side-navbar.collapsed + .content-area {
+  margin-left: 80px;
 }
 
 
@@ -656,23 +724,9 @@ a {
   height: 100vh;
 }
 
-/* Top Navigation Bar */
-.top-navbar {
-  width: 100%;
-  height: 60px;
-  background-color: #49274A;
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-}
 
 /* Main Content Layout */
 .main-content {
   display: flex;
+  height: 100vh;
 }
