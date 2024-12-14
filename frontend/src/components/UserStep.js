@@ -4,10 +4,11 @@ import axios from 'axios';
 const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [name, setName] = useState('');
+  const [firstname, setFirstName] = useState('');
+  const [lastname, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('therapist'); // Default role
+  const [role, setRole] = useState('User'); // Default role
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,9 +39,10 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     }
 
     try {
-      console.log("Creating user with details:", { name, email, password, role, tenantId: selectedTenant._id });
+      console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant._id });
       const response = await axios.post('http://localhost:5001/api/users', {
-        name,
+        firstname,
+        lastname,
         email,
         password,
         role,
@@ -49,10 +51,11 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
       console.log("User created successfully:", response.data);
       setMessage(`User created: ${response.data.name}`);
       setUsers((prev) => [...prev, response.data]);
-      setName('');
+      setFirstName('');
+      setLastName('');
       setEmail('');
       setPassword('');
-      setRole('therapist');
+      setRole('User');
       setShowForm(false); // Close the form after creation
     } catch (error) {
       console.error("Error creating user:", error.response?.data || error);
@@ -69,7 +72,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   const handleDeleteUser = async (userId, event) => {
     event.stopPropagation(); // Prevent row selection when clicking delete
     try {
-      await axios.delete(`http://localhost:5001/api/users/${userId}`);
+      await axios.put(`http://localhost:5001/api/users/${userId}/deactivate`);
       setUsers((prev) => prev.filter((user) => user.userId !== userId));
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -82,7 +85,8 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   };
 
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
     formatTimestamp(user.createdAt).toLowerCase().includes(searchTerm.toLowerCase())
@@ -96,8 +100,12 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
             <form className="form-group" onSubmit={handleCreateUser}>
               <h3>Create New User</h3>
               <label>
-                Name:
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                First Name:
+                <input type="text" value={firstname} onChange={(e) => setFirstName(e.target.value)} required />
+              </label>
+              <label>
+                Last Name:
+                <input type="text" value={lastname} onChange={(e) => setLastName(e.target.value)} required />
               </label>
               <label>
                 Email:
@@ -110,9 +118,8 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
               <label>
                 Role:
                 <select value={role} onChange={(e) => setRole(e.target.value)} required>
-                  <option value="admin">Admin</option>
-                  <option value="therapist">Therapist</option>
-                  <option value="client">Client</option>
+                  <option value="Admin">Admin</option>
+                  <option value="User">User</option>
                 </select>
               </label>
               <div className="button-container">
@@ -141,7 +148,8 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
         <table className="tenant-table">
           <thead>
             <tr>
-              <th>User Name</th>
+              <th>First Name</th>
+              <th>Last Name</th>
               <th>User ID</th>
               <th>Email</th>
               <th>Role</th>
@@ -156,7 +164,8 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
                 className={selectedUserId === user.userId ? 'selected' : ''}
                 onClick={() => handleSelectUser(user)}
               >
-                <td>{user.name}</td>
+                <td>{user.firstname}</td>
+                <td>{user.lastname}</td>
                 <td>{user.userId}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
@@ -175,11 +184,11 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
             ))}
           </tbody>
         </table>
-        <div className="navigation-buttons">
-          <button className="btn secondary-btn" onClick={onPrevious}>
+        <div className="right-button-container">
+          <button className="btn create-btn" onClick={onPrevious}>
             Previous
           </button>
-          <button className="btn primary-btn" onClick={onNext} disabled={!selectedUserId}>
+          <button className="btn create-btn" onClick={onNext} disabled={!selectedUserId}>
             Next
           </button>
         </div>
