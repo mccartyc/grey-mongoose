@@ -6,8 +6,6 @@ import '../styles/styles.css';
 
 const Calendar = () => {
   return (
-    <div className="home-container">
-      <TopNavBar />
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
@@ -15,7 +13,6 @@ const Calendar = () => {
           <p>Welcome to your Calendar! Use the side navigation to access different sections.</p>
         </div>
       </div>
-    </div>
   );
 };
 

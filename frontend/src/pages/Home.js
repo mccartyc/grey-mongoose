@@ -30,7 +30,7 @@ const Home = () => {
       });
 
   return (
-    <div className="home-container">
+    <div className="main-container">
       <Navbar />
 
       {/* Hero Section */}

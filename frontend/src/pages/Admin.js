@@ -46,8 +46,6 @@ const Admin = () => {
   };
 
   return (
-    <div className="home-container">
-      <TopNavBar />
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
@@ -59,7 +57,6 @@ const Admin = () => {
         <div className="step-content">{renderStepComponent()}</div>
         </div>
       </div>
-    </div>
   );
 };
 
