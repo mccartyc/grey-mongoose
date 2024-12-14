@@ -137,7 +137,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
           </tbody>
         </table>
         <div className="right-button-container">
-          <button className="btn create-btn" onClick={handleNextStep} disabled={!selectedTenantId}>
+          <button className="btn next-btn" onClick={handleNextStep} disabled={!selectedTenantId}>
             Next
           </button>
         </div>

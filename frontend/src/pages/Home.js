@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/HomeNavbar";
 import Button from "../components/Button";
 import Carousel from "../components/Carousel";
 import "../styles/styles.css";
@@ -30,7 +30,7 @@ const Home = () => {
       });
 
   return (
-    <div className="home-container">
+    <div className="main-container">
       <Navbar />
 
       {/* Hero Section */}
