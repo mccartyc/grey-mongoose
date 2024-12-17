@@ -1,17 +1,111 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
+const { protect } = require("../middleware/authMiddleware");
+const Client = require("../models/Clients"); // Ensure this path is correct
 
 // POST: Create a new client
-router.post("/api/clients", (req, res) => {
-    const { name } = req.body;
-    // Save the client to your database and return the created client
-    res.status(201).json({ _id: "client_id", name });
+router.post("/", protect, async (req, res) => {
+  const {
+    userId,
+    firstName,
+    lastName,
+    streetAddress,
+    birthday,
+    gender,
+    city,
+    state,
+    email,
+    phone,
+  } = req.body;
+
+  console.log("Request to create client:", {
+    userId,
+    firstName,
+    lastName,
+    streetAddress,
+    birthday,
+    gender,
+    city,
+    state,
+    email,
+    phone,
   });
-  
-// GET: Get all clients
-router.get("/api/clients", (req, res) => {
-  // Fetch all clients from your database
-  res.status(200).json([{ _id: "client_id1", name: "Client 1" }]);
+
+  // Check if all required fields are provided
+  if (!userId || !firstName || !lastName || !email || !phone) {
+    console.error("Validation error: Missing required fields");
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    // Create the new client
+    const newClient = new Client({
+      userId,
+      firstName,
+      lastName,
+      streetAddress,
+      birthday,
+      gender,
+      city,
+      state,
+      email,
+      phone,
+    });
+
+    await newClient.save();
+    console.log("Client created successfully:", newClient);
+    res.status(201).json(newClient);
+  } catch (error) {
+    console.error("Error creating client:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
-  
+
+// PUT: Deactivate a client
+router.put("/:clientId/deactivate", protect, async (req, res) => {
+  const { clientId } = req.params;
+  try {
+    const updateData = { isActive: false, deactivatedAt: new Date() };
+    console.log("Update Data:", updateData); // Log the update data
+
+    const client = await Client.findOneAndUpdate(
+      { clientId },
+      updateData,
+      { new: true }
+    );
+
+    if (!client) {
+      console.log(`Client with ID ${clientId} not found`); // Log if client not found
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    console.log("Deactivated Client:", client); // Log the deactivated client
+    res.status(200).json(client);
+  } catch (error) {
+    console.error("Error deactivating client:", error);
+    res.status(400).json({ error: "Failed to deactivate client" });
+  }
+});
+
+// GET: Get all clients for a specific tenant
+router.get("/", protect, async (req, res) => {
+  const { tenantId } = req.query;
+
+  if (!tenantId) {
+    console.error("Validation error: Tenant ID is required");
+    return res.status(400).json({ error: "Tenant ID is required" });
+  }
+
+  try {
+    // Filter clients by tenantId and isActive field
+    const clients = await Client.find({ tenantId, isActive: true });
+    console.log("Active clients fetched successfully:", clients);
+    res.status(200).json(clients);
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;

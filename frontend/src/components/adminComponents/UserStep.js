@@ -97,7 +97,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
-            <form className="form-group" onSubmit={handleCreateUser}>
+            <form className="form-group" onSubmit={handleCreateUser} autocomplete="off">
               <h3>Create New User</h3>
               <label>
                 First Name:

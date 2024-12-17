@@ -3,21 +3,28 @@ const { v4: uuidv4 } = require('uuid');
 
 const clientSchema = new mongoose.Schema({
   tenantId: { type: String, required: true },
-  therapistId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   clientId: { type: String, default: uuidv4, unique: true },
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  streetAddress: { type: String, required: false },
+  birthday: {type: Date},
+  gender: {type: String},
+  city: { type: String, required: false },
+  state: { type: String, required: false },
   email: { type: String, required: true },
   phone: { type: String, required: true },
-  notes: String
+  createdAt: { type: Date, default: Date.now },
+  isActive: { type: Boolean, required: true, default: true }
 });
 
-// Middleware to ensure tenantId and therapistId are valid
+// Middleware to ensure tenantId and userId are valid
 clientSchema.pre('save', async function(next) {
-  const therapist = await mongoose.model('User').findById(this.therapistId);
-  if (!therapist) {
-    throw new Error('Therapist not found');
+  const user = await mongoose.model('User').findById(this.userId);
+  if (!user) {
+    throw new Error('User not found');
   }
-  this.tenantId = therapist.tenantId; // Ensure tenantId is consistent
+  this.tenantId = user.tenantId; // Ensure tenantId is consistent
   next();
 });
 

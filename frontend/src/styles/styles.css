@@ -326,6 +326,7 @@ a {
 .form-input {
   width: 100%;
   padding: 10px;
+  margin-right: 5px;
   margin-top: 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -383,6 +384,71 @@ a {
   font-size: 0.85rem;
   margin-top: 5px;
 }
+
+.overlay {
+  position: fixed; /* Stays in place */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensures it sits above other content */
+}
+
+.popup-form {
+  max-width: 700px; /* Ensure maximum width to avoid overflow */
+  width: 90%; /* Adjust width for better responsiveness */
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001; /* Ensures it sits above the overlay background */
+}
+.popup-form .form-row,
+.popup-form .form-row-three-item { 
+  display: flex; 
+  justify-content: space-between; 
+}
+
+.popup-form .form-row label { 
+  width: 48%; 
+}
+
+.popup-form .form-row-three-item label { 
+  width: 32%; 
+}
+
+.popup-form h3 { 
+  margin-bottom: 20px; 
+}
+
+.popup-form label { 
+  display: block; 
+  margin-bottom: 10px;
+ }
+
+ .popup-form input[type="text"],
+ .popup-form input[type="email"],
+ .popup-form input[type="tel"],
+ .popup-form input[type="password"],
+ .popup-form input[type="date"],
+ .popup-form input[type="password"]
+  { 
+  width: 100%; /* Make input fields take full width */ 
+  padding: 8px; 
+  margin: 5px 0 10px; 
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  box-sizing: border-box; /* Ensures padding doesn't affect the width */
+}
+
+.blur-background {
+  filter: blur(5px); /* Blurs the background when the overlay is active */
+}
+
 
 /*Buttons*/
 .btn {
