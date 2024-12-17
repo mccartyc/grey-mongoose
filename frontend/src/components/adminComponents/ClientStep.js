@@ -18,13 +18,15 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    console.log("Selected Tenant:", selectedTenant);
+    console.log("Selected User:", selectedUser);
+
     if (selectedTenant && selectedUser) {
-      console.log("Tenant ID:", selectedTenant._id);
-      console.log("User ID:", selectedUser._id);
       const fetchClients = async () => {
         try {
-          // const response = await axios.get(`http://localhost:5001/api/clients?/userId=${selectedUser._id}`);
-          const response = await axios.get(`http://localhost:5001/api/clients?/tenantId=${selectedTenant._id}&userId=${selectedUser._id}`);
+          console.log("Tenant ID:", selectedTenant._id);
+          console.log("User ID:", selectedUser._id);
+          const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`);
           setClients(response.data);
         } catch (error) {
           console.error('Error fetching clients:', error);
