@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
   });
 
   // Check if all required fields are provided
-  if (!userId || !firstName || !lastName || !email || !phone) {
+  if (!userId || !firstName || !lastName || !email || !phone || !tenantId) {
     console.error("Validation error: Missing required fields");
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
   try {
     // Create the new client
     const newClient = new Client({
-      tenantId,
+      tenantId: tenantId,
       userId,
       firstName,
       lastName,
