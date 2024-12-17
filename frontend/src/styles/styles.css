@@ -530,32 +530,39 @@ a {
 }
 
 /* Table */
-.tenant-table {
+.tenant-table,
+.client-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
 .tenant-table th,
-.tenant-table td {
+.client-table th,
+.tenant-table td,
+.client-table td {
   border: 1px solid #ddd;
   padding: 8px;
 }
 
-.tenant-table th {
+.tenant-table th,
+.client-table th  {
   background-color: #f2f2f2;
 }
 
-.tenant-table tr {
+.tenant-table tr,
+.client-table tr {
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.tenant-table tr:hover {
+.tenant-table tr:hover,
+.client-table tr:hover {
   background-color: #dfd8de;
 }
 
-.tenant-table tr.selected {
+.tenant-table tr.selected,
+.client-table tr.selected {
   background-color: #b6abb5;
 }
 

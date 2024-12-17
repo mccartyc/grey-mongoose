@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const { protect } = require("../middleware/authMiddleware");
-const Client = require("../models/Clients"); // Ensure this path is correct
+const Client = require("../models/Clients"); 
 
 // POST: Create a new client
-router.post("/", protect, async (req, res) => {
+router.post("/", async (req, res) => {
   const {
+    tenantId,
     userId,
     firstName,
     lastName,
@@ -20,6 +21,7 @@ router.post("/", protect, async (req, res) => {
   } = req.body;
 
   console.log("Request to create client:", {
+    tenantId,
     userId,
     firstName,
     lastName,
@@ -41,6 +43,7 @@ router.post("/", protect, async (req, res) => {
   try {
     // Create the new client
     const newClient = new Client({
+      tenantId,
       userId,
       firstName,
       lastName,
@@ -63,7 +66,7 @@ router.post("/", protect, async (req, res) => {
 });
 
 // PUT: Deactivate a client
-router.put("/:clientId/deactivate", protect, async (req, res) => {
+router.put("/:clientId/deactivate", async (req, res) => {
   const { clientId } = req.params;
   try {
     const updateData = { isActive: false, deactivatedAt: new Date() };
@@ -89,7 +92,7 @@ router.put("/:clientId/deactivate", protect, async (req, res) => {
 });
 
 // GET: Get all clients for a specific tenant
-router.get("/", protect, async (req, res) => {
+router.get("/", async (req, res) => {
   const { tenantId } = req.query;
 
   if (!tenantId) {

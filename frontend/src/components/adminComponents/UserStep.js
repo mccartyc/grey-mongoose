@@ -33,7 +33,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     e.preventDefault();
 
     // Check if selectedTenant is defined before proceeding
-    if (!selectedTenant || !selectedTenant._id) {
+    if (!selectedTenant || !selectedTenant.tenantId) {
       setMessage('Error: Tenant not selected or tenant ID not available.');
       return;
     }
@@ -65,6 +65,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
   const handleSelectUser = (user) => {
     setSelectedUserId(user.userId);
+    console.log('Selected User:', user); // Debug log
     onSelectUser(user);
   };
 

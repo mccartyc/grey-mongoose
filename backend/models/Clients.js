@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const clientSchema = new mongoose.Schema({
-  tenantId: { type: String, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  tenantId: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   clientId: { type: String, default: uuidv4, unique: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
