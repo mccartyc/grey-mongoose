@@ -74,7 +74,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
-            <form className="form-group" onSubmit={handleCreateTenant}>
+            <form className="form-group" onSubmit={handleCreateTenant} autocomplete="off">
               <h3>Create New Tenant</h3>
               <label>
                 Tenant Name:
