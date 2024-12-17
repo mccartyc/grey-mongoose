@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      tenant: new mongoose.Types.ObjectId(tenantId), // Use new with ObjectId
+      tenant: tenantId, // Use new with ObjectId
     });
 
     await newUser.save();
