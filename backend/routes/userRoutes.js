@@ -47,6 +47,8 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+/*deactivate user*/
 router.put('/:userId/deactivate', async (req, res) => {
   const { userId } = req.params;
   try {
@@ -73,7 +75,7 @@ router.put('/:userId/deactivate', async (req, res) => {
 });
 
 
-// GET: Get all users for a specific tenant
+// Get all users for a specific tenant
 router.get("/", async (req, res) => {
   const { tenantId } = req.query;
 

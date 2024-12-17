@@ -1,6 +1,5 @@
 // src/pages/Dashboard.js
 import React from 'react';
-import TopNavBar from '../components/TopNavBar';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
 
