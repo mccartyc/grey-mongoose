@@ -5,7 +5,7 @@ import "../styles/styles.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState('');
+  const [error] = useState('');
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e) => {
