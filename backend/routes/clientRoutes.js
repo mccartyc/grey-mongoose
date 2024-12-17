@@ -94,6 +94,8 @@ router.put("/:clientId/deactivate", async (req, res) => {
 // GET: Get all clients for a specific tenant
 router.get("/", async (req, res) => {
   const { tenantId, userId } = req.query;
+  console.log("Tenant ID:", tenantId);
+  console.log("User ID:", userId);
 
   if (!tenantId || !userId) {
     console.error("Validation error: Tenant ID and User ID are required");
