@@ -35,6 +35,8 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   const handleCreateClient = async (e) => {
     e.preventDefault();
 
+    console.log('selectedUser:', selectedUser); // Debug log
+
     if (!selectedTenant || !selectedUser) {
       setMessage('Error: Tenant or User not selected.');
       return;
@@ -52,7 +54,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
         city,
         state,
         tenantId: selectedTenant._id,
-        createdBy: selectedUser.userId,
+        userId: selectedUser._id,
       });
       setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
       setClients((prev) => [...prev, response.data]);
