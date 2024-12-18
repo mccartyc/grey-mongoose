@@ -16,6 +16,7 @@ router.post("/", async (req, res) => {
     gender,
     city,
     state,
+    zipcode,
     email,
     phone,
   } = req.body;
@@ -30,6 +31,7 @@ router.post("/", async (req, res) => {
     gender,
     city,
     state,
+    zipcode,
     email,
     phone,
   });
@@ -52,6 +54,7 @@ router.post("/", async (req, res) => {
       gender,
       city,
       state,
+      zipcode,
       email,
       phone,
     });

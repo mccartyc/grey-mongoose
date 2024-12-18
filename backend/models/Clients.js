@@ -12,6 +12,7 @@ const clientSchema = new mongoose.Schema({
   gender: {type: String},
   city: { type: String, required: false },
   state: { type: String, required: false },
+  zipcode: { type: String, required: false },
   email: { type: String, required: true },
   phone: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
