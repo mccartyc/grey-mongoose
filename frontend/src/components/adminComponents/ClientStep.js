@@ -13,9 +13,24 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   const [streetAddress, setStreetAddress] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
+  const [zipcode, setZipcode] = useState('');
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const calculateAge = (birthday) => {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // Check if the birthday has occurred this year
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+  };
 
   useEffect(() => {
     console.log("Selected Tenant:", selectedTenant);
@@ -58,6 +73,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
         streetAddress,
         city,
         state,
+        zipcode,
         tenantId: selectedTenant._id,
         userId: selectedUser._id,
       });
@@ -81,6 +97,12 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     setStreetAddress('');
     setCity('');
     setState('');
+    setZipcode('');
+  };
+
+  const handleCloseForm = () => {
+    resetFormFields(); // Clear all form fields
+    setShowForm(false); // Hide the form
   };
 
   const handleSelectClient = (client) => {
@@ -101,7 +123,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     client.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client._id.toLowerCase().includes(searchTerm.toLowerCase())
+    client.clientId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -109,52 +131,56 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
-            <form className="form-group" onSubmit={handleCreateClient} autoComplete="off">
+            <form className="form-group" onSubmit={handleCreateClient} autoComplete="nope">
               <h3>Create New Client</h3>
               <div className="form-row">
                 <label>
                   First Name:
-                  <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                  <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="off" required />
                 </label>
                 <label>
                   Last Name:
-                  <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                  <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="off" required />
                 </label>
               </div>
               <label>
                 Street Address:
-                <input type="text" value={streetAddress} onChange={(e) => setStreetAddress(e.target.value)} required />
+                <input type="text" value={streetAddress} onChange={(e) => setStreetAddress(e.target.value)} autoComplete="off" required />
               </label>
-              <div className="form-row">
+              <div className="form-row-three-item">
                 <label>
                   City:
-                  <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required />
+                  <input type="text" value={city} onChange={(e) => setCity(e.target.value)} autoComplete="off" required />
                 </label>
                 <label>
                   State:
-                  <input type="text" value={state} onChange={(e) => setState(e.target.value)} required />
+                  <input type="text" value={state} onChange={(e) => setState(e.target.value)} autoComplete="off" required />
+                </label>
+                <label>
+                  Zip Code:
+                  <input type="text" value={zipcode} onChange={(e) => setZipcode(e.target.value)} autoComplete="off" required />
                 </label>
               </div>
               <label>
                 Email:
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="new-email" required />
               </label>
               <div className="form-row-three-item">
                 <label>
                   Phone:
-                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="off" required />
                 </label>
                 <label>
                   Gender:
-                  <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} required />
+                  <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} autoComplete="off" required />
                 </label>
                 <label>
                   Birthday:
-                  <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} required />
+                  <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} autoComplete="off" required />
                 </label>
               </div>
               <div className="button-container">
-                <button onClick={() => setShowForm(false)} className="btn close-btn">Close</button>
+                <button onClick={handleCloseForm} className="btn close-btn">Close</button>
                 <button type="submit" className="btn primary-btn">Create Client</button>
               </div>
             </form>
@@ -181,8 +207,15 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
             <tr>
               <th>First Name</th>
               <th>Last Name</th>
+              <th>Age</th>
+              <th>Gender</th>
               <th>Email</th>
-              <th>Client ID</th>
+              <th>Phone</th>
+              <th>Street Address</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Zip Code</th>
+              <th>Client Id</th>
               <th className="action-column">Action</th>
             </tr>
           </thead>
@@ -195,8 +228,15 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
               >
                 <td>{client.firstName}</td>
                 <td>{client.lastName}</td>
+                <td>{calculateAge(client.birthday)}</td>
+                <td>{client.gender}</td>
                 <td>{client.email}</td>
-                <td>{client._id}</td>
+                <td>{client.phone}</td>
+                <td>{client.streetAddress}</td>
+                <td>{client.city}</td>
+                <td>{client.state}</td>
+                <td>{client.zipcode}</td>
+                <td>{client.clientId}</td>
                 <td className="action-column">
                   <span
                     role="img"
