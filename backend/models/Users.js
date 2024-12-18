@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   userId: { type: String, default: uuidv4, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["Admin", "User"], default: "User" }, // User roles
-  tenant: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant
+  tenantId: {type: String, required: true }, // Reference to Tenant
   refreshToken: { type: String }, // Store the latest refresh token
   createdAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, required: true, default: true } // Field to indicate if user is active
