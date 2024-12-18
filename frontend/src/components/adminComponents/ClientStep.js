@@ -119,6 +119,28 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     }
   };
 
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '');
+    
+    // Format if the length is appropriate
+    if (digits.length < 4) return digits;  // 123
+    if (digits.length < 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`; // 123-456
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`; // 123-456-7890
+  };
+
+  const handlePhoneChange = (e) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    setPhone(formattedPhone);
+  };
+
+  const handleZipCodeChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ''); // This will remove non-digit characters
+    if (value.length <= 5) {
+      setZipcode(value); // Update only if it's 5 digits or less
+    }
+  };
+
   const filteredClients = clients.filter((client) =>
     client.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,7 +180,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                 </label>
                 <label>
                   Zip Code:
-                  <input type="text" value={zipcode} onChange={(e) => setZipcode(e.target.value)} autoComplete="off" required />
+                  <input type="text" value={zipcode} onChange={handleZipCodeChange} autoComplete="off" required />
                 </label>
               </div>
               <label>
@@ -168,11 +190,16 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
               <div className="form-row-three-item">
                 <label>
                   Phone:
-                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="off" required />
+                  <input type="tel" value={phone} onChange={handlePhoneChange} autoComplete="off" required />
                 </label>
                 <label>
                   Gender:
-                  <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} autoComplete="off" required />
+                  <select className="option" value={gender} onChange={(e) => setGender(e.target.value)} required>
+                    <option value="">Select Gender</option> {/* Placeholder option */}
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </label>
                 <label>
                   Birthday:

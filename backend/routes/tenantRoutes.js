@@ -46,6 +46,29 @@ router.put('/:tenantId/deactivate', async (req, res) => {
       res.status(400).json({ error: 'Failed to deactivate tenant' });
     }
   });
+
+  router.put('/:tenantId', async (req, res) => {
+    const { tenantId } = req.params;
+    const { name } = req.body;
+  
+    try {
+      // Update the tenant in the database
+      const updatedTenant = await Tenant.findOneAndUpdate(
+        { tenantId }, // Assuming tenantId is a field in your schema
+        { name },
+        { new: true, runValidators: true } // new: return the updated doc, runValidators: ensure validators run
+      );
+  
+      if (!updatedTenant) {
+        return res.status(404).send('Tenant not found');
+      }
+  
+      res.status(200).json(updatedTenant);
+    } catch (error) {
+      console.error('Error updating tenant:', error);
+      res.status(500).send('Server error');
+    }
+  });
   
 
 router.get('/', async (req, res) => {

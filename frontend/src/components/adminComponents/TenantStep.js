@@ -28,25 +28,51 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
       const response = await axios.post('http://localhost:5001/api/tenants', { name });
       setMessage(`Tenant created: ${response.data.name}`);
       setTenants((prev) => [...prev, response.data]);
-      setName('');
-      setShowForm(false); // Close the form after creation
+      resetForm(); // Reset form after creation
     } catch (error) {
       setMessage(error.response?.data?.error || 'Failed to create tenant');
     }
   };
 
+  const handleUpdateTenant = async (e) => {
+    e.preventDefault();
+    try {
+      if (!selectedTenantId) return; // Safety check
+      
+      const response = await axios.put(`http://localhost:5001/api/tenants/${selectedTenantId}`, { name });
+      setMessage(`Tenant updated: ${response.data.name}`);
+      setTenants((prev) =>
+        prev.map((tenant) => (tenant.tenantId === selectedTenantId ? { ...tenant, name: response.data.name } : tenant))
+      );
+      resetForm(); // Reset form after update
+    } catch (error) {
+      setMessage(error.response?.data?.error || 'Failed to update tenant');
+    }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setSelectedTenantId(null); // Resetting selected tenant ID
+    setShowForm(false); // Close the form after operation
+  };
+
   const handleSelectTenant = (tenant) => {
     setSelectedTenantId(tenant.tenantId);
+    setName(tenant.name);  // Store the selected tenant's name if you want to show it somewhere (if needed)
     onSelectTenant(tenant);
+  };
+
+  const handleEditTenant = (tenant) => {
+    setSelectedTenantId(tenant.tenantId);
+    setName(tenant.name); // Populate the form with the selected tenant's name
+    setShowForm(true); // Show the form for editing
   };
 
   const handleDeleteTenant = async (tenantId, event) => {
     event.stopPropagation(); // Prevent row selection when clicking delete
     try {
       await axios.put(`http://localhost:5001/api/tenants/${tenantId}/deactivate`);
-      setTenants((prev) =>
-        prev.filter((tenant) => tenant.tenantId !== tenantId)
-      );
+      setTenants((prev) => prev.filter((tenant) => tenant.tenantId !== tenantId));
     } catch (error) {
       console.error('Error deleting tenant:', error);
     }
@@ -63,7 +89,6 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
     formatTimestamp(tenant.createdAt).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
   const handleNextStep = () => { 
     console.log('Selected Tenant ID:', selectedTenantId); 
     onNext(selectedTenantId); 
@@ -74,15 +99,20 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
-            <form className="form-group" onSubmit={handleCreateTenant} autocomplete="off">
-              <h3>Create New Tenant</h3>
+            <form className="form-group" onSubmit={selectedTenantId ? handleUpdateTenant : handleCreateTenant} autoComplete="off">
+              <h3>{selectedTenantId ? 'Edit Tenant' : 'Create New Tenant'}</h3>
               <label>
                 Tenant Name:
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                <input 
+                  type="text" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  required 
+                />
               </label>
               <div className="button-container">
-                <button onClick={() => setShowForm(false)} className="btn close-btn">Close</button>
-                <button type="submit" className="btn primary-btn">Create Tenant</button>
+                <button type="button" onClick={resetForm} className="btn close-btn">Close</button>
+                <button type="submit" className="btn primary-btn">{selectedTenantId ? 'Update Tenant' : 'Create Tenant'}</button>
               </div>
             </form>
             {message && <p>{message}</p>}
@@ -100,7 +130,10 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={() => setShowForm(true)} className="btn create-btn">Create New</button>
+            <button onClick={() => { 
+              resetForm(); 
+              setShowForm(true); 
+            }} className="btn create-btn">Create New</button>
           </div>
         </div>
         <table className="tenant-table">
@@ -114,15 +147,26 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
           </thead>
           <tbody>
             {filteredTenants.map((tenant) => (
-              <tr
-                key={tenant.tenantId}
-                className={selectedTenantId === tenant.tenantId ? 'selected' : ''}
-                onClick={() => handleSelectTenant(tenant)}
+              <tr key={tenant.tenantId}
+                  className={selectedTenantId === tenant.tenantId ? 'selected' : ''}
+                  onClick={() => handleSelectTenant(tenant)} 
               >
                 <td>{tenant.name}</td>
                 <td>{tenant.tenantId}</td>
                 <td>{formatTimestamp(tenant.createdAt)}</td>
-                <td className="action-cell">
+                <td className="action-column">
+                  <span
+                    role="img"
+                    aria-label="edit"
+                    className="edit-icon"
+                    onClick={(event) => {
+                      event.stopPropagation(); // Prevent row selection when clicking edit icon
+                      handleEditTenant(tenant); // Open form to edit tenant
+                    }}
+                    style={{ cursor: 'pointer', marginRight: '10px' }}
+                  >
+                    ✏️
+                  </span>
                   <span
                     role="img"
                     aria-label="delete"
