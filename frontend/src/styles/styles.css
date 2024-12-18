@@ -434,9 +434,7 @@ a {
  .popup-form input[type="email"],
  .popup-form input[type="tel"],
  .popup-form input[type="password"],
- .popup-form input[type="date"],
- .popup-form input[type="password"]
-  { 
+ .popup-form input[type="date"]  { 
   width: 100%; /* Make input fields take full width */ 
   padding: 8px; 
   margin: 5px 0 10px; 
@@ -444,6 +442,18 @@ a {
   border-radius: 5px; 
   box-sizing: border-box; /* Ensures padding doesn't affect the width */
 }
+.popup-form select {
+  width: 100%; /* Make dropdown take full width */
+  padding: 10px; /* Padding for better spacing */
+  margin: 5px 0 10px; /* Vertical margin for spacing */
+  border: 1px solid #ccc; /* Match border color with your inputs */
+  border-radius: 8px; /* Consistent border radius */
+  font-size: 1rem; /* Font size */
+  color: #49274A; /* Text color */
+  background-color: #fff; /* White background for the dropdown */
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
 
 .blur-background {
   filter: blur(5px); /* Blurs the background when the overlay is active */
@@ -788,7 +798,9 @@ a {
   margin-left: 80px;
 }
 
-
+.action-column {
+  text-align: center; 
+}
 
 /* Dashboard Container */
 .dashboard-container {
