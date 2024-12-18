@@ -815,3 +815,88 @@ a {
   display: flex;
   height: 100vh;
 }
+
+
+
+
+/* FullCalendar Styles */
+.calendar-container {
+  margin-top: 20px; /* Add spacing above the calendar */
+  padding: 20px; /* Add padding for better spacing */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #fff; /* Background color matching other sections */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  max-width: 100%; /* Ensure calendar does not overflow */
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* Force the calendar to fit the available height */
+.fc {
+  height: 100%; /* Take full height of the container */
+}
+
+.fc-daygrid-view {
+  height: auto; /* Adjust the height based on the view */
+}
+
+/* Header styles within FullCalendar */
+.fc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.fc-toolbar button {
+  background-color: #49274A; /* Matching your theme */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.fc-toolbar button:hover {
+  background-color: #7AB2D3; /* Hover effect */
+}
+
+/* Additional FullCalendar Styles for better visuals */
+.fc-daygrid-event {
+  background-color: #7AB2D3; /* Event background */
+  color: white; /* Event text color */
+  border-radius: 4px; /* Rounded events */
+}
+
+/* Ensure that when not in a specific month, the calendar is still properly sized */
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 10px; /* Adjusted padding for smaller screens */
+  }
+}
+
+
+.event-form {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff; /* Ensure a consistent background */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.event-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.event-form button {
+  margin-right: 10px; /* Add space between buttons */
+}
