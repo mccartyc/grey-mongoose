@@ -94,8 +94,6 @@ router.put("/:clientId/deactivate", async (req, res) => {
 // GET: Get all clients for a specific tenant
 router.get("/", async (req, res) => {
   const { tenantId, userId } = req.query;
-  console.log("Tenant ID:", tenantId);
-  console.log("User ID:", userId);
 
   if (!tenantId || !userId) {
     console.error("Validation error: Tenant ID and User ID are required");
@@ -104,7 +102,9 @@ router.get("/", async (req, res) => {
 
   try {
     // Filter clients by tenantId and isActive field
-    const clients = await Client.find({ tenantId, userId, isActive: true });
+    console.log("Tenant ID:", tenantId);
+    console.log("User ID:", userId);
+    const clients = await Client.find({ tenantId: tenantId, userId: userId, isActive: true });
     console.log("Active clients fetched successfully:", clients);
     res.status(200).json(clients);
   } catch (error) {

@@ -15,10 +15,10 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
   useEffect(() => {
     if (selectedTenant) {
-      console.log("Selected Tenant in UserStep:", selectedTenant); // Debug log
+      console.log("Selected Tenant in UserStep:", selectedTenant.tenantId); // Debug log
       const fetchUsers = async () => {
         try {
-          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant._id}`);
+          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant.tenantId}`);
           setUsers(response.data);
         } catch (error) {
           console.error('Error fetching users:', error);
@@ -39,14 +39,14 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     }
 
     try {
-      console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant._id });
+      console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant.tenantId });
       const response = await axios.post('http://localhost:5001/api/users', {
         firstname,
         lastname,
         email,
         password,
         role,
-        tenantId: selectedTenant._id,
+        tenantId: selectedTenant.tenantId,
       });
       console.log("User created successfully:", response.data);
       setMessage(`User created: ${response.data.name}`);

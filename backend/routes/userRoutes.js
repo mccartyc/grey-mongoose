@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      tenant: tenantId, // Use new with ObjectId
+      tenantId,
     });
 
     await newUser.save();
@@ -86,7 +86,8 @@ router.get("/", async (req, res) => {
 
   try {
     // Filter users by tenantId and isActive field
-    const users = await User.find({ tenant: tenantId, isActive: true });
+    console.log("User Tenant Filter:", tenantId);
+    const users = await User.find({ tenantId: tenantId, isActive: true });
     console.log("Active users fetched successfully:", users);
     res.status(200).json(users);
   } catch (error) {
