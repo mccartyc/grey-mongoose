@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaBrain, FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaAngleDoubleLeft, FaAngleDoubleRight, FaUserCog, FaRegClipboard } from 'react-icons/fa';
+import { FaBrain, FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard } from 'react-icons/fa';
 import '../styles/styles.css';
 
 const user = {
@@ -35,11 +35,11 @@ const SideNavBar = () => {
         <FaBrain className="brand-icon" />
         {!collapsed && <span className="brand-name">MindCloud</span>}
       </div>
-      <div className="user-name">
-        {collapsed ? <p>  </p> : <p>Hi, {`${user.firstName} ${user.lastName}`}!</p>}
-      </div>
-      <div className="toggle-btn" onClick={toggleSidebar}>
-        {collapsed ? <FaAngleDoubleRight /> : <FaAngleDoubleLeft />}
+      <div className="toggle-btn-container">
+        <div className="toggle-btn" onClick={toggleSidebar}>
+          {collapsed ? <FaBars /> : <FaAngleDoubleLeft /> }
+          <span className="user-name user-info">Hi, {`${user.firstName} ${user.lastName}`}!</span>
+        </div>
       </div>
       <ul className="nav-links">
         <li>

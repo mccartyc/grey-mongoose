@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import SideNavBar from '../components/SideNavBar';
-import TenantStep from '../components/adminComponents/TenantStep';
-import UserStep from '../components/adminComponents/UserStep';
-import ClientStep from '../components/adminComponents/ClientStep';
+import TenantStep from '../components/admin/TenantStep';
+import UserStep from '../components/admin/UserStep';
+import ClientStep from '../components/admin/ClientStep';
 import '../styles/styles.css';
 
 const Admin = () => {

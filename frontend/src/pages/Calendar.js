@@ -6,6 +6,8 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timegrid from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // Required for event interaction
+// import TimePicker from 'react-time-picker';
+
 
 
 const categoryColors = {
@@ -22,18 +24,24 @@ const MyCalendar = () => {
   const [calendar, setCalendar] = useState(null);
   const [showEventForm, setShowEventForm] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
-  const [eventDate, setEventDate] = useState('');
+  const [eventDescription, setEventDescription] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [allDay, setAllDay] = useState(false);
   const [category, setCategory] = useState('Other');
   const [events, setEvents] = useState([
-    { title: 'Client Session', start: '2024-12-01T10:00:00', category: 'Client Session' },
-    { title: 'Internal Meeting', start: '2024-12-02T14:30:00', category: 'Internal Meeting' },
+    { title: 'Client Session', start: '2024-12-20T10:00:00', category: 'Client Session' },
+    { title: 'Internal Meeting', start: '2024-12-21T14:30:00', category: 'Internal Meeting' },
   ]);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+
+    // Add no-scroll class to body when component mounts 
+    document.body.classList.add('no-scroll');
+
     const calendarEl = document.getElementById('calendar');
     const newCalendar = new Calendar(calendarEl, {
       plugins: [dayGridPlugin, interactionPlugin, timegrid],
@@ -60,12 +68,12 @@ const MyCalendar = () => {
         },
       },
       height: 'auto', // Automatically set height for better responsiveness
-      // Set the height to show only one month
-      contentHeight: 'auto', // This will adapt based on the content
+      contentHeight: 'auto',// Set the height to show only one month
       slotDuration: '00:30:00', // 30-minute time slots
-      slotMinTime: '08:00:00', // Calendar start time (8 AM)
-      slotMaxTime: '20:00:00', // Calendar end time (8 PM)
+      slotMinTime: '00:00:00', // Calendar start time (12 AM)
+      slotMaxTime: '24:00:00', // Calendar end time (12 AM)
       scrollTime: '08:00:00',
+      expandRows: true, // Make sure rows expand to fit content
     });
     newCalendar.render();
     setCalendar(newCalendar); // Store the calendar instance
@@ -74,16 +82,19 @@ const MyCalendar = () => {
   const handleAddEvent = (e) => {
     e.preventDefault();
     
-    if (!eventTitle || !eventDate || (!allDay && (!startTime || !endTime))) {
-      setMessage('Please enter all event details');
+    if (!eventTitle || !startDate || (!allDay && (!startTime || !endTime))) {
+      setMessage('Please enter all required event details.');
       return;
     }
 
     const newEvent = {
       title: eventTitle,
-      start: allDay ? eventDate : `${eventDate}T${startTime}`,
-      end: allDay ? null : `${eventDate}T${endTime}`,
+      start: allDay ? startDate : `${startDate}T${startTime}`,
+      end: allDay ? endDate : `${endDate}T${endTime}`,
       allDay: allDay,
+      extendedProps: {
+        description: eventDescription,
+      },
       category: category,
       color: categoryColors[category],
     };
@@ -95,7 +106,8 @@ const MyCalendar = () => {
     }
 
     setEventTitle('');
-    setEventDate('');
+    setStartDate('');
+    setEndDate('');
     setStartTime('');
     setEndTime('');
     setAllDay(false);
@@ -110,7 +122,7 @@ const MyCalendar = () => {
       <SideNavBar />
       <div className="content-area">
         <h1 className="section-title">Calendar</h1>
-        <div id="calendar" className="calendar-container" style={{ maxHeight: '700px', overflowY: 'auto' }}></div>
+        <div id="calendar" className="calendar-container"></div>
 
         {/* Modal for adding events */}
         {showEventForm && (
@@ -128,11 +140,20 @@ const MyCalendar = () => {
                   />
                 </label>
                 <label>
-                  Event Date:
+                  Start Date:
                   <input
                     type="date"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  End Date:
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
                     required
                   />
                 </label>
@@ -141,7 +162,7 @@ const MyCalendar = () => {
                     <label>
                       Start Time:
                       <input
-                         type="time"
+                        type="time"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
                         step="900"  // 15 minutes = 900 seconds
@@ -178,6 +199,15 @@ const MyCalendar = () => {
                     <option value="Out of Office">Out of Office</option>
                     <option value="Other">Other</option>
                   </select>
+                </label>
+                <label>
+                  Body:
+                  <textarea
+                    type="time"
+                    value={eventDescription}
+                    onChange={(e) => setEventDescription(e.target.value)}
+                    rows="3"
+                  />
                 </label>
                 <button type="submit" className="btn primary-btn">Add Event</button>
                 <button type="button" className="btn close-btn" onClick={() => setShowEventForm(false)}>Cancel</button>
