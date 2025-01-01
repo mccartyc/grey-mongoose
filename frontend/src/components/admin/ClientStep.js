@@ -32,26 +32,25 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     return age;
   };
 
-  useEffect(() => {
-    console.log("Selected Tenant:", selectedTenant);
-    console.log("Selected User:", selectedUser);
-
+  const fetchClients = async () => {
     if (selectedTenant && selectedUser) {
-      const fetchClients = async () => {
-        try {
-          console.log("Tenant ID:", selectedTenant._id);
-          console.log("User ID:", selectedUser._id);
-          const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`);
-          setClients(response.data);
-        } catch (error) {
-          console.error('Error fetching clients:', error);
-        }
-      };
-  
-      fetchClients();
+      try {
+        const response = await axios.get(
+          `http://localhost:5001/api/clients?tenantId=${selectedTenant.tenantId}&userId=${selectedUser.userId}`
+        );
+        setClients(response.data);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchClients();
   }, [selectedTenant, selectedUser]);
 
+
+  /*Create a new client*/
   const handleCreateClient = async (e) => {
     e.preventDefault();
 
@@ -74,8 +73,8 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
         city,
         state,
         zipcode,
-        tenantId: selectedTenant._id,
-        userId: selectedUser._id,
+        tenantId: selectedTenant.tenantId,
+        userId: selectedUser.userId,
       });
       setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
       setClients((prev) => [...prev, response.data]);
@@ -106,14 +105,14 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   };
 
   const handleSelectClient = (client) => {
-    setSelectedClientId(client._id);
+    setSelectedClientId(client.clientID);
   };
 
   const handleDeleteClient = async (clientId, event) => {
     event.stopPropagation();
     try {
       await axios.put(`http://localhost:5001/api/clients/${clientId}/deactivate`);
-      setClients((prev) => prev.filter((client) => client._id !== clientId));
+      setClients((prev) => prev.filter((client) => client.clientID !== clientId));
     } catch (error) {
       console.error('Error deleting client:', error);
     }
@@ -250,7 +249,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
             {filteredClients.map((client) => (
               <tr
                 key={client._id}
-                className={selectedClientId === client._id ? 'selected' : ''}
+                className={selectedClientId === client.clientId ? 'selected' : ''}
                 onClick={() => handleSelectClient(client)}
               >
                 <td>{client.firstName}</td>
@@ -269,7 +268,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteClient(client._id, event)}
+                    onClick={(event) => handleDeleteClient(client.clientId, event)}
                   >
                     🗑️
                   </span>

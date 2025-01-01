@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
     // Create the new client
     const newClient = new Client({
       tenantId: tenantId,
-      userId,
+      userId: userId,
       firstName,
       lastName,
       streetAddress,
@@ -67,6 +67,8 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
 
 // PUT: Deactivate a client
 router.put("/:clientId/deactivate", async (req, res) => {
@@ -93,6 +95,8 @@ router.put("/:clientId/deactivate", async (req, res) => {
     res.status(400).json({ error: "Failed to deactivate client" });
   }
 });
+
+
 
 // GET: Get all clients for a specific tenant
 router.get("/", async (req, res) => {

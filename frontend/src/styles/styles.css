@@ -430,6 +430,8 @@ a {
   margin-bottom: 10px;
  }
 
+ .popup-form textarea,
+ .popup-form input[type="text"],
  .popup-form input[type="text"],
  .popup-form input[type="email"],
  .popup-form input[type="tel"],
@@ -658,6 +660,7 @@ a {
   display: flex;
   align-items: center;
   margin-bottom: 40px;
+  margin-left: 7px;
 }
 
 .brand-icon {
@@ -672,12 +675,29 @@ a {
 }
 
 /* User name styles */
+
+/* Container for the toggle button and user name */
+.toggle-btn-container {
+  display: flex; /* Ensures children elements are aligned in a row */
+  align-items: center; /* Vertically aligns the items */
+  gap: 10px; /* Adds space between the toggle button and user name */
+}
+
+
 .user-name {
   font-size: 10pt;
   height: 1mm;
   margin-bottom: 20px;
   color: #ccc;
   transition: opacity 1s ease;
+}
+
+.user-info {
+    gap: 8px; /* Adds space between the icon and the name */
+    margin-left: 8px; /* Adjust spacing from the toggle button */
+    margin-top: 8px;
+    font-size: 1rem;
+    color: #fff
 }
 
 .side-navbar.collapsed .user-name {
@@ -695,10 +715,13 @@ a {
 }
 
 .toggle-btn {
+  display: flex; /* Ensures the toggle icon and text are in a row */
+  align-items: center; /* Vertically aligns the icon and text */
   cursor: pointer;
   font-size: 1.5rem;
   color: #B9E5E8;
   margin-bottom: 20px;
+  margin-left: 10px;
   transition: padding 0.7s ease;
 }
 
@@ -820,7 +843,16 @@ a {
 
 
 /* FullCalendar Styles */
+
+body.no-scroll { 
+  overflow: hidden; /* Disable main window scrolling */ 
+}
+
 .calendar-container {
+  max-height: 700px;
+  overflow-y: auto;
+  position: relative;
+  height: 700px; /*Set a fixed height for the calendar*/
   margin-top: 20px; /* Add spacing above the calendar */
   padding: 20px; /* Add padding for better spacing */
   border-radius: 8px; /* Rounded corners */
@@ -828,6 +860,38 @@ a {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
   max-width: 100%; /* Ensure calendar does not overflow */
   overflow: hidden; /* Prevent overflow */
+}
+
+.calendar-container .fc-timegrid-body {
+  overflow-y: auto;
+  max-height: 500px; /* Adjust height to allow scrolling within the time grid */
+}
+
+.fc .fc-day-today {
+  background-color: rgba(255, 255, 0, 0.2); /*Your preferred highlight color*/
+  position: relative; /* Ensure relative positioning */
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+}
+
+.fc .fc-day-today
+.fc-timegrid-col-frame { 
+  flex-grow: 1; /* Ensure the highlight covers the entire column */ 
+}
+
+.fc-timegrid-slots,
+.fc-scrollgrid-sync-inner { 
+  overflow-y: scroll !important; /* Ensure the time slots are scrollable */ 
+} 
+
+.calendar-container .fc-timegrid-header {
+  position: sticky;
+  top: 0;
+  background-color: white; /* Ensure headers are distinguishable */
+  z-index: 2;
 }
 
 /* Force the calendar to fit the available height */
