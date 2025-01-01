@@ -837,8 +837,12 @@ a {
 .main-content {
   display: flex;
   height: 100vh;
+  transition: all 0.3s ease;
 }
 
+.main-content.collapsed .content-area {
+  margin-left: 80px; /* Adjust based on collapsed sidebar width */
+}
 
 
 
@@ -859,7 +863,8 @@ body.no-scroll {
   background-color: #fff; /* Background color matching other sections */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
   max-width: 100%; /* Ensure calendar does not overflow */
-  overflow: hidden; /* Prevent overflow */
+  width: 100%; /* Ensures the calendar takes full width of its container */
+  overflow: hidden; /* Prevent overflow *
 }
 
 .calendar-container .fc-timegrid-body {
@@ -963,4 +968,26 @@ body.no-scroll {
 
 .event-form button {
   margin-right: 10px; /* Add space between buttons */
+}
+
+
+.main-content {
+  display: flex;
+  transition: all 0.3s ease;
+}
+
+.main-content.collapsed .content-area {
+  margin-left: 80px; /* Adjust to your sidebar's collapsed width */
+}
+
+.content-area {
+  flex: 1;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.calendar-container {
+  width: 100%; /* Ensure it takes the full width */
+  height: calc(100vh - 100px); /* Dynamically set height if needed */
+  min-height: 600px; /* Minimum height for usability */
 }
