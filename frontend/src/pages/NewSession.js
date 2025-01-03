@@ -2,7 +2,7 @@
 import React from 'react';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
-import Sessions from '../components/Sessions';
+import NewSession from '../components/NewSession';
 
 const SessionList = () => {
   return (
@@ -11,7 +11,7 @@ const SessionList = () => {
         <SideNavBar />
         <div className="content-area">
           <h1>Sessions</h1>
-            <Sessions />
+            <NewSession />
         </div>
       </div>
     </div>

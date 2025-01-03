@@ -16,7 +16,10 @@ const MyCalendar = () => {
     setCollapsed(!collapsed);
   };
 
+
   useEffect(() => {
+
+
     const calendarEl = calendarContainerRef.current; // Calendar container element
     const calendar = new Calendar(calendarEl, {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -30,8 +33,19 @@ const MyCalendar = () => {
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay',
       },
+      buttonText: {
+        today: 'Today', // This will set the button text to "Today"
+        dayGridMonth: 'Month',
+        dayGridWeek: 'Week',
+        timeGridWeek: 'Week',
+        timeGridDay: 'Day'
+      },
       height: 'auto',
       contentHeight: 'auto',
+      slotDuration: '00:30:00', // 30-minute time slots
+      // slotMinTime: '08:00:00', // Calendar start time (8 AM)
+      // slotMaxTime: '20:00:00', // Calendar end time (8 PM)
+      // scrollTime: '08:00:00',
     });
 
     calendar.render();
@@ -63,7 +77,7 @@ const MyCalendar = () => {
   }, [collapsed]);
 
   return (
-    <div className={`main-content ${collapsed ? 'collapsed' : ''}`}>
+    <div className={`main-content no-scroll ${collapsed ? 'collapsed' : ''}`}>
       <SideNavBar collapsed={collapsed} toggleSidebar={toggleSidebar} />
       <div className="content-area">
         <h1 className="section-title">Calendar</h1>
