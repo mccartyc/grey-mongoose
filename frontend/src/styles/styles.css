@@ -10,6 +10,7 @@ body {
   background-color: #f4f5f7;
   color: #333;
   margin: 0;
+  overflow: hidden;
 }
 
 
@@ -55,6 +56,7 @@ a {
   margin-top: 20px;
 }
 .header-container { 
+  margin-top: 25px;
   display: flex; 
   justify-content: space-between;
   align-items: center; 
@@ -543,7 +545,8 @@ a {
 
 /* Table */
 .tenant-table,
-.client-table {
+.client-table,
+.session-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -551,30 +554,36 @@ a {
 
 .tenant-table th,
 .client-table th,
+.session-table th,
 .tenant-table td,
-.client-table td {
+.client-table td,
+.session-table td {
   border: 1px solid #ddd;
   padding: 8px;
 }
 
 .tenant-table th,
-.client-table th  {
+.client-table th,
+.session-table th {
   background-color: #f2f2f2;
 }
 
 .tenant-table tr,
-.client-table tr {
+.client-table tr,
+.session-table tr {
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .tenant-table tr:hover,
-.client-table tr:hover {
+.client-table tr:hover,
+.session-table tr:hover {
   background-color: #dfd8de;
 }
 
 .tenant-table tr.selected,
-.client-table tr.selected {
+.client-table tr.selected,
+.session-table tr.selected {
   background-color: #b6abb5;
 }
 
@@ -850,13 +859,15 @@ a {
 
 body.no-scroll { 
   overflow: hidden; /* Disable main window scrolling */ 
+  margin: 0;
 }
 
 .calendar-container {
-  max-height: 700px;
+  max-height: 100%;
   overflow-y: auto;
+  overflow: hidden; /* Prevent overflow */
   position: relative;
-  height: 700px; /*Set a fixed height for the calendar*/
+  height: 100%; /*Set a fixed height for the calendar*/
   margin-top: 20px; /* Add spacing above the calendar */
   padding: 20px; /* Add padding for better spacing */
   border-radius: 8px; /* Rounded corners */
@@ -864,12 +875,11 @@ body.no-scroll {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
   max-width: 100%; /* Ensure calendar does not overflow */
   width: 100%; /* Ensures the calendar takes full width of its container */
-  overflow: hidden; /* Prevent overflow *
 }
 
 .calendar-container .fc-timegrid-body {
   overflow-y: auto;
-  max-height: 500px; /* Adjust height to allow scrolling within the time grid */
+  max-height: 700px; /* Adjust height to allow scrolling within the time grid */
 }
 
 .fc .fc-day-today {
@@ -889,7 +899,8 @@ body.no-scroll {
 
 .fc-timegrid-slots,
 .fc-scrollgrid-sync-inner { 
-  overflow-y: scroll !important; /* Ensure the time slots are scrollable */ 
+  overflow-y: auto !important; /* Ensure the time slots are scrollable */ 
+  overflow-x: hidden;
 } 
 
 .calendar-container .fc-timegrid-header {
@@ -990,4 +1001,148 @@ body.no-scroll {
   width: 100%; /* Ensure it takes the full width */
   height: calc(100vh - 100px); /* Dynamically set height if needed */
   min-height: 600px; /* Minimum height for usability */
+}
+
+
+/*New Session CSS*/
+
+.create-session-page {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f4f5f7; /* Maintain consistency with the body */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+/* Custom style for the React Quill editor */
+.react-quill {
+  padding: 10px; /* Padding inside the editor */
+  border: 1px solid #ccc; /* Light border for the editor */
+  width: 100%;
+  border-radius: 4px; /* Rounded corners */
+  min-height: 200px; /*Set a minimum height*/
+  max-height: 225px; /* Set a maximum height */
+  font-size: 1rem; /* Consistent font size */
+  overflow-y: auto; /*Enable vertical scrolling*/
+}
+
+.react-quill .ql-toolbar {
+  position: sticky; /* Make the toolbar sticky */
+  top: 0; /* Stick to the top of the editor */
+  z-index: 1; /* Ensure it stays above other content */
+  background: white; /* Set background for visibility */
+  border: none; /* Optional: If you want to remove the border */
+}
+
+/* Preventing resizing and keeping consistent spacing */
+.react-quill .ql-editor {
+  min-height: 150px; /* Ensure editor matches minimum height */
+  max-height: 200px; /* Ensure editor matches maximum height */
+}
+
+.react-quill .ql-container {
+  border: none; /* Remove the default border */
+}
+#toolbar {
+  display: flex;
+  justify-content: space-between; /* Space out the items in the toolbar */
+  align-items: center;
+}
+
+#toolbar button {
+  margin-left: 5px; /* Spacing between toolbar buttons */
+}
+
+h3 {
+  margin-bottom: 20px; /* Space below the heading */
+  color: #49274A; /* Heading color matching your theme */
+}
+
+.form-group {
+  display: flex; /* Use flex for a column layout */
+  flex-direction: column; /* Stack form elements vertically */
+  gap: 20px; /* Space between form elements */
+}
+
+.form-row {
+  display: flex; /* Use flex to create a row layout */
+  align-items: center; /* Center items vertically */
+  gap: 40px; /* Space between inputs */
+}
+
+label {
+  display: flex;
+  flex-direction: column; /* Stack label and input vertically */
+  font-size: 1rem;
+  flex: 1; /* Allow it to grow */
+}
+
+span {
+  margin-bottom: 10px;
+}
+
+.client-label {
+  flex: 0 0 30%; /* 30% width for the client input */
+  position: relative; /* Position relative for dropdown */
+}
+
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+  padding: 10px; /* Padding inside input fields */
+  border: 1px solid #ccc; /* Light border for inputs */
+  border-radius: 4px; /* Rounded corners for inputs */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.client-dropdown {
+  position: absolute; /* Dropdown appears directly below the input */
+  background-color: white; /* Dropdown background */
+  border: 1px solid #ccc; /* Light border for dropdown */
+  border-radius: 4px; /* Rounded corners */
+  max-height: 200px; /* Limit the height of the dropdown */
+  overflow-y: auto; /* Enable scrolling for long lists */
+  z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.client-dropdown li {
+  padding: 10px; /* Space around dropdown items */
+  cursor: pointer; /* Pointer on hover */
+}
+
+.client-dropdown li:hover {
+  background-color: #f1f1f1; /* Highlight on hover */
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Space buttons evenly */
+}
+
+.btn {
+  padding: 10px 20px; /* Padding for buttons */
+  border: none; /* Plain button borders */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 1rem; /* Font size for buttons */
+}
+
+.close-btn {
+  background-color: #ccc; /* Light background for cancel button */
+  color: #fff; /* Text color */
+}
+
+.primary-btn {
+  background-color: #49274A; /* Primary button color */
+  color: white; /* Button text color */
+}
+
+.primary-btn:hover {
+  background-color: #7AB2D3; /* Hover effect for the primary button */
+}
+
+.error-message {
+  color: red; /* Error message color */
+  margin-top: 10px; /* Space above the error message */
 }

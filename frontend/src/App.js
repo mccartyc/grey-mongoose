@@ -9,6 +9,8 @@ import Clients from "./pages/Clients";
 import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
+import NewSession from './pages/NewSession'; 
+
 
 const App = () => (
   <Router>
@@ -23,6 +25,7 @@ const App = () => (
       <Route path="/sessions" element={<Sessions />} />
       <Route path="/calendar" element={<Calendar />} />
       <Route path="/invoicing" element={<Invoicing />} />
+      <Route path="/sessions/newsession" element={<NewSession />} />
 
     </Routes>
   </Router>
