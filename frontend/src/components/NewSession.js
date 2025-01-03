@@ -5,7 +5,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 
 const CreateSessionPage = () => {
-  const [clients, setClients] = useState([]);
+  // const [clients, setClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // Set today's date as default
@@ -22,7 +22,7 @@ const CreateSessionPage = () => {
 
       try {
         const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`);
-        setClients(response.data);
+        // setClients(response.data);
         setFilteredClients(response.data); // Initialize filtered clients
       } catch (error) {
         console.error('Error fetching clients:', error);

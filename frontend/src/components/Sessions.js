@@ -14,14 +14,8 @@ const SessionPage = () => {
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [currentSessionNotes, setCurrentSessionNotes] = useState('');
   const [isEditing, setIsEditing] = useState(false); // State to control editing mode
-  const [showForm, setShowForm] = useState(false); // State for showing/hiding the form
   const navigate = useNavigate();
 
-  // State variables for the form fields
-  const [date, setDate] = useState('');
-  const [length, setLength] = useState('');
-  const [type, setType] = useState('');
-  const [notes, setNotes] = useState('');
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -53,39 +47,6 @@ const SessionPage = () => {
     session.notes?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCreateSession = async (e) => {
-    e.preventDefault();
-
-    const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
-    const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
-
-    try {
-      const response = await axios.post('http://localhost:5001/api/sessions', {
-        tenantId,
-        clientId: selectedSessionId, // Use selected client ID from your logic
-        userId,
-        date,
-        length,
-        type,
-        notes,
-      });
-
-      setMessage(`Session created successfully for ${response.data.clientId}`);
-      setSessions((prev) => [...prev, response.data]);
-      resetFormFields();
-      setShowForm(false); // Close the form after creation
-    } catch (error) {
-      console.error('Error creating session:', error);
-      setMessage(error.response?.data?.error || 'Failed to create session');
-    }
-  };
-
-  const resetFormFields = () => {
-    setDate('');
-    setLength('');
-    setType('');
-    setNotes('');
-  };
   
   const handleViewNotes = (session) => {
     setCurrentSessionNotes(session.notes); // Set the notes for the selected session
