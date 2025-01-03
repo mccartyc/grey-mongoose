@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const Session = require("../models/Session"); // Adjust the path as necessary
-const { protect } = require("../middleware/authMiddleware"); // If you have an auth middleware
+const Session = require("../models/Sessions"); // Adjust the path as necessary
+// const { protect } = require("../middleware/authMiddleware"); // If you have an auth middleware
 
 // POST: Create a new session
 router.post("/", async (req, res) => {
@@ -52,6 +52,29 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+// GET: Retrieve sessions for a specific tenantId and userId
+router.get("/", async (req, res) => {
+  const { tenantId, userId } = req.query;
+
+  console.log("Request to get sessions:", { tenantId, userId });
+
+  if (!tenantId || !userId) {
+    console.error("Validation error: Missing tenantId or userId");
+    return res.status(400).json({ error: "Missing tenantId or userId" });
+  }
+
+  try {
+    const sessions = await Session.find({ tenantId, userId, isActive: true }); // Including isActive filter if needed
+    console.log("Retrieved sessions:", sessions);
+    res.status(200).json(sessions);
+  } catch (error) {
+    console.error("Error retrieving sessions:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 // PUT: Edit an existing session
 router.put("/:sessionId", async (req, res) => {

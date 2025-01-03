@@ -10,7 +10,7 @@ body {
   background-color: #f4f5f7;
   color: #333;
   margin: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 
@@ -1070,14 +1070,14 @@ h3 {
   gap: 40px; /* Space between inputs */
 }
 
-label {
+.new-session-label {
   display: flex;
-  flex-direction: column; /* Stack label and input vertically */
+  flex-direction: column; 
   font-size: 1rem;
-  flex: 1; /* Allow it to grow */
+  flex: 1;
 }
 
-span {
+.new-session-span {
   margin-bottom: 10px;
 }
 
@@ -1145,4 +1145,65 @@ textarea {
 .error-message {
   color: red; /* Error message color */
   margin-top: 10px; /* Space above the error message */
+}
+
+
+/* Modal Overlay */
+.modal {
+  position: fixed; /* Stay in place */
+  z-index: 999; /* Sit on top */
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+  display: flex; /* Enable flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fff; /* White background for the modal */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  width: 80%; /* Width of the modal */
+  max-width: 600px; /* Max width */
+  padding: 20px; /* Padding inside the modal */
+  position: relative; /* Position relative for absolute positioning children */
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex; /* Enable flexbox */
+  justify-content: space-between; /* Space between title and close button */
+  align-items: center; /* Center align items */
+  border-bottom: 1px solid #e0e0e0; /* Bottom border */
+  padding-bottom: 10px; /* Padding below header */
+}
+
+/* Modal Title */
+.modal-header h2 {
+  margin: 0; /* Remove default margin */
+  font-size: 20px; /* Title font size */
+}
+
+/* Close Button */
+.modal-header button {
+  background: none; /* No background */
+  border: none; /* No border */
+  font-size: 16px; /* Font size for button */
+  cursor: pointer; /* Pointer cursor for button */
+}
+
+/* Modal Body */
+.modal-body {
+  margin: 10px 0; /* Margin around body */
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex; /* Enable flexbox */
+  justify-content: space-between; /* Space between buttons */
+  margin-top: 15px; /* Margin on top */
 }

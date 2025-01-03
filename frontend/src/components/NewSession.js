@@ -33,13 +33,13 @@ const CreateSessionPage = () => {
     fetchClients();
   }, []);
 
-  const handleClientSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setFilteredClients(clients.filter(client => 
-      client.firstName.toLowerCase().includes(value) || 
-      client.lastName.toLowerCase().includes(value)
-    ));
-  };
+  // const handleClientSearch = (e) => {
+  //   const value = e.target.value.toLowerCase();
+  //   setFilteredClients(clients.filter(client => 
+  //     client.firstName.toLowerCase().includes(value) || 
+  //     client.lastName.toLowerCase().includes(value)
+  //   ));
+  // };
 
   const handleCreateSession = async (e) => {
     e.preventDefault();
@@ -54,9 +54,9 @@ const CreateSessionPage = () => {
 
     try {
       const response = await axios.post('http://localhost:5001/api/sessions', {
-        tenantId,
+        tenantId: tenantId,
         clientId: selectedClientId,
-        userId,
+        userId: userId,
         date,
         length,
         type,
@@ -77,23 +77,23 @@ const CreateSessionPage = () => {
       {message && <p className="error-message">{message}</p>}
       <form className="form-group" onSubmit={handleCreateSession} autoComplete="off">
         <div className="form-row">
-          <label className="client-label">
-            <span>Select Client:</span>
+          <label className="client-label new-session-label">
+            <span>Select Client</span>
             <select value={selectedClientId} onChange={(e) => setSelectedClientId(e.target.value)} required>
-              <option value="">Select a client</option>
+              <option value="">Client</option>
               {filteredClients.map((client) => (
-                <option key={client._id} value={client._id}>
+                <option key={client.clientId} value={client.clientId}>
                   {client.firstName} {client.lastName}
                 </option>
               ))}
             </select>
           </label>
-          <label>
-            <span>Date:</span>
+          <label className="new-session-label">
+            <span className="new-session-span">Date:</span>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
           </label>
-          <label>
-            <span>Length:</span>
+          <label className="new-session-label">
+            <span className="new-session-span">Length:</span>
             <select value={length} onChange={(e) => setLength(e.target.value)} required>
               <option value="">Select Length</option>
               <option value="00:15">00:15</option>
@@ -107,8 +107,8 @@ const CreateSessionPage = () => {
               <option value="02:00+">02:00+</option>
             </select>
           </label>
-          <label>
-            <span>Type:</span>
+          <label className="new-session-label">
+            <span className="new-session-span">Type:</span>
             <select value={type} onChange={(e) => setType(e.target.value)} required>
               <option value="">Select Type</option>
               <option value="In Person">In Person</option>
@@ -121,14 +121,14 @@ const CreateSessionPage = () => {
           </label>
         </div>
         <div className="form-row">
-          <label>Record:</label>
+          <label className="new-session-label">Record:</label>
         </div>
         <div className="form-row">
           <button type="button" className="btn primary-btn">Start Transcript</button>
           <button type="button" className="btn primary-btn">Stop Transcript</button>
         </div>
-        <label>
-          <span>Notes:</span>
+        <label className="new-session-label">
+          <span className="new-session-span">Notes:</span>
         </label>
         <div className="form-row">
           <ReactQuill 

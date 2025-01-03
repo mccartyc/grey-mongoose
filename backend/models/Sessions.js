@@ -16,11 +16,11 @@ const sessionSchema = new mongoose.Schema({
 
 // Middleware to ensure tenantId is valid
 sessionSchema.pre('save', async function(next) {
-  const client = await mongoose.model('Client').findById(this.clientId);
+  const client = await mongoose.model('Client').findOne({ clientId: this.clientId });
   if (!client) {
     throw new Error('Client not found');
   }
-  const user = await mongoose.model('User').findById(this.userId);
+  const user = await mongoose.model('User').findOne({ userId: this.userId });
   if (!user) {
     throw new Error('User not found');
   }
