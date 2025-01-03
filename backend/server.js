@@ -4,6 +4,7 @@ const connectDB = require('./config/db'); // Import the database connection
 const tenantRoutes = require('./routes/tenantRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const userRoutes = require('./routes/userRoutes');
+const sessionRoutes = require('./routes/sessionRoutes');
 const cors = require('cors');
 require('dotenv').config(); // Load .env variables
 
@@ -34,6 +35,8 @@ connectDB();
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/sessions', sessionRoutes);
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 
