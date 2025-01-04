@@ -26,7 +26,6 @@ const App = () => (
       <Route path="/calendar" element={<Calendar />} />
       <Route path="/invoicing" element={<Invoicing />} />
       <Route path="/sessions/newsession" element={<NewSession />} />
-
     </Routes>
   </Router>
 );
