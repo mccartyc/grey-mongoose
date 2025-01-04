@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "../styles/styles.css";
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error] = useState('');
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token); // Save JWT to localStorage
-      setMessage("Login successful");
+      const { data } = await axios.post('http://localhost:5001/api/auth/login', { email, password });
+      localStorage.setItem('accessToken', data.accessToken);
+      navigate('/dashboard'); // Redirect to the dashboard page
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed");
     }
