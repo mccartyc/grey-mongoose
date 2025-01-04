@@ -6,15 +6,9 @@ const { protect } = require("../middleware/authMiddleware");
 const Event = require('../models/Event');
 
 
-// Middleware for authentication (simplified example)
-const authenticateUser = (req, res, next) => {
-  // Example: Assuming userId is attached to req.user after authentication
-  if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
-  next();
-};
 
 // GET all events for the logged-in user
-router.get('/', authenticateUser, async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const events = await Event.find({ userId: req.user.id });
     res.json(events);
@@ -24,7 +18,7 @@ router.get('/', authenticateUser, async (req, res) => {
 });
 
 // POST a new event
-router.post('/', authenticateUser, async (req, res) => {
+router.post('/', protect, async (req, res) => {
   const { title, description, category, start, end, allDay } = req.body;
 
   try {
@@ -46,7 +40,7 @@ router.post('/', authenticateUser, async (req, res) => {
 });
 
 // PUT to update an existing event
-router.put('/:id', authenticateUser, async (req, res) => {
+router.put('/:id', protect, async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
 
@@ -63,7 +57,7 @@ router.put('/:id', authenticateUser, async (req, res) => {
 });
 
 // DELETE an event
-router.delete('/:id', authenticateUser, async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
 

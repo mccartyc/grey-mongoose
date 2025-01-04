@@ -6,7 +6,7 @@ const User = require("../models/Users"); // Ensure this path is correct
 const bcrypt = require("bcryptjs");
 
 // POST: Create a new user
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   const { firstname, lastname, email, password, role, tenantId } = req.body;
 
   console.log("Request to create user:", { firstname, lastname, email, password, role, tenantId });
@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
 
 
 /*deactivate user*/
-router.put('/:userId/deactivate', async (req, res) => {
+router.put('/:userId/deactivate', protect, async (req, res) => {
   const { userId } = req.params;
   try {
     const updateData = { isActive: false, deactivatedAt: new Date() };
@@ -76,7 +76,7 @@ router.put('/:userId/deactivate', async (req, res) => {
 
 
 // Get all users for a specific tenant
-router.get("/", async (req, res) => {
+router.get("/", protect, async (req, res) => {
   const { tenantId } = req.query;
 
   if (!tenantId) {
