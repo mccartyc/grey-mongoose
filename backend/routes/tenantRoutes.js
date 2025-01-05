@@ -1,6 +1,7 @@
 // server/routes/tenantRoutes.js
 const express = require('express');
 const router = express.Router();
+const { protect } = require("../middleware/authMiddleware");
 const Tenant = require('../models/Tenant');
 
 router.post('/', protect, async (req, res) => {

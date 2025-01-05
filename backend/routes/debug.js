@@ -1,6 +1,8 @@
 // routes/debug.js
 const express = require('express');
 const User = require('../models/Users'); // Adjust path as needed
+const { protect } = require("../middleware/authMiddleware");
+
 
 const router = express.Router();
 

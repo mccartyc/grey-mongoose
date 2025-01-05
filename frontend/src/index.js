@@ -3,17 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './styles/styles.css'; // Ensure your styles load here (optional)
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { AuthContext } from '../../services/authContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  // <React.StrictMode>
-    <AuthContext>
+  <React.StrictMode>
       <App />
-    </AuthContext>
-  // </React.StrictMode>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
