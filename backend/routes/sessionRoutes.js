@@ -1,4 +1,5 @@
 const express = require("express");
+const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Session = require("../models/Sessions"); // Adjust the path as necessary
