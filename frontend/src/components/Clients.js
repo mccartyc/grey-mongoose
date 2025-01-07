@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext'; // Import AuthContext
+
 
 const ClientPage = () => {
   const [clients, setClients] = useState([]);
@@ -21,15 +23,30 @@ const ClientPage = () => {
   const [state, setState] = useState('');
   const [zipcode, setZipcode] = useState('');
 
+  const { user } = useAuth(); // Access the current user from AuthContext
+
+
   useEffect(() => {
     const fetchClients = async () => {
-      const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9";
-      const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc";
+
+      if (!user) {
+        console.error('User is not logged in or data is missing.');
+        return;
+      }
+      const { tenantId, userId, token } = user; // Get tenantId and userId from user context
+      console.log("User Info:", user);
       console.log("Selected Tenant:", tenantId);
       console.log("Selected User:", userId);
 
       try {
-        const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`);
+        const response = await axios.get(
+            `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setClients(response.data);
       } catch (error) {
         console.error('Error fetching clients:', error);
@@ -38,7 +55,7 @@ const ClientPage = () => {
     };
 
     fetchClients();
-  }, []);
+  }, [user]); // Re-run the effect when the user changes
 
   const handleSelectClient = (client) => {
     setSelectedClientId(client._id);
@@ -50,9 +67,9 @@ const ClientPage = () => {
       setMessage('All fields are required.');
       return;
     }
-
-    const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
-    const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
+    const { tenantId, userId, token } = user; // Get tenantId and userId from user context
+    // const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
+    // const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
 
     try {
       const response = await axios.post('http://localhost:5001/api/clients', {
@@ -68,7 +85,13 @@ const ClientPage = () => {
         zipcode,
         tenantId,
         userId,
-      });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
       setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
       setClients((prev) => [...prev, response.data]);
       resetFormFields();
