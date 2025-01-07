@@ -13,7 +13,7 @@ export const AuthContextProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(userData));
     console.log('Navigating to /dashboard');
     navigate('/dashboard'); // Navigate to a protected page
-    console.log(user)
+    // console.log(user)
   };
 
   const logout = () => {
