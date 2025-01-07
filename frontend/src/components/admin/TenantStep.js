@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext'; // Import AuthContext
+
 
 const TenantStep = ({ onNext, onSelectTenant }) => {
   const [tenants, setTenants] = useState([]);
@@ -9,10 +11,18 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const { user } = useAuth(); // Access the current user from AuthContext
+
   useEffect(() => {
     const fetchTenants = async () => {
+      const { token } = user; // Get tenantId and userId from user context
       try {
-        const response = await axios.get('http://localhost:5001/api/tenants');
+        const response = await axios.get('http://localhost:5001/api/tenants',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
         setTenants(response.data.filter(tenant => tenant.isActive));
       } catch (error) {
         console.error('Error fetching tenants:', error);
@@ -20,12 +30,18 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
     };
 
     fetchTenants();
-  }, []);
+  }, [user]);
 
   const handleCreateTenant = async (e) => {
     e.preventDefault();
+    const { token } = user; // Get tenantId and userId from user context
     try {
-      const response = await axios.post('http://localhost:5001/api/tenants', { name });
+      const response = await axios.post('http://localhost:5001/api/tenants', { name },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       setMessage(`Tenant created: ${response.data.name}`);
       setTenants((prev) => [...prev, response.data]);
       resetForm(); // Reset form after creation
@@ -36,10 +52,16 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
 
   const handleUpdateTenant = async (e) => {
     e.preventDefault();
+    const { token } = user; // Get tenantId and userId from user context
     try {
       if (!selectedTenantId) return; // Safety check
       
-      const response = await axios.put(`http://localhost:5001/api/tenants/${selectedTenantId}`, { name });
+      const response = await axios.put(`http://localhost:5001/api/tenants/${selectedTenantId}`, { name },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       setMessage(`Tenant updated: ${response.data.name}`);
       setTenants((prev) =>
         prev.map((tenant) => (tenant.tenantId === selectedTenantId ? { ...tenant, name: response.data.name } : tenant))
@@ -70,8 +92,14 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
 
   const handleDeleteTenant = async (tenantId, event) => {
     event.stopPropagation(); // Prevent row selection when clicking delete
+    const { token } = user; // Get tenantId and userId from user context
     try {
-      await axios.put(`http://localhost:5001/api/tenants/${tenantId}/deactivate`);
+      await axios.put(`http://localhost:5001/api/tenants/${tenantId}/deactivate`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       setTenants((prev) => prev.filter((tenant) => tenant.tenantId !== tenantId));
     } catch (error) {
       console.error('Error deleting tenant:', error);

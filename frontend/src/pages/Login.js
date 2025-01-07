@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../context/AuthContext"; // Import AuthContext
+import { useNavigate } from 'react-router-dom';
 import "../styles/styles.css";
 
 const Login = () => {
@@ -7,13 +10,25 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error] = useState('');
   const [message, setMessage] = useState("");
+  const { login } = useAuth(); // Access login function from AuthContext
+  const navigate = useNavigate();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token); // Save JWT to localStorage
-      setMessage("Login successful");
+      const { data } = await axios.post('http://localhost:5001/api/auth/login', { email, password });
+      localStorage.setItem('accessToken', data.accessToken);
+      const decodedToken = jwtDecode(data.accessToken);
+      const userData = { 
+        decodedToken: decodedToken,
+        email: data.email, 
+        token: data.accessToken,
+        userId: decodedToken.userId, // Extract from decoded token
+        tenantId: decodedToken.tenantId // Extract from decoded token 
+      }; 
+      login(userData); // Update context
+      navigate('/dashboard'); // Redirect to dashboard
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed");
     }
