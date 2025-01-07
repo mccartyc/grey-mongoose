@@ -68,8 +68,6 @@ const ClientPage = () => {
       return;
     }
     const { tenantId, userId, token } = user; // Get tenantId and userId from user context
-    // const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
-    // const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
 
     try {
       const response = await axios.post('http://localhost:5001/api/clients', {

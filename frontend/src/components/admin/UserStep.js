@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext'; // Import AuthContext
+
 
 const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   const [users, setUsers] = useState([]);
@@ -13,12 +15,20 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const { user } = useAuth(); // Access the current user from AuthContext
+
   useEffect(() => {
     if (selectedTenant) {
       console.log("Selected Tenant in UserStep:", selectedTenant.tenantId); // Debug log
+      const { token } = user; // Get tenantId and userId from user context
       const fetchUsers = async () => {
         try {
-          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant.tenantId}`);
+          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant.tenantId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
           setUsers(response.data);
         } catch (error) {
           console.error('Error fetching users:', error);
@@ -27,7 +37,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
       fetchUsers();
     }
-  }, [selectedTenant]);
+  }, [selectedTenant, user]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -37,7 +47,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
       setMessage('Error: Tenant not selected or tenant ID not available.');
       return;
     }
-
+    const { token } = user; // Get tenantId and userId from user context
     try {
       console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant.tenantId });
       const response = await axios.post('http://localhost:5001/api/users', {
@@ -47,6 +57,11 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
         password,
         role,
         tenantId: selectedTenant.tenantId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       console.log("User created successfully:", response.data);
       setMessage(`User created: ${response.data.name}`);
@@ -72,8 +87,14 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
   const handleDeleteUser = async (userId, event) => {
     event.stopPropagation(); // Prevent row selection when clicking delete
+    const { token } = user; // Get tenantId and userId from user context
     try {
-      await axios.put(`http://localhost:5001/api/users/${userId}/deactivate`);
+      await axios.put(`http://localhost:5001/api/users/${userId}/deactivate`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       setUsers((prev) => prev.filter((user) => user.userId !== userId));
     } catch (error) {
       console.error('Error deleting user:', error);

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import { useAuth } from '../context/AuthContext'; // Import AuthContext
 
 const CreateSessionPage = () => {
   // const [clients, setClients] = useState([]);
@@ -15,13 +16,20 @@ const CreateSessionPage = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  const { user } = useAuth(); // Access the current user from AuthContext
+  
   useEffect(() => {
     const fetchClients = async () => {
-      const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
-      const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
+      
+      const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
       try {
-        const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`);
+        const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
         // setClients(response.data);
         setFilteredClients(response.data); // Initialize filtered clients
       } catch (error) {
@@ -31,7 +39,7 @@ const CreateSessionPage = () => {
     };
 
     fetchClients();
-  }, []);
+  }, [user]);
 
   // const handleClientSearch = (e) => {
   //   const value = e.target.value.toLowerCase();
@@ -49,8 +57,7 @@ const CreateSessionPage = () => {
       return;
     }
 
-    const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
-    const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
+    const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
     try {
       const response = await axios.post('http://localhost:5001/api/sessions', {
@@ -61,6 +68,11 @@ const CreateSessionPage = () => {
         length,
         type,
         notes, // The notes will now be in rich text format
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setMessage(`Session created successfully for client ID: ${response.data.clientId}`);
