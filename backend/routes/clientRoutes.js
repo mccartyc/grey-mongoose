@@ -5,7 +5,7 @@ const { protect } = require("../middleware/authMiddleware");
 const Client = require("../models/Clients"); 
 
 // POST: Create a new client
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   const {
     tenantId,
     userId,
@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
 
 
 // PUT: Deactivate a client
-router.put("/:clientId/deactivate", async (req, res) => {
+router.put("/:clientId/deactivate", protect, async (req, res) => {
   const { clientId } = req.params;
   try {
     const updateData = { isActive: false, deactivatedAt: new Date() };
@@ -99,7 +99,7 @@ router.put("/:clientId/deactivate", async (req, res) => {
 
 
 // GET: Get all clients for a specific tenant
-router.get("/", async (req, res) => {
+router.get("/", protect, async (req, res) => {
   const { tenantId, userId } = req.query;
 
   if (!tenantId || !userId) {

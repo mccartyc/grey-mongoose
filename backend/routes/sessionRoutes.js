@@ -1,11 +1,12 @@
 const express = require("express");
+const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Session = require("../models/Sessions"); // Adjust the path as necessary
 // const { protect } = require("../middleware/authMiddleware"); // If you have an auth middleware
 
 // POST: Create a new session
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   const {
     tenantId,
     clientId,
@@ -55,7 +56,7 @@ router.post("/", async (req, res) => {
 
 
 // GET: Retrieve sessions for a specific tenantId and userId
-router.get("/", async (req, res) => {
+router.get("/", protect, async (req, res) => {
   const { tenantId, userId } = req.query;
 
   console.log("Request to get sessions:", { tenantId, userId });
@@ -77,7 +78,7 @@ router.get("/", async (req, res) => {
 
 
 // PUT: Edit an existing session
-router.put("/:sessionId", async (req, res) => {
+router.put("/:sessionId", protect, async (req, res) => {
   const { sessionId } = req.params;
   const { date, timeMet, notes } = req.body;
 
@@ -104,7 +105,7 @@ router.put("/:sessionId", async (req, res) => {
 });
 
 // PATCH: Archive a session (set isActive to false)
-router.patch("/:sessionId/archive", async (req, res) => {
+router.patch("/:sessionId/archive", protect, async (req, res) => {
   const { sessionId } = req.params;
 
   console.log("Request to archive session with ID:", sessionId);

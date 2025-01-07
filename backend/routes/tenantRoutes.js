@@ -1,9 +1,10 @@
 // server/routes/tenantRoutes.js
 const express = require('express');
 const router = express.Router();
+const { protect } = require("../middleware/authMiddleware");
 const Tenant = require('../models/Tenant');
 
-router.post('/', async (req, res) => {
+router.post('/', protect, async (req, res) => {
   const { name } = req.body;
   console.log('Received Request Body:', req.body);
 
@@ -22,7 +23,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:tenantId/deactivate', async (req, res) => {
+router.put('/:tenantId/deactivate', protect, async (req, res) => {
     const { tenantId } = req.params;
     try {
       const updateData = { isActive: false, deactivatedAt: new Date() };
@@ -47,31 +48,31 @@ router.put('/:tenantId/deactivate', async (req, res) => {
     }
   });
 
-  router.put('/:tenantId', async (req, res) => {
-    const { tenantId } = req.params;
-    const { name } = req.body;
-  
-    try {
-      // Update the tenant in the database
-      const updatedTenant = await Tenant.findOneAndUpdate(
-        { tenantId }, // Assuming tenantId is a field in your schema
-        { name },
-        { new: true, runValidators: true } // new: return the updated doc, runValidators: ensure validators run
-      );
-  
-      if (!updatedTenant) {
-        return res.status(404).send('Tenant not found');
-      }
-  
-      res.status(200).json(updatedTenant);
-    } catch (error) {
-      console.error('Error updating tenant:', error);
-      res.status(500).send('Server error');
+router.put('/:tenantId', protect, async (req, res) => {
+  const { tenantId } = req.params;
+  const { name } = req.body;
+
+  try {
+    // Update the tenant in the database
+    const updatedTenant = await Tenant.findOneAndUpdate(
+      { tenantId }, // Assuming tenantId is a field in your schema
+      { name },
+      { new: true, runValidators: true } // new: return the updated doc, runValidators: ensure validators run
+    );
+
+    if (!updatedTenant) {
+      return res.status(404).send('Tenant not found');
     }
-  });
+
+    res.status(200).json(updatedTenant);
+  } catch (error) {
+    console.error('Error updating tenant:', error);
+    res.status(500).send('Server error');
+  }
+});
   
 
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const tenants = await Tenant.find({ isActive: true });
     res.status(200).json(tenants);
@@ -79,6 +80,6 @@ router.get('/', async (req, res) => {
     console.error('Error Fetching Tenants:', error);
     res.status(400).json({ error: 'Failed to fetch tenants' });
   }
-});
+  });
 
 module.exports = router;

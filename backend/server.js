@@ -1,6 +1,9 @@
 // File: backend/server.js
 const express = require('express');
 const connectDB = require('./config/db'); // Import the database connection
+const cookieParser = require('cookie-parser');
+const authRoutes = require('./routes/authRoutes');
+const debugRoutes = require('./routes/debug'); // Adjust path to debug.js
 const tenantRoutes = require('./routes/tenantRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -14,8 +17,10 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS
-
 app.use(cors());
+
+// Use Cookie Parser
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 5001;
 
@@ -31,14 +36,13 @@ app.use(cors({
 connectDB();
 
 // Routes
-// app.use('/api/users', require('./routes/authRoutes'));
+app.use('/api/auth', authRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/sessions', sessionRoutes);
-
-// Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/debug', debugRoutes); // Prefix the route with `/api/debug`
 
 // Start the server
 app.listen(PORT, () => {

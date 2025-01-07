@@ -15,12 +15,12 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, required: true, default: true } // Field to indicate if user is active
 });
 
-// Encrypt password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+// // Encrypt password before saving
+// userSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) return next();
+//   this.password = await bcrypt.hash(this.password, 10);
+//   next();
+// });
 
 // Method to compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import { useAuth } from '../context/AuthContext'; // Import AuthContext
 
 
 const SessionPage = () => {
@@ -16,17 +17,25 @@ const SessionPage = () => {
   const [isEditing, setIsEditing] = useState(false); // State to control editing mode
   const navigate = useNavigate();
 
+  const { user } = useAuth(); // Access the current user from AuthContext
+
+
 
   useEffect(() => {
     const fetchSessions = async () => {
-      const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Adjust as necessary
-      const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Adjust as necessary
+
+      const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
       console.log("Selected Tenant:", tenantId);
       console.log("Selected User:", userId);
 
       try {
-        const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}`);
+        const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setSessions(response.data);
       } catch (error) {
         console.error('Error fetching sessions:', error);
@@ -35,7 +44,7 @@ const SessionPage = () => {
     };
 
     fetchSessions();
-  }, []);
+  }, [user]);
 
   const handleSelectSession = (session) => {
     setSelectedSessionId(session.sessionId);
