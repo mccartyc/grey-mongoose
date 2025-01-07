@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext'; // Import AuthContext
+
 
 const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   const [clients, setClients] = useState([]);
@@ -18,6 +20,9 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const { user } = useAuth(); // Access the current user from AuthContext
+  // const { tenantId, userId, token } = user; // Get tenantId and userId from user context
+
   const calculateAge = (birthday) => {
     const today = new Date();
     const birthDate = new Date(birthday);
@@ -32,22 +37,28 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     return age;
   };
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     if (selectedTenant && selectedUser) {
+      console.log(selectedTenant,selectedUser );
+      const { token } = user; // Get tenantId and userId from user context
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/clients?tenantId=${selectedTenant.tenantId}&userId=${selectedUser.userId}`
-        );
+          `http://localhost:5001/api/clients?tenantId=${selectedTenant.tenantId}&userId=${selectedUser.userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
         setClients(response.data);
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
     }
-  };
+  }, [selectedTenant, selectedUser, user]);
 
   useEffect(() => {
     fetchClients();
-  }, [selectedTenant, selectedUser]);
+  }, [fetchClients]);
 
 
   /*Create a new client*/
@@ -60,6 +71,8 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       setMessage('Error: Tenant or User not selected.');
       return;
     }
+
+    const { token } = user; // Get tenantId and userId from user context
 
     try {
       const response = await axios.post('http://localhost:5001/api/clients', {
@@ -75,6 +88,11 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
         zipcode,
         tenantId: selectedTenant.tenantId,
         userId: selectedUser.userId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
       setClients((prev) => [...prev, response.data]);
@@ -110,8 +128,16 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
 
   const handleDeleteClient = async (clientId, event) => {
     event.stopPropagation();
+    const { token } = user; // Get tenantId and userId from user context
+
     try {
-      await axios.put(`http://localhost:5001/api/clients/${clientId}/deactivate`);
+      await axios.put(`http://localhost:5001/api/clients/${clientId}/deactivate`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setClients((prev) => prev.filter((client) => client.clientID !== clientId));
     } catch (error) {
       console.error('Error deleting client:', error);

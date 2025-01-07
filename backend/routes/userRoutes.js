@@ -97,4 +97,30 @@ router.get("/", protect, async (req, res) => {
 
 });
 
+// Get a single user for a specific tenant and user combination
+router.get("/user", protect, async (req, res) => {
+  const { tenantId, userId } = req.query;
+
+  if (!tenantId || !userId) {
+    console.error("Validation error: Tenant ID and User ID are required");
+    return res.status(400).json({ error: "Tenant ID and User ID are required" });
+  }
+
+  try {
+    // Find the user by tenantId and userId
+    const user = await User.findOne({ tenantId, userId, isActive: true });
+    
+    if (!user) {
+      console.log(`No active user found for Tenant ID: ${tenantId} and User ID: ${userId}`);
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    console.log("User fetched successfully:", user);
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;
