@@ -90,7 +90,7 @@ const CreateSessionPage = () => {
       <form className="form-group" onSubmit={handleCreateSession} autoComplete="off">
         <div className="form-row">
           <label className="client-label new-session-label">
-            <span>Select Client</span>
+            <span className="new-session-span">Select Client</span>
             <select value={selectedClientId} onChange={(e) => setSelectedClientId(e.target.value)} required>
               <option value="">Client</option>
               {filteredClients.map((client) => (
@@ -140,7 +140,7 @@ const CreateSessionPage = () => {
           <button type="button" className="btn primary-btn">Stop Transcript</button>
         </div>
         <label className="new-session-label">
-          <span className="new-session-span">Notes:</span>
+          Notes:
         </label>
         <div className="form-row">
           <ReactQuill 

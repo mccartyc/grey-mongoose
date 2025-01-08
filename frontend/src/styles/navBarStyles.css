@@ -1,0 +1,200 @@
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    height: 60px; /* Ensure a fixed height */
+    align-items: center;
+    padding-left: 20px;
+    background-color: #525869;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  /* Side Navigation Bar */
+  .side-navbar {
+    background-color: #012d56;
+    color: #fff;
+    width: 250px;
+    height: 100vh;
+    transition: width 0.3s ease, padding 0.3s ease; 
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: fixed;
+  }
+  
+  .side-navbar.collapsed {
+    width: 45px;
+  }
+  
+  /* When the navbar is collapsed */
+  .side-navbar.collapsed .navbar-brand {
+    display: none; /* Hide name */
+    transition: padding 0.3s ease;
+  }
+  
+  .brand {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    margin-left: 7px;
+  }
+  
+  .brand-icon {
+    font-size: 2rem;
+    color: #b3d9ff;
+  }
+  
+  .brand-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+  
+  /* User name styles */
+
+/* Container for the toggle button and user name */
+.toggle-btn-container {
+    display: flex; /* Ensures children elements are aligned in a row */
+    align-items: center; /* Vertically aligns the items */
+    gap: 10px; /* Adds space between the toggle button and user name */
+  }
+  
+  
+  .user-name {
+    font-size: 10pt;
+    height: 1mm;
+    margin-bottom: 20px;
+    color: #ccc;
+    transition: opacity 1s ease;
+  }
+  
+  .user-info {
+      gap: 8px; /* Adds space between the icon and the name */
+      margin-left: 8px; /* Adjust spacing from the toggle button */
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #fff
+  }
+  
+  .side-navbar.collapsed .user-name {
+    font-size: 10pt;
+    height: 1mm;
+    margin-bottom: 20px;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+  
+  .side-navbar.collapsed .navbar-logo {
+    display: block; /* Show logo */
+    transition: padding 0.7s ease;
+  }
+  
+  .toggle-btn {
+    display: flex; /* Ensures the toggle icon and text are in a row */
+    align-items: center; /* Vertically aligns the icon and text */
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #B9E5E8;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    transition: padding 0.7s ease;
+  }
+  
+  
+  
+  .bottom-links {
+    margin-top: auto;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px; /* Add some margin from the bottom */
+  }
+  
+  .nav-links {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
+  }
+  
+  .nav-links li, 
+  .bottom-links li {
+    margin-bottom: 15px;
+  }
+  
+  .nav-links li,
+  .bottom-links li {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    transition: padding 0.3s ease;
+  }
+  
+  .nav-links a,
+  .bottom-links a {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Active link styling */
+  .nav-links li a.active-link {
+    background-color: #0066cc;
+    color: #e6f7ff;
+    font-weight: bold;
+    width: 100%;
+  }
+  
+  .nav-links a:hover,
+  .bottom-links a:hover {
+    background-color: #0066cc;
+    width: 100%;
+  }
+  
+  /* Icon Styles */
+  .nav-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+  }
+  
+  .side-navbar.collapsed .nav-icon {
+    margin-right: 0;
+    transition: padding 0.3s ease;
+  }
+  
+  .nav-text {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  
+  /* Logout Link */
+  .logout {
+    margin-top: 10px;
+  }
+  
+  .logout a {
+    color: #fff;
+  }
+  
+  .logout a:hover {
+    background-color: #FFB5B5;
+  }

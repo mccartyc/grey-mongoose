@@ -1,0 +1,168 @@
+/*New Session CSS*/
+
+.create-session-page {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f4f5f7; /* Maintain consistency with the body */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  }
+  
+  /* Custom style for the React Quill editor */
+  .react-quill {
+    padding: 10px; /* Padding inside the editor */
+    border: 1px solid #ccc; /* Light border for the editor */
+    width: 100%;
+    border-radius: 4px; /* Rounded corners */
+    min-height: 200px; /*Set a minimum height*/
+    max-height: 225px; /* Set a maximum height */
+    font-size: 1rem; /* Consistent font size */
+    overflow-y: auto; /*Enable vertical scrolling*/
+  }
+  
+  .react-quill .ql-toolbar {
+    position: sticky; /* Make the toolbar sticky */
+    top: 0; /* Stick to the top of the editor */
+    z-index: 1; /* Ensure it stays above other content */
+    background: white; /* Set background for visibility */
+    border: none; /* Optional: If you want to remove the border */
+  }
+  
+  /* Preventing resizing and keeping consistent spacing */
+  .react-quill .ql-editor {
+    min-height: 150px; /* Ensure editor matches minimum height */
+    max-height: 200px; /* Ensure editor matches maximum height */
+  }
+  
+  .react-quill .ql-container {
+    border: none; /* Remove the default border */
+  }
+  #toolbar {
+    display: flex;
+    justify-content: space-between; /* Space out the items in the toolbar */
+    align-items: center;
+  }
+  
+  #toolbar button {
+    margin-left: 5px; /* Spacing between toolbar buttons */
+  }
+  
+  
+  .form-group {
+    display: flex; /* Use flex for a column layout */
+    flex-direction: column; /* Stack form elements vertically */
+    gap: 20px; /* Space between form elements */
+  }
+  
+  .form-row {
+    display: flex; /* Use flex to create a row layout */
+    align-items: center; /* Center items vertically */
+    gap: 40px; /* Space between inputs */
+  }
+  
+  .new-session-label {
+    display: flex;
+    flex-direction: column; 
+    font-size: 1rem;
+    flex: 1;
+  }
+  
+  .new-session-span {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .client-label {
+    flex: 0 0 30%; /* 30% width for the client input */
+    position: relative; /* Position relative for dropdown */
+  }
+  
+  input[type="text"],
+  input[type="date"],
+  select,
+  textarea {
+    padding: 10px; /* Padding inside input fields */
+    border: 1px solid #ccc; /* Light border for inputs */
+    border-radius: 4px; /* Rounded corners for inputs */
+    font-size: 1rem; /* Consistent font size */
+  }
+  
+  .client-dropdown {
+    position: absolute; /* Dropdown appears directly below the input */
+    background-color: white; /* Dropdown background */
+    border: 1px solid #ccc; /* Light border for dropdown */
+    border-radius: 4px; /* Rounded corners */
+    max-height: 200px; /* Limit the height of the dropdown */
+    overflow-y: auto; /* Enable scrolling for long lists */
+    z-index: 1000; /* Ensure it appears above other elements */
+  }
+  
+  .client-dropdown li {
+    padding: 10px; /* Space around dropdown items */
+    cursor: pointer; /* Pointer on hover */
+  }
+  
+  .client-dropdown li:hover {
+    background-color: #f1f1f1; /* Highlight on hover */
+  }
+  
+  
+  .error-message {
+    color: red; /* Error message color */
+    margin-top: 10px; /* Space above the error message */
+  }
+  
+  
+  /* Modal Overlay */
+  .modal {
+    position: fixed; /* Stay in place */
+    z-index: 999; /* Sit on top */
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+    display: flex; /* Enable flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background-color: #fff; /* White background for the modal */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    width: 80%; /* Width of the modal */
+    max-width: 600px; /* Max width */
+    padding: 20px; /* Padding inside the modal */
+    position: relative; /* Position relative for absolute positioning children */
+  }
+  
+  /* Modal Header */
+  .modal-header {
+    display: flex; /* Enable flexbox */
+    justify-content: space-between; /* Space between title and close button */
+    align-items: center; /* Center align items */
+    border-bottom: 1px solid #e0e0e0; /* Bottom border */
+    padding-bottom: 10px; /* Padding below header */
+  }
+  
+  /* Modal Title */
+  .modal-header h2 {
+    margin: 0; /* Remove default margin */
+    font-size: 20px; /* Title font size */
+  }
+  
+
+  
+  /* Modal Body */
+  .modal-body {
+    margin: 10px 0; /* Margin around body */
+  }
+  
+  /* Modal Footer */
+  .modal-footer {
+    display: flex; /* Enable flexbox */
+    justify-content: space-between; /* Space between buttons */
+    margin-top: 15px; /* Margin on top */
+  }

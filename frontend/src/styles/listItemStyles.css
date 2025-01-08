@@ -1,0 +1,18 @@
+/* Item List */
+.item-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  .item-list-entry {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .item-list-entry:hover {
+    background-color: #DFF2EB;
+  }

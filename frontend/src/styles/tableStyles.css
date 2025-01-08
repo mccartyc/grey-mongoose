@@ -1,0 +1,85 @@
+
+/* Modern Table Styling */
+.tenant-table,
+.client-table,
+.session-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tenant-table th,
+.client-table th,
+.session-table th {
+  background-color: #012d56;
+  color: #ffffff;
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tenant-table td,
+.client-table td,
+.session-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333333;
+  border-bottom: 1px solid #ddd;
+}
+
+.tenant-table tr:nth-child(even),
+.client-table tr:nth-child(even),
+.session-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.tenant-table tr:nth-child(odd),
+.client-table tr:nth-child(odd),
+.session-table tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.tenant-table tr:hover,
+.client-table tr:hover,
+.session-table tr:hover {
+  background-color: #e1f0ff;
+  transition: background-color 0.3s;
+}
+
+.tenant-table tr.selected,
+.client-table tr.selected,
+.session-table tr.selected {
+  background-color: #cce3ff;
+}
+
+.trash-icon {
+  cursor: pointer;
+  color: #666666;
+  transition: color 0.3s;
+}
+
+.trash-icon:hover {
+  color: #d32f2f;
+}
+
+/* Add a subtle shadow to the header */
+.tenant-table th,
+.client-table th,
+.session-table th {
+  position: sticky;
+  top: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Rounded corners for the entire table */
+.tenant-table,
+.client-table,
+.session-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
