@@ -305,7 +305,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
         </table>
         <div className="right-button-container">
           <button className="btn create-btn" onClick={onPrevious}>
-            Back
+            Previous
           </button>
         </div>
       </div>

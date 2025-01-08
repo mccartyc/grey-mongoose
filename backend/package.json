@@ -38,5 +38,6 @@
       "/node_modules/",
       "/tests/setup.js"
     ]
-  }
+  },
+    "proxy": "http://localhost:5000"
 }

@@ -57,30 +57,60 @@ const MyCalendar = () => {
   }, []);
 
   // Resize calendar on sidebar toggle or window resize
+  // useEffect(() => {
+  //   const resizeCalendar = () => {
+  //     const container = calendarContainerRef.current;
+  //     if (container && calendarRef.current) {
+  //       // Use requestAnimationFrame and setTimeout for reliable DOM updates
+  //       requestAnimationFrame(() => {
+  //         setTimeout(() => {
+  //           calendarRef.current.updateSize();
+  //         }, 100); // Adjust delay as necessary
+  //       });
+  //     }
+  //   };
+
+  //   // Resize calendar on sidebar toggle
+  //   resizeCalendar();
+
+  //   // Resize calendar on window resize
+  //   window.addEventListener('resize', resizeCalendar);
+  //   return () => {
+  //     window.removeEventListener('resize', resizeCalendar);
+  //   };
+  // }, [collapsed]);
+
   useEffect(() => {
-    const resizeCalendar = () => {
-      const container = calendarContainerRef.current;
-      if (container && calendarRef.current) {
-        console.log('Container dimensions:', container.offsetWidth, container.offsetHeight); // Debugging
+    // Resize calendar dynamically when the sidebar is toggled
+    if (calendarRef.current) {
+      setTimeout(() => {
+        calendarRef.current.updateSize();
+      }, 200); // Small delay to ensure DOM changes have taken effect
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    // Automatically resize calendar on container resize
+    const resizeObserver = new ResizeObserver(() => {
+      if (calendarRef.current) {
         calendarRef.current.updateSize();
       }
-    };
+    });
 
-    // Resize calendar on sidebar toggle
-    resizeCalendar();
+    if (calendarContainerRef.current) {
+      resizeObserver.observe(calendarContainerRef.current);
+    }
 
-    // Resize calendar on window resize
-    window.addEventListener('resize', resizeCalendar);
     return () => {
-      window.removeEventListener('resize', resizeCalendar);
+      resizeObserver.disconnect();
     };
-  }, [collapsed]);
+  }, []);
 
   return (
     <div className={`main-content no-scroll ${collapsed ? 'collapsed' : ''}`}>
       <SideNavBar collapsed={collapsed} toggleSidebar={toggleSidebar} />
       <div className="content-area">
-        <h1 className="section-title">Calendar</h1>
+        <h1>Calendar</h1>
         <div ref={calendarContainerRef} id="calendar" className="calendar-container"></div>
       </div>
     </div>
