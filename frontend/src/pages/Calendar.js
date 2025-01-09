@@ -16,6 +16,8 @@ const MyCalendar = () => {
     setCollapsed(!collapsed);
   };
 
+  const addEvent = () => { const title = prompt('Enter event title:'); const date = prompt('Enter event date and time (YYYY-MM-DDTHH:MM:SS):'); if (title && date) { calendarRef.current.addEvent({ title, start: date }); } };
+
 
   useEffect(() => {
 
@@ -25,11 +27,16 @@ const MyCalendar = () => {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: 'timeGridWeek',
       events: [
-        { title: 'Client Session', start: '2024-12-20T10:00:00' },
-        { title: 'Internal Meeting', start: '2024-12-21T14:30:00' },
-      ],
+        { title: 'Client Session', start: '2025-01-09T10:00:00' },
+        { title: 'Internal Meeting', start: '2025-01-08T14:30:00' },
+      ], 
+      customButtons: { 
+        addEventButton: { 
+          text: 'Add Event', 
+          click: addEvent } 
+      },
       headerToolbar: {
-        left: 'prev,next today',
+        left: 'prev,next today addEventButton',
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay',
       },
@@ -40,45 +47,26 @@ const MyCalendar = () => {
         timeGridWeek: 'Week',
         timeGridDay: 'Day'
       },
+      allDayText: "Day",
       height: 'auto',
       contentHeight: 'auto',
       slotDuration: '00:30:00', // 30-minute time slots
-      // slotMinTime: '08:00:00', // Calendar start time (8 AM)
-      // slotMaxTime: '20:00:00', // Calendar end time (8 PM)
-      // scrollTime: '08:00:00',
+      slotMinTime: '07:00:00', // Calendar start time (5 AM) 
+      slotMaxTime: '24:00:00', // Calendar end time (midnight) 
+      scrollTime: '08:00:00', // Initial scroll time (8 AM)
+      
     });
 
     calendar.render();
     calendarRef.current = calendar;
 
+    // Update scroll position after render 
+    // calendarEl.querySelector('.fc-timegrid-col-frame').scrollTop = calendarEl.querySelector('.fc-timegrid-col-frame').scrollHeight / 24 * 3;
+
     return () => {
       calendar.destroy();
     };
   }, []);
-
-  // Resize calendar on sidebar toggle or window resize
-  // useEffect(() => {
-  //   const resizeCalendar = () => {
-  //     const container = calendarContainerRef.current;
-  //     if (container && calendarRef.current) {
-  //       // Use requestAnimationFrame and setTimeout for reliable DOM updates
-  //       requestAnimationFrame(() => {
-  //         setTimeout(() => {
-  //           calendarRef.current.updateSize();
-  //         }, 100); // Adjust delay as necessary
-  //       });
-  //     }
-  //   };
-
-  //   // Resize calendar on sidebar toggle
-  //   resizeCalendar();
-
-  //   // Resize calendar on window resize
-  //   window.addEventListener('resize', resizeCalendar);
-  //   return () => {
-  //     window.removeEventListener('resize', resizeCalendar);
-  //   };
-  // }, [collapsed]);
 
   useEffect(() => {
     // Resize calendar dynamically when the sidebar is toggled
