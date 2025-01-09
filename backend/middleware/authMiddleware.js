@@ -60,7 +60,7 @@ const handleTokenRefresh = async (req, res, next) => {
 const generateTokens = (user) => {
   // Generate new access token
   const accessToken = jwt.sign(
-    { id: user._id, tenantId: user.tenantId, role: user.role },
+    { id: user._id, tenantId: user.tenantId, role: user.role, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION }
   );

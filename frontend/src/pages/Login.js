@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../context/AuthContext"; // Import AuthContext
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import "../styles/styles.css";
 
 const Login = () => {
@@ -11,7 +11,7 @@ const Login = () => {
   const [error] = useState('');
   const [message, setMessage] = useState("");
   const { login } = useAuth(); // Access login function from AuthContext
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
 
   const handleLogin = async (e) => {
@@ -22,13 +22,12 @@ const Login = () => {
       const decodedToken = jwtDecode(data.accessToken);
       const userData = { 
         decodedToken: decodedToken,
-        email: data.email, 
         token: data.accessToken,
         userId: decodedToken.userId, // Extract from decoded token
         tenantId: decodedToken.tenantId // Extract from decoded token 
       }; 
       login(userData); // Update context
-      navigate('/dashboard'); // Redirect to dashboard
+      // navigate('/dashboard'); // Redirect to dashboard
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed");
     }
@@ -40,7 +39,7 @@ const Login = () => {
       <p className="form-subtitle">Login to your MindCloud account</p>
       <form className="form" onSubmit={handleLogin}>
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          {/* <label htmlFor="email">Email</label> */}
           <input
             type="email"
             id="email"
@@ -51,7 +50,7 @@ const Login = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="password">Password</label>
+          {/* <label htmlFor="password">Password</label> */}
           <input
             type="password"
             id="password"
