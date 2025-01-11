@@ -63,7 +63,7 @@ a {
   padding: 20px;
   background-color: #fff;
   border-left: 1px solid #ddd;
-  /* height: 100vh; */
+  height: 100%;
 }
 
 .side-navbar.collapsed + .content-area {
