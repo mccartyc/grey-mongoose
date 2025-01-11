@@ -1,8 +1,10 @@
+// File: Dashboard.jsx
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, Grid2, Card, CardContent, Typography, Box } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, Box } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
-import { FaCalendarCheck, FaUsers, FaClock } from 'react-icons/fa';
+import { FaCalendarCheck, FaUsers, FaClock, FaUserPlus, FaClipboardList, FaTimesCircle } from 'react-icons/fa';
 
 // Import Chart.js components
 import {
@@ -13,14 +15,21 @@ import {
     Title,
     Tooltip,
     Legend,
-  } from 'chart.js';
+} from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
-  const [appointmentsNextWeek, setAppointmentsNextWeek] = useState(0);
-  const [appointmentsThisMonth, setAppointmentsThisMonth] = useState(0);
-  const [averageSessionLength, setAverageSessionLength] = useState(0);
+  const [appointmentsNextWeek, setAppointmentsNextWeek] = useState(6);
+  const [appointmentsThisMonth, setAppointmentsThisMonth] = useState(16);
+  const [averageSessionLength, setAverageSessionLength] = useState(30);
+  const [newClientsThisMonth, setNewClientsThisMonth] = useState(10);
+  const [followUpsScheduled, setFollowUpsScheduled] = useState(5);
+  const [noShowRate, setNoShowRate] = useState(10);
+
+  const [genderDistribution, setGenderDistribution] = useState({ male: 50, female: 50, other: 0 });
+  const [locationDistribution, setLocationDistribution] = useState({});
+  const [meetingTypes, setMeetingTypes] = useState({ virtual: 70, inPerson: 30 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +42,24 @@ const Dashboard = () => {
 
         const averageDurationResponse = await axios.get('http://localhost:5000/api/appointments/average-duration');
         setAverageSessionLength(averageDurationResponse.data.averageDuration);
+
+        const newClientsResponse = await axios.get('http://localhost:5000/api/clients/new');
+        setNewClientsThisMonth(newClientsResponse.data.count);
+
+        const followUpsResponse = await axios.get('http://localhost:5000/api/appointments/follow-ups');
+        setFollowUpsScheduled(followUpsResponse.data.count);
+
+        const noShowRateResponse = await axios.get('http://localhost:5000/api/appointments/no-show-rate');
+        setNoShowRate(noShowRateResponse.data.rate);
+
+        const genderResponse = await axios.get('http://localhost:5000/api/clients/gender-distribution');
+        setGenderDistribution(genderResponse.data);
+
+        const locationResponse = await axios.get('http://localhost:5000/api/clients/locations');
+        setLocationDistribution(locationResponse.data);
+
+        const meetingTypesResponse = await axios.get('http://localhost:5000/api/appointments/meeting-types');
+        setMeetingTypes(meetingTypesResponse.data);
       } catch (error) {
         console.error("Error fetching data", error);
       }
@@ -40,14 +67,36 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Define the data for the chart
-  const chartData = {
-    labels: ['Next Week', 'This Month', 'Average Duration'],
+  // Prepare data for charts
+  const genderChartData = {
+    labels: ['Male', 'Female', 'Other'],
     datasets: [
       {
-        label: 'Appointment Metrics',
-        data: [appointmentsNextWeek, appointmentsThisMonth, averageSessionLength],
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        label: 'Gender Distribution (%)',
+        data: [genderDistribution.male, genderDistribution.female, genderDistribution.other],
+        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+      },
+    ],
+  };
+
+  const locationChartData = {
+    labels: Object.keys(locationDistribution),
+    datasets: [
+      {
+        label: 'Location Distribution',
+        data: Object.values(locationDistribution),
+        backgroundColor: '#4BC0C0',
+      },
+    ],
+  };
+
+  const meetingTypeChartData = {
+    labels: ['Virtual', 'In-Person'],
+    datasets: [
+      {
+        label: 'Meeting Types (%)',
+        data: [meetingTypes.virtual, meetingTypes.inPerson],
+        backgroundColor: ['#FF9F40', '#9966FF'],
       },
     ],
   };
@@ -57,8 +106,8 @@ const Dashboard = () => {
       <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
         Dashboard
       </Typography>
-      <Grid2 container spacing={3}>
-        <Grid2 item xs={12} md={4}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center">
@@ -68,8 +117,8 @@ const Dashboard = () => {
               <Typography variant="h3">{appointmentsNextWeek}</Typography>
             </CardContent>
           </Card>
-        </Grid2>
-        <Grid2 item xs={12} md={4}>
+        </Grid>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center">
@@ -79,8 +128,8 @@ const Dashboard = () => {
               <Typography variant="h3">{appointmentsThisMonth}</Typography>
             </CardContent>
           </Card>
-        </Grid2>
-        <Grid2 item xs={12} md={4}>
+        </Grid>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center">
@@ -90,14 +139,38 @@ const Dashboard = () => {
               <Typography variant="h3">{averageSessionLength.toFixed(2)}</Typography>
             </CardContent>
           </Card>
-        </Grid2>
-      </Grid2>
-      <Box marginTop={4}>
-        <Typography variant="h5" gutterBottom>
-          Appointment Metrics Overview
-        </Typography>
-        <Bar data={chartData} options={{ responsive: true, scales: { y: { beginAtZero: true } } }} />
-      </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Gender Distribution
+              </Typography>
+              <Bar data={genderChartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Location Distribution
+              </Typography>
+              <Bar data={locationChartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Meeting Types
+              </Typography>
+              <Bar data={meetingTypeChartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </Container>
   );
 };
