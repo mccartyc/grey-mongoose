@@ -57,7 +57,7 @@ const Register = () => {
       <p className="form-subtitle">Join MindCloud today</p>
       <form className="form" onSubmit={handleRegister}>
         <div className="form-group">
-          <label htmlFor="name">Name</label>
+          {/* <label htmlFor="name">Name</label> */}
           <input
             type="text"
             id="name"
@@ -69,7 +69,7 @@ const Register = () => {
           {errors.name && <p className="form-error">{errors.name}</p>}
         </div>
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          {/* <label htmlFor="email">Email</label> */}
           <input
             type="email"
             id="email"
@@ -81,7 +81,7 @@ const Register = () => {
           {errors.email && <p className="form-error">{errors.email}</p>}
         </div>
         <div className="form-group">
-          <label htmlFor="password">Password</label>
+          {/* <label htmlFor="password">Password</label> */}
           <input
             type="password"
             id="password"
