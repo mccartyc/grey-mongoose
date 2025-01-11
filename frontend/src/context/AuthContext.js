@@ -9,13 +9,24 @@ export const AuthContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true); // New loading state
   const navigate = useNavigate();
 
+  const isTokenValid = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.exp * 1000 > Date.now(); // Check expiration
+    } catch (error) {
+      console.error('Invalid token:', error.message);
+      return false;
+    }
+  };
+
   useEffect(() => { 
     const token = localStorage.getItem('accessToken'); 
     console.log('Token loaded from localStorage:', token);
-    if (token) { 
+    if (token && isTokenValid(token)) { 
       try {
         const decodedToken = jwtDecode(token); 
         const userData = {
+          token,
           decodedToken, 
           userId: decodedToken.userId, 
           tenantId: decodedToken.tenantId 

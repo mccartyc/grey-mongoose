@@ -198,3 +198,31 @@
   .logout a:hover {
     background-color: #FFB5B5;
   }
+
+  /* Logout Button Styled Like a Link */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%; /* Matches the width of the NavLink */
+  cursor: pointer; /* Indicates a clickable element */
+  text-decoration: none; /* Removes default button styles */
+}
+
+.logout-btn:hover {
+  background-color: #0066cc; /* Matches hover styling for links */
+}
+
+.logout-btn:active,
+.logout-btn:focus {
+  outline: none; /* Removes focus outline for accessibility compliance */
+}
+
+.side-navbar.collapsed .logout-btn .nav-text {
+  display: none; /* Hide text when collapsed */
+}

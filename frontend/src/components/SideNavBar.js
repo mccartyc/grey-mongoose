@@ -15,8 +15,11 @@ const SideNavBar = () => {
   const [userInfo, setUserInfo] = useState({ firstname: '', lastname: '' }); // Initialize the userInfo state
   // const [loading, setLoading] = useState(true);
 
-  const { user } = useAuth(); // Access the current user from AuthContext
+  const { user, logout } = useAuth(); // Access the current user from AuthContext
 
+  const handleLogout = () => {
+    logout(); // Call logout function to clear local storage and navigate
+  };
 
   useEffect(() => {
     if (user) {
@@ -118,11 +121,17 @@ const SideNavBar = () => {
             </NavLink>
           </li>
           <li className="logout">
-            <NavLink to="/logout" className={({ isActive }) => isActive ? "active-link" : ""}>
+            <button onClick={handleLogout} className="logout-btn">
+              <FaSignOutAlt className="nav-icon" />
+              {!collapsed && <span className="nav-text">Logout</span>}
+            </button>
+          </li>
+          {/* <li className="logout"> 
+            <NavLink to="/login" className={({ isActive }) => isActive ? "active-link" : ""}>
               <FaSignOutAlt className="nav-icon" />
               {!collapsed && <span className="nav-text">Logout</span>}
             </NavLink>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
