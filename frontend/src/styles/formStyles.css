@@ -29,11 +29,11 @@
 .form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
   }
   
 .form-group {
-    margin-bottom: 10px;
+    /* margin-bottom: 3px; */
     text-align: left;
 }
 
@@ -43,7 +43,6 @@
 }
   
   .form-group input {
-    width: 100%;
     padding: 10px;
     border: 2px solid #66b2ff;
     border-radius: 8px;
