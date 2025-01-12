@@ -133,7 +133,14 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     setSelectedClientId(client.clientID);
     setFirstName(client.firstName); // Populate the form with the selected tenant's name
     setLastName(client.lastName); // Populate the form with the selected tenant's name
-
+    setGender(client.gender);
+    setEmail(client.email);
+    setPhone(client.phone);
+    setStreetAddress(client.streetAddress);
+    setCity(client.city);
+    setState(client.state);
+    setZipcode(client.zipcode);
+    setBirthday(client.birthday);
     setMessage(false);
     setShowForm(true); // Show the form for editing
   };
