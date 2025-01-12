@@ -4,6 +4,8 @@ const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
 const Tenant = require('../models/Tenant');
 
+
+//Create new Tenant
 router.post('/', protect, async (req, res) => {
   const { name } = req.body;
   console.log('Received Request Body:', req.body);
@@ -23,6 +25,8 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+
+//Deactivate Tenant
 router.put('/:tenantId/deactivate', protect, async (req, res) => {
     const { tenantId } = req.params;
     try {
@@ -48,6 +52,8 @@ router.put('/:tenantId/deactivate', protect, async (req, res) => {
     }
   });
 
+
+//Update Tenant
 router.put('/:tenantId', protect, async (req, res) => {
   const { tenantId } = req.params;
   const { name } = req.body;
@@ -72,6 +78,7 @@ router.put('/:tenantId', protect, async (req, res) => {
 });
   
 
+//Retrieve Tenants
 router.get('/', protect, async (req, res) => {
   try {
     const tenants = await Tenant.find({ isActive: true });

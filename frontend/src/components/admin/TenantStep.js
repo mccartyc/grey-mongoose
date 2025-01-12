@@ -10,6 +10,8 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
+  const [tenantToDelete, setTenantToDelete] = useState(null); // Track tenant to delete
 
   const { user } = useAuth(); // Access the current user from AuthContext
 
@@ -87,20 +89,28 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   const handleEditTenant = (tenant) => {
     setSelectedTenantId(tenant.tenantId);
     setName(tenant.name); // Populate the form with the selected tenant's name
+    setMessage(false);
     setShowForm(true); // Show the form for editing
   };
 
-  const handleDeleteTenant = async (tenantId, event) => {
-    event.stopPropagation(); // Prevent row selection when clicking delete
+  const handleDeleteClick = (tenantId, event) => {
+    event.stopPropagation(); // Prevent row selection
+    setTenantToDelete(tenantId); // Set tenant to delete
+    setShowDeleteModal(true); // Show confirmation modal
+  };
+
+  const handleDeleteTenant = async () => {
     const { token } = user; // Get tenantId and userId from user context
     try {
-      await axios.put(`http://localhost:5001/api/tenants/${tenantId}/deactivate`,
+      await axios.put(`http://localhost:5001/api/tenants/${tenantToDelete}/deactivate`,{},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-      setTenants((prev) => prev.filter((tenant) => tenant.tenantId !== tenantId));
+      setTenants((prev) => prev.filter((tenant) => tenant.tenantId !== tenantToDelete));
+      setShowDeleteModal(false); // Close modal after successful delete
+      setTenantToDelete(null); // Reset tenant to delete
     } catch (error) {
       console.error('Error deleting tenant:', error);
     }
@@ -124,6 +134,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
 
   return (
     <div className="tenant-step">
+      
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
@@ -147,7 +158,36 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
           </div>
         </div>
       )}
-      <div className={`content-container ${showForm ? 'blur-background' : ''}`}>
+
+      {showDeleteModal && (
+        <div className="overlay">
+          <div className="cofirm-modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>
+              Are you sure you want to delete this tenant?
+            </p>
+            <p>
+             This action is{' '}
+              <strong>irreversible</strong>.
+            </p>
+            <div className="button-container">
+              <button
+                type= "button"
+                onClick={() => setShowDeleteModal(false)}
+                className="btn close-btn"
+              >
+                Cancel
+              </button>
+              <button type="submit" onClick={handleDeleteTenant} className="btn primary-btn">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      <div className={`content-container ${showForm ? 'blur-background' : ''} ${showDeleteModal ? 'blur-background' : ''}`}>
         <div className="header-container">
           <h2>Select or Create Tenant</h2>
           <div className="right-button-container">
@@ -199,7 +239,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteTenant(tenant.tenantId, event)}
+                    onClick={(event) => handleDeleteClick(tenant.tenantId, event)}
                   >
                     🗑️
                   </span>
