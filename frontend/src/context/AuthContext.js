@@ -53,9 +53,13 @@ export const AuthContextProvider = ({ children }) => {
 
   const logout = () => {
     console.log('User logged out');
+    console.log('User data before Logout:' || localStorage.getItem('user'));
+    console.log('User token before Logout:' || localStorage.getItem('accessToken'));
     setUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
+    console.log('User data after Logout:' || localStorage.getItem('user'));
+    console.log('Usere token after Logout:' || localStorage.getItem('accessToken'));
     navigate('/login');
   };
 

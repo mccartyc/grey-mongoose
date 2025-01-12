@@ -19,6 +19,9 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
+  const [clientToDelete, setClientToDelete] = useState(null); // Track tenant to delete
+
 
   const { user } = useAuth(); // Access the current user from AuthContext
   // const { tenantId, userId, token } = user; // Get tenantId and userId from user context
@@ -126,22 +129,40 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     setSelectedClientId(client.clientID);
   };
 
-  const handleDeleteClient = async (clientId, event) => {
-    event.stopPropagation();
+  const handleEditClient = (client) => {
+    setSelectedClientId(client.clientID);
+    setFirstName(client.firstName); // Populate the form with the selected tenant's name
+    setLastName(client.lastName); // Populate the form with the selected tenant's name
+
+    setMessage(false);
+    setShowForm(true); // Show the form for editing
+  };
+
+  const handleDeleteClick = (clientId, event) => {
+    event.stopPropagation(); // Prevent row selection
+    setClientToDelete(clientId); // Set tenant to delete
+    setShowDeleteModal(true); // Show confirmation modal
+  };
+
+  const handleDeleteClient = async () => {
     const { token } = user; // Get tenantId and userId from user context
 
     try {
-      await axios.put(`http://localhost:5001/api/clients/${clientId}/deactivate`,
+      await axios.put(`http://localhost:5001/api/clients/${clientToDelete}/deactivate`,
+      {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setClients((prev) => prev.filter((client) => client.clientID !== clientId));
+      setClients((prev) => prev.filter((client) => client.clientID !== clientToDelete));
+      setShowDeleteModal(false); // Close modal after successful delete
+      setClientToDelete(null); // Reset tenant to delete
     } catch (error) {
       console.error('Error deleting client:', error);
     }
+    fetchClients()
   };
 
   const formatPhoneNumber = (value) => {
@@ -175,6 +196,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
 
   return (
     <div className="client-step">
+      
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
@@ -240,6 +262,34 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
           </div>
         </div>
       )}
+
+      {showDeleteModal && (
+        <div className="overlay">
+          <div className="cofirm-modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>
+              Are you sure you want to delete this client?
+            </p>
+            <p>
+             This action is{' '}
+              <strong>irreversible</strong>.
+            </p>
+            <div className="button-container">
+              <button
+                type= "button"
+                onClick={() => setShowDeleteModal(false)}
+                className="btn close-btn"
+              >
+                Cancel
+              </button>
+              <button type="submit" onClick={handleDeleteClient} className="btn primary-btn">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={`content-container ${showForm ? 'blur-background' : ''}`}>
         <div className="header-container">
           <h2>Select or Create Client</h2>
@@ -290,11 +340,23 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                 <td>{client.zipcode}</td>
                 <td>{client.clientId}</td>
                 <td className="action-column">
+                <span
+                    role="img"
+                    aria-label="edit"
+                    className="edit-icon"
+                    onClick={(event) => {
+                      event.stopPropagation(); // Prevent row selection when clicking edit icon
+                      handleEditClient(client); // Open form to edit tenant
+                    }}
+                    style={{ cursor: 'pointer', marginRight: '10px' }}
+                  >
+                    ✏️
+                  </span>
                   <span
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteClient(client.clientId, event)}
+                    onClick={(event) => handleDeleteClick(client.clientId, event)}
                   >
                     🗑️
                   </span>
