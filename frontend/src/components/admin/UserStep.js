@@ -14,6 +14,9 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
+  const [userToDelete, setUserToDelete] = useState(null); // Track tenant to delete
+
 
   const { user } = useAuth(); // Access the current user from AuthContext
 
@@ -84,18 +87,37 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     onSelectUser(user);
   };
 
+  const handleEditUser = (user) => {
+    setSelectedUserId(user.userId);
+    setFirstName(user.firstname); // Populate the form with the selected user's name
+    setLastName(user.lastname); // Populate the form with the selected user's name
+    setEmail(user.email);
+    setPassword(user.password);
+    setRole(user.role);
+    setMessage(false);
+    setShowForm(true); // Show the form for editing
+  };
 
-  const handleDeleteUser = async (userId, event) => {
-    event.stopPropagation(); // Prevent row selection when clicking delete
+  const handleDeleteClick = (userId, event) => {
+    event.stopPropagation(); // Prevent row selection
+    setUserToDelete(userId); // Set tenant to delete
+    setShowDeleteModal(true); // Show confirmation modal
+  };
+
+  const handleDeleteUser = async () => {
+    // event.stopPropagation(); // Prevent row selection when clicking delete
     const { token } = user; // Get tenantId and userId from user context
     try {
-      await axios.put(`http://localhost:5001/api/users/${userId}/deactivate`,
+      await axios.put(`http://localhost:5001/api/users/${userToDelete}/deactivate`,
+      {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-      setUsers((prev) => prev.filter((user) => user.userId !== userId));
+      setUsers((prev) => prev.filter((user) => user.userId !== userToDelete));
+      setShowDeleteModal(false); // Close modal after successful delete
+      setUserToDelete(null); // Reset tenant to delete
     } catch (error) {
       console.error('Error deleting user:', error);
     }
@@ -116,6 +138,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
   return (
     <div className="user-step">
+
       {showForm && (
         <div className="overlay">
           <div className="popup-form">
@@ -153,6 +176,34 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
           </div>
         </div>
       )}
+
+      {showDeleteModal && (
+        <div className="overlay">
+          <div className="cofirm-modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>
+              Are you sure you want to delete this user?
+            </p>
+            <p>
+             This action is{' '}
+              <strong>irreversible</strong>.
+            </p>
+            <div className="button-container">
+              <button
+                type= "button"
+                onClick={() => setShowDeleteModal(false)}
+                className="btn close-btn"
+              >
+                Cancel
+              </button>
+              <button type="submit" onClick={handleDeleteUser} className="btn primary-btn">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={`content-container ${showForm ? 'blur-background' : ''}`}>
         <div className="header-container">
           <h2>Select or Create User</h2>
@@ -193,11 +244,23 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
                 <td>{user.role}</td>
                 <td>{formatTimestamp(user.createdAt)}</td>
                 <td className="action-column">
+                <span
+                    role="img"
+                    aria-label="edit"
+                    className="edit-icon"
+                    onClick={(event) => {
+                      event.stopPropagation(); // Prevent row selection when clicking edit icon
+                      handleEditUser(user); // Open form to edit tenant
+                    }}
+                    style={{ cursor: 'pointer', marginRight: '10px' }}
+                  >
+                    ✏️
+                  </span>
                   <span
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteUser(user.userId, event)}
+                    onClick={(event) => handleDeleteClick(user.userId, event)}
                   >
                     🗑️
                   </span>
