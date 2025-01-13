@@ -70,10 +70,6 @@ a {
   margin-left: 80px;
 }
 
-.action-column {
-  text-align: center; 
-}
-
 /* Dashboard Container */
 .dashboard-container {
   display: flex;
