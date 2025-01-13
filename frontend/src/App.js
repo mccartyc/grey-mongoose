@@ -8,6 +8,7 @@ import Admin from './pages/Admin';
 import Register from './pages/Register';
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
+import ClientDetail from "./pages/ClientDetail";
 import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
@@ -48,6 +49,14 @@ const App = () => (
             </ProtectedRoute>
           }
         />
+        <Route 
+          path="/clients/:id"
+          element={
+            <ProtectedRoute>
+              <ClientDetail />
+             </ProtectedRoute>
+            } 
+          />
         <Route
           path="/sessions"
           element={
