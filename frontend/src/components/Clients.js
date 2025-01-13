@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
-
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const ClientPage = () => {
   const [clients, setClients] = useState([]);
@@ -24,6 +24,7 @@ const ClientPage = () => {
   const [zipcode, setZipcode] = useState('');
 
   const { user } = useAuth(); // Access the current user from AuthContext
+  const navigate = useNavigate(); // Use navigate hook
 
 
   useEffect(() => {
@@ -56,6 +57,11 @@ const ClientPage = () => {
 
     fetchClients();
   }, [user]); // Re-run the effect when the user changes
+
+  const handleRowDoubleClick = (clientId) => {
+    console.log('Double Click Client:', clientId);
+    navigate(`/clients/${clientId}`); // Navigate to client detail page
+  };
 
   const handleSelectClient = (client) => {
     setSelectedClientId(client._id);
@@ -221,6 +227,7 @@ const ClientPage = () => {
                 key={client._id}
                 className={selectedClientId === client._id ? 'selected' : ''}
                 onClick={() => handleSelectClient(client)}
+                onDoubleClick={() => handleRowDoubleClick(client.clientId)} // Handle double-click
               >
                 <td>{client.firstName}</td>
                 <td>{client.lastName}</td>
