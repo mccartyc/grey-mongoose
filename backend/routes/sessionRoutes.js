@@ -76,6 +76,33 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
+// New GET: Retrieve session details for a specific client
+router.get("/client/:clientId", protect, async (req, res) => {
+  const { tenantId, userId } = req.query;
+  const { clientId } = req.params;
+
+  console.log("Request to get session details for client:", { tenantId, userId, clientId });
+
+  if (!tenantId || !userId || !clientId) {
+    console.error("Validation error: Missing tenantId, userId, or clientId");
+    return res.status(400).json({ error: "Missing tenantId, userId, or clientId" });
+  }
+
+  try {
+    const sessions = await Session.find({ tenantId, userId, clientId, isActive: true });
+    
+    if (sessions.length === 0) {
+      console.log("No sessions found for this client.");
+      return res.status(404).json({ error: "No sessions found" });
+    }
+
+    console.log("Retrieved client sessions:", sessions);
+    res.status(200).json(sessions);
+  } catch (error) {
+    console.error("Error retrieving client sessions:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 // PUT: Edit an existing session
 router.put("/:sessionId", protect, async (req, res) => {

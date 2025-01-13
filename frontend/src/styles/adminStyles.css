@@ -22,6 +22,10 @@
     border-bottom: 1px solid #ddd;
     background-color: #f1f1f1;
   }
+
+  .action-column {
+    text-align: center; 
+  }
   
   .admin-tab {
     padding: 10px 20px;
