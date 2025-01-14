@@ -120,4 +120,40 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
+
+// NEW: GET: Fetch a specific client by tenantId, userId, and clientId
+router.get("/:clientId", protect, async (req, res) => {
+  const { clientId } = req.params;
+  const { tenantId, userId } = req.query;
+
+  if (!tenantId || !userId || !clientId) {
+    console.error("Validation error: Tenant ID, User ID, and Client ID are required");
+    return res.status(400).json({ error: "Tenant ID, User ID, and Client ID are required" });
+  }
+
+  try {
+    console.log("Fetching client with ID:", clientId);
+    console.log("Tenant ID:", tenantId);
+    console.log("User ID:", userId);
+
+    const client = await Client.findOne({
+      clientId: clientId,
+      tenantId: tenantId,
+      userId: userId,
+      isActive: true,
+    });
+
+    if (!client) {
+      console.log(`Client with ID ${clientId} not found`);
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    console.log("Client fetched successfully:", client);
+    res.status(200).json(client);
+  } catch (error) {
+    console.error("Error fetching client:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;

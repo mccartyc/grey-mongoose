@@ -9,7 +9,6 @@ const ClientList = () => {
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
-          <h1>Client Detail</h1>
           <ClientDetail />
         </div>
       </div>
