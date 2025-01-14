@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
+import Intake from "./pages/Intake";
 import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
@@ -54,6 +55,14 @@ const App = () => (
           element={
             <ProtectedRoute>
               <ClientDetail />
+             </ProtectedRoute>
+            } 
+          />
+        <Route 
+          path="/clients/:Id/intake"
+          element={
+            <ProtectedRoute>
+              <Intake />
              </ProtectedRoute>
             } 
           />
