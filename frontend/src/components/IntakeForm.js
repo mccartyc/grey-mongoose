@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
+import ClientNavBar from './ClientNavBar';
 
 const IntakeForm = () => {
   const { clientId } = useParams(); // Get the client ID from the route
@@ -10,18 +11,18 @@ const IntakeForm = () => {
   const navigate = useNavigate(); // Use navigate hook
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    dateOfBirth: '',
-    gender: '',
-    preferredPronouns: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phoneNumber: '',
-    emailAddress: '',
-    emergencyContactName: '',
-    emergencyContactPhone: '',
+    // fullName: '',
+    // dateOfBirth: '',
+    // gender: '',
+    // preferredPronouns: '',
+    // address: '',
+    // city: '',
+    // state: '',
+    // zipCode: '',
+    // phoneNumber: '',
+    // emailAddress: '',
+    // emergencyContactName: '',
+    // emergencyContactPhone: '',
     referralInfo: { source: '', referralName: '' },
     presentingConcerns: { concerns: '', startDate: '', dailyImpact: '' },
     mentalHealthHistory: { previousTreatment: '', previousDiagnoses: '', hospitalizationHistory: '' },
@@ -77,6 +78,7 @@ const IntakeForm = () => {
 
   return (
     <div className="intake-form">
+    
       <h1>Mental Health Intake Form</h1>
       <form onSubmit={handleSubmit}>
         
