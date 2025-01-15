@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import ClientNavBar from './ClientNavBar'
 
 
 const ClientDetail = () => {
@@ -121,9 +122,11 @@ const handleSaveNotes = async () => {
   
 
 
-
 return (
   <div className="client-detail-page">
+  
+      <ClientNavBar/>
+
     <div className="top-section">
       <div className="client-details">
         <h3>Client Details</h3>
@@ -152,6 +155,8 @@ return (
         )}
       </div>
     </div>
+
+    
 
     <div className="sessions-section">
     <h3>Session Details</h3>
