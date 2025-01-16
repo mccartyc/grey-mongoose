@@ -8,9 +8,14 @@ const ClientNavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  if (!id) {
+    console.error('Error: No client ID found in URL.');
+    return <div>Client ID is missing. Please refresh the page.</div>;
+  }
+
   // Define navigation links
   const links = [
-    { label: 'Overview', path: `/clients/${id}/` },
+    { label: 'Overview', path: `/clients/${id}` },
     { label: 'Intake Form', path: `/clients/${id}/intake` },
     { label: 'Health Assessment', path: `/clients/${id}/health-assessment` },
     { label: 'Health Plan', path: `/clients/${id}/health-plan` },
@@ -21,7 +26,7 @@ const ClientNavBar = () => {
       {links.map((link) => (
         <button
           key={link.path}
-          className={`nav-button ${
+          className={`client-nav-button ${
             location.pathname === link.path ? 'active' : ''
           }`}
           onClick={() => navigate(link.path)}

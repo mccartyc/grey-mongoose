@@ -16,6 +16,7 @@ import Sessions from "./pages/Sessions";
 import NewSession from './pages/NewSession';
 
 const App = () => (
+
   <Router>
     <AuthContextProvider>
       <Routes>
@@ -66,6 +67,22 @@ const App = () => (
              </ProtectedRoute>
             } 
           />
+          <Route 
+          path="/clients/:Id/health-assessment"
+          element={
+            <ProtectedRoute>
+              <div>...Coming Soon</div>
+             </ProtectedRoute>
+            } 
+          />
+          <Route 
+          path="/clients/:Id/health-plan"
+          element={
+            <ProtectedRoute>
+              <div>...Coming Soon</div>
+             </ProtectedRoute>
+            } 
+          />
         <Route
           path="/sessions"
           element={
@@ -102,6 +119,7 @@ const App = () => (
     </AuthContextProvider>
   </Router>
 );
+
 
 
 
