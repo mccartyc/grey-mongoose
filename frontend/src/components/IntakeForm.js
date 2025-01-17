@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
-import ClientNavBar from './ClientNavBar';
+// import ClientNavBar from './ClientNavBar';
 
 const IntakeForm = () => {
   const { clientId } = useParams(); // Get the client ID from the route
