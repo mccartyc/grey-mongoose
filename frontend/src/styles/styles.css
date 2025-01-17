@@ -6,7 +6,7 @@
 @import './adminStyles.css';
 @import './calendarStyles.css';
 @import './newSessionStyles.css';
-
+@import './intakeFormStyles.css';
 
 /* General */
 body, h1, h2, h3, p, a, ul, li {
@@ -63,7 +63,8 @@ a {
   padding: 20px;
   background-color: #fff;
   border-left: 1px solid #ddd;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
 }
 
 .side-navbar.collapsed + .content-area {
@@ -81,8 +82,9 @@ a {
 /* Main Content Layout */
 .main-content {
   display: flex;
-  height: 100vh;
+  height: 100%;
   transition: all 0.3s ease;
+  min-height: 100vh;
 }
 
 .main-content.collapsed .content-area {

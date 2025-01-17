@@ -9,12 +9,14 @@ import Register from './pages/Register';
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
+import Intake from "./pages/Intake";
 import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
 import NewSession from './pages/NewSession';
 
 const App = () => (
+
   <Router>
     <AuthContextProvider>
       <Routes>
@@ -50,10 +52,34 @@ const App = () => (
           }
         />
         <Route 
-          path="/clients/:id"
+          path="/clients/:id/overview"
           element={
             <ProtectedRoute>
               <ClientDetail />
+             </ProtectedRoute>
+            } 
+          />
+        <Route 
+          path="/clients/:id/intake"
+          element={
+            <ProtectedRoute>
+              <Intake />
+             </ProtectedRoute>
+            } 
+          />
+          <Route 
+          path="/clients/:id/health-assessment"
+          element={
+            <ProtectedRoute>
+              <div>...Coming Soon</div>
+             </ProtectedRoute>
+            } 
+          />
+          <Route 
+          path="/clients/:id/health-plan"
+          element={
+            <ProtectedRoute>
+              <div>...Coming Soon</div>
              </ProtectedRoute>
             } 
           />
@@ -93,6 +119,7 @@ const App = () => (
     </AuthContextProvider>
   </Router>
 );
+
 
 
 

@@ -59,6 +59,8 @@
   .brand-icon {
     font-size: 2rem;
     color: #b3d9ff;
+    height: 15mm;
+    margin-left: -3.5mm;
   }
   
   .brand-name {
@@ -225,4 +227,27 @@
 
 .side-navbar.collapsed .logout-btn .nav-text {
   display: none; /* Hide text when collapsed */
+}
+
+
+
+
+/*Client Nav Bar*/
+
+.client-nav-button {
+  background-color: transparent;
+  color: #000;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.client-nav-button:hover {
+  background-color: transparent;
+}
+
+.client-nav-button.active {
+  color: #0066cc;
 }
