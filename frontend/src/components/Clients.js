@@ -60,7 +60,7 @@ const ClientPage = () => {
 
   const handleRowDoubleClick = (clientId) => {
     console.log('Double Click Client:', clientId);
-    navigate(`/clients/${clientId}`); // Navigate to client detail page
+    navigate(`/clients/${clientId}/overview`); // Navigate to client detail page
   };
 
   const handleSelectClient = (client) => {
