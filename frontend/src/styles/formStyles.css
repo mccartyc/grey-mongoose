@@ -37,6 +37,12 @@
     text-align: left;
 }
 
+.form-group-side-by-side {
+    flex-direction: row;
+    /* margin-bottom: 3px; */
+    text-align: left;
+}
+
 .form-group label {
     font-weight: bold;
     color: #012d56;
@@ -202,3 +208,14 @@
     text-align: center;
   }
   
+
+  .medication-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  
+  .medication-input {
+    flex: 1;
+  }

@@ -58,8 +58,8 @@ const ClientPage = () => {
     fetchClients();
   }, [user]); // Re-run the effect when the user changes
 
-  const handleRowDoubleClick = (clientId) => {
-    console.log('Double Click Client:', clientId);
+  const handleRowDoubleClick = (clientId, firstName, lastName) => {
+    console.log('Double Click Client:', clientId, firstName, lastName);
     navigate(`/clients/${clientId}/overview`); // Navigate to client detail page
   };
 
@@ -227,7 +227,7 @@ const ClientPage = () => {
                 key={client._id}
                 className={selectedClientId === client._id ? 'selected' : ''}
                 onClick={() => handleSelectClient(client)}
-                onDoubleClick={() => handleRowDoubleClick(client.clientId)} // Handle double-click
+                onDoubleClick={() => handleRowDoubleClick(client.clientId, client.firstName, client.lastName)} // Handle double-click
               >
                 <td>{client.firstName}</td>
                 <td>{client.lastName}</td>

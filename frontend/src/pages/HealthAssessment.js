@@ -3,6 +3,7 @@ import React from 'react';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
 import ClientNavBar from '../components/ClientNavBar.js';
+import MentalHealthIntakeAssessment from '../components/HealthAssessmentForm.js';
 
 const HealthAssessmentPage = () => {
   return (
@@ -13,7 +14,7 @@ const HealthAssessmentPage = () => {
             <h1>Client Detail</h1>
             <ClientNavBar/>
             </div>
-            <h3>HealthAssessment ...coming soon</h3>
+            <MentalHealthIntakeAssessment/>
         </div>
       </div>
   );
