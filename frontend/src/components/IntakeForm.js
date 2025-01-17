@@ -6,7 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 // import ClientNavBar from './ClientNavBar';
 
 const IntakeForm = () => {
-  const { clientId } = useParams(); // Get the client ID from the route
+  const { id } = useParams(); // Get the client ID from the route
   const { user } = useAuth(); // Access the current user from AuthContext
   const navigate = useNavigate(); // Use navigate hook
 
@@ -60,7 +60,7 @@ const IntakeForm = () => {
     try {
       const response = await axios.post(
         `http://localhost:5001/api/intake-forms`,
-        { ...formData, clientId }, // Include the clientId in the request body
+        { ...formData, id }, // Include the clientId in the request body
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -69,7 +69,7 @@ const IntakeForm = () => {
       );
       console.log("Intake form submitted:", response.data);
       // Navigate to a confirmation page or back to client detail
-      navigate(`/clients/${clientId}`);
+      navigate(`/clients/${id}`);
     } catch (error) {
       console.error('Error submitting intake form:', error);
       // Handle error (e.g., show an error message)
