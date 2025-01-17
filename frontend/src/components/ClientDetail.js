@@ -121,7 +121,6 @@ const handleSaveNotes = async () => {
   
 
 
-
 return (
   <div className="client-detail-page">
     <div className="top-section">
@@ -152,6 +151,8 @@ return (
         )}
       </div>
     </div>
+
+    
 
     <div className="sessions-section">
     <h3>Session Details</h3>

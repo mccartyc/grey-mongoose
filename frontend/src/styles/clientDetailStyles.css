@@ -59,13 +59,13 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  /* .header-container {
+  .client-detail-header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
   }
-  
+/*   
   .header-container .create-btn {
     background: #007bff;
     color: #fff;
@@ -78,7 +78,7 @@
   
   .header-container .create-btn:hover {
     background: #0056b3;
-  } */
+  } */ 
   
   /* .search-input {
     padding: 8px;
