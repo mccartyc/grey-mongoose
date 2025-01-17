@@ -45,6 +45,32 @@ body.no-scroll {
     color: #012d56;
   }
 
+  /* Add hover effect */
+.fc-prev-button:hover,
+.fc-next-button:hover,
+.fc-today-button:hover,
+.fc-addEvent-button:hover,
+.fc-dayGridMonth-button:hover,
+.fc-timeGridDay-button:hover,
+.fc-timeGridWeek-button:hover
+ {
+  background-color: #0066cc !important;
+}
+
+.fc-prev-button,
+.fc-next-button,
+.fc-today-button,
+.fc-addEvent-button,
+.fc-dayGridMonth-button,
+.fc-timeGridDay-button,
+.fc-timeGridWeek-button
+ {
+  background-color: #012d56 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+
   .fc .fc-day-today 
   .fc-daygrid-day-frame { 
     background-color: #fff; 
@@ -122,7 +148,11 @@ body.no-scroll {
   }
   
   .fc-toolbar button:hover {
-    background-color: #7AB2D3; /* Hover effect */
+    background-color: #7AB2D3; /* Hover effect  */
+  }
+
+  .fc-button-primary:hover {
+    background-color: #7AB2D3; /* Hover effect  */
   }
   
   /* Additional FullCalendar Styles for better visuals */
@@ -156,9 +186,9 @@ body.no-scroll {
   cursor: pointer;
 }
 
-.fc-event:hover {
+/* .fc-event:hover {
   background-color: #0066cc;
-}
+} */
 
   /*Events*/
   .event-form {

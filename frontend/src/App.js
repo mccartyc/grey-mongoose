@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
 import Intake from "./pages/Intake";
+import HealthAssessment from "./pages/HealthAssessment";
+import HealthPlan from "./pages/HealthPlan";
 import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
@@ -71,7 +73,7 @@ const App = () => (
           path="/clients/:id/health-assessment"
           element={
             <ProtectedRoute>
-              <div>...Coming Soon</div>
+               <HealthAssessment/>
              </ProtectedRoute>
             } 
           />
@@ -79,7 +81,7 @@ const App = () => (
           path="/clients/:id/health-plan"
           element={
             <ProtectedRoute>
-              <div>...Coming Soon</div>
+              <HealthPlan/>
              </ProtectedRoute>
             } 
           />
