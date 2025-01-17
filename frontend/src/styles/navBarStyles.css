@@ -59,6 +59,8 @@
   .brand-icon {
     font-size: 2rem;
     color: #b3d9ff;
+    height: 15mm;
+    margin-left: -3.5mm;
   }
   
   .brand-name {

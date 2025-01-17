@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-import { FaBrain, FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard } from 'react-icons/fa';
 import '../styles/styles.css';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
+import mindcloudLogo from '../assets/mindcloud_white.png';
+
 
 
 const SideNavBar = () => {
@@ -47,7 +49,12 @@ const SideNavBar = () => {
   return (
     <div className={`side-navbar ${collapsed ? 'collapsed' : ''}`}>
       <div className="brand">
-        <FaBrain className="brand-icon" />
+        {/* <FaBrain className="brand-icon" /> */}
+        <img
+          src={mindcloudLogo}
+          alt=""
+          className="brand-icon"
+        />
         {!collapsed && <span className="brand-name">MindCloud</span>}
       </div>
       <div className="toggle-btn-container">
