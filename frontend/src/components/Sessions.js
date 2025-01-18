@@ -80,9 +80,8 @@ const SessionPage = () => {
       await axios.put(`http://localhost:5001/api/sessions/${selectedSessionId}`, updatedNotes); // Update session with new notes
 
       // Refresh session data
-      const tenantId = "ed2c3dad-153b-46e7-b480-c70b867d8aa9"; // Your tenant ID
-      const userId = "4e0bf9c5-cc78-4028-89e5-02d6003f4cdc"; // Your user ID
-      const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}`);
+  
+      const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}`);
       setSessions(response.data);
       setShowModal(false); // Close modal after saving
     } catch (error) {
@@ -125,7 +124,10 @@ const SessionPage = () => {
                 className={selectedSessionId === session.sessionId ? 'selected' : ''}
                 onClick={() => handleSelectSession(session)}
               >
-                <td>{new Date(session.date).toLocaleDateString()}</td>
+                <td>{(() => {
+                    const [year, month, day] = session.date.split('T')[0].split('-');
+                    return `${month}/${day}/${year}`;
+                  })()}</td>
                 <td>{session.clientId}</td>
                 <td>{session.type}</td>
                 <td>{session.length}</td>

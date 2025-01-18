@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SideNavBar from '../components/SideNavBar';
 import TenantStep from '../components/admin/TenantStep';
 import UserStep from '../components/admin/UserStep';
@@ -10,6 +10,12 @@ const Admin = () => {
   const [step, setStep] = useState(1);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    // Scroll to the top of the page when the component is mounted
+    window.scrollTo(0, 0);
+  }, []); // Empty dependency array ensures this runs only once on mount
+
 
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);
