@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "core-js": "^3.39.0",
+    "framer-motion": "^11.18.1",
     "fullcalendar": "^6.1.15",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
@@ -50,5 +51,5 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   },
-    "proxy": "http://localhost:5000"
+  "proxy": "http://localhost:5000"
 }

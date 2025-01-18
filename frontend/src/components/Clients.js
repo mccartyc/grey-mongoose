@@ -22,6 +22,7 @@ const ClientPage = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [zipcode, setZipcode] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // Loading state for the spinner
 
   const { user } = useAuth(); // Access the current user from AuthContext
   const navigate = useNavigate(); // Use navigate hook
@@ -40,6 +41,8 @@ const ClientPage = () => {
       console.log("Selected User:", userId);
 
       try {
+        setIsLoading(true); // Start loading
+
         const response = await axios.get(
             `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
           {
@@ -52,6 +55,8 @@ const ClientPage = () => {
       } catch (error) {
         console.error('Error fetching clients:', error);
         setMessage('Failed to load clients.');
+      } finally {
+        setIsLoading(false); // Stop loading after fetching
       }
     };
 
@@ -125,6 +130,14 @@ const ClientPage = () => {
     client.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (isLoading) {
+    return (
+      <div className="spinner-container">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+  
   return (
     <div className="client-page">
       <div className="content-container">

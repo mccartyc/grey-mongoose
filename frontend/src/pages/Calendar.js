@@ -43,6 +43,8 @@ const MyCalendar = () => {
   const addEvent = () => { const title = prompt('Enter event title:'); const date = prompt('Enter event date and time (YYYY-MM-DDTHH:MM:SS):'); if (title && date) { calendarRef.current.addEvent({ title, start: date }); } };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     const calendarEl = calendarContainerRef.current;
     const calendar = new Calendar(calendarEl, {
       plugins: [dayGridPlugin, interactionPlugin, timegrid],
