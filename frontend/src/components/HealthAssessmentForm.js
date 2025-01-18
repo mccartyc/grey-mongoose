@@ -123,12 +123,10 @@ const MentalHealthIntakeAssessment = () => {
       <h1>Mental Health Intake Assessment</h1>
       <form onSubmit={handleSubmit}>
         {/* Client Information */}
-        <h3>Client Information</h3>
-        <div className="form-group">
-          <label>ID:</label> <p>{id}</p>
-          <label>Name:</label> <p>{client.firstName} {client.lastName}</p>
+        <div className='intake-form-header intake-form-header-row'> 
+        <p>Client: {client.firstName} {client.lastName}</p>
+        <p>{id}</p> 
         </div>
-
         {/* Presenting Concerns */}
         <h3>Presenting Concerns</h3>
         <div className="form-group">
