@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
 import Intake from "./pages/Intake";
+import NewClientSession from "./pages/NewClientSession";
 import HealthAssessment from "./pages/HealthAssessment";
 import HealthPlan from "./pages/HealthPlan";
 import Calendar from "./pages/Calendar";
@@ -82,6 +83,14 @@ const App = () => (
           element={
             <ProtectedRoute>
               <HealthPlan/>
+             </ProtectedRoute>
+            } 
+          />
+          <Route 
+          path="/clients/:id/new-session"
+          element={
+            <ProtectedRoute>
+              <NewClientSession/>
              </ProtectedRoute>
             } 
           />

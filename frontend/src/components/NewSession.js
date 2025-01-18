@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 
 const CreateSessionPage = () => {
-  // const [clients, setClients] = useState([]);
+  const { id } = useParams(); // Get client ID from the URL (if available)
   const [filteredClients, setFilteredClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // Set today's date as default
@@ -17,21 +17,26 @@ const CreateSessionPage = () => {
   const navigate = useNavigate();
 
   const { user } = useAuth(); // Access the current user from AuthContext
-  
+
   useEffect(() => {
     const fetchClients = async () => {
-      
-      const { tenantId, userId, token } = user; // Get tenantId and userId from user context
+      const { tenantId, userId, token } = user;
 
       try {
-        const response = await axios.get(`http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
+        const response = await axios.get(
+          `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          });
-        // setClients(response.data);
-        setFilteredClients(response.data); // Initialize filtered clients
+          }
+        );
+        setFilteredClients(response.data);
+
+        // If `id` is available, auto-select the client
+        if (id) {
+          setSelectedClientId(id);
+        }
       } catch (error) {
         console.error('Error fetching clients:', error);
         setMessage('Failed to load clients.');
@@ -39,15 +44,7 @@ const CreateSessionPage = () => {
     };
 
     fetchClients();
-  }, [user]);
-
-  // const handleClientSearch = (e) => {
-  //   const value = e.target.value.toLowerCase();
-  //   setFilteredClients(clients.filter(client => 
-  //     client.firstName.toLowerCase().includes(value) || 
-  //     client.lastName.toLowerCase().includes(value)
-  //   ));
-  // };
+  }, [user, id]);
 
   const handleCreateSession = async (e) => {
     e.preventDefault();
@@ -57,23 +54,26 @@ const CreateSessionPage = () => {
       return;
     }
 
-    const { tenantId, userId, token } = user; // Get tenantId and userId from user context
+    const { tenantId, userId, token } = user;
 
     try {
-      const response = await axios.post('http://localhost:5001/api/sessions', {
-        tenantId: tenantId,
-        clientId: selectedClientId,
-        userId: userId,
-        date,
-        length,
-        type,
-        notes, // The notes will now be in rich text format
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.post(
+        'http://localhost:5001/api/sessions',
+        {
+          tenantId: tenantId,
+          clientId: selectedClientId,
+          userId: userId,
+          date,
+          length,
+          type,
+          notes, // The notes will now be in rich text format
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setMessage(`Session created successfully for client ID: ${response.data.clientId}`);
       navigate('/sessions'); // Redirect to the sessions page
@@ -91,7 +91,12 @@ const CreateSessionPage = () => {
         <div className="form-row">
           <label className="client-label new-session-label">
             <span className="new-session-span">Select Client</span>
-            <select value={selectedClientId} onChange={(e) => setSelectedClientId(e.target.value)} required>
+            <select
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value)}
+              required
+              disabled={!!id} // Disable if `id` is available
+            >
               <option value="">Client</option>
               {filteredClients.map((client) => (
                 <option key={client.clientId} value={client.clientId}>
@@ -132,26 +137,32 @@ const CreateSessionPage = () => {
             </select>
           </label>
         </div>
-        <div className="form-row">
-          <label className="new-session-label">Record:</label>
-        </div>
-        <div className="form-row">
-          <button type="button" className="btn primary-btn">Start Transcript</button>
-          <button type="button" className="btn primary-btn">Stop Transcript</button>
-        </div>
         <label className="new-session-label">
           Notes:
         </label>
         <div className="form-row">
-          <ReactQuill 
-            className="react-quill" 
-            value={notes} 
-            onChange={setNotes} 
-            placeholder="Type notes..." />
+          <ReactQuill
+            className="react-quill"
+            value={notes}
+            onChange={setNotes}
+            placeholder="Type notes..."
+          />
         </div>
         <div className="button-container">
-          <button type="button" onClick={() => navigate('/sessions')} className="btn close-btn">Cancel</button>
-          <button type="submit" className="btn primary-btn">Submit</button>
+          <button type="button" 
+            onClick={() => {
+              if (id) {
+                navigate(`/clients/${id}/overview`); // Navigate to client overview if `id` is present
+              } else {
+                navigate('/sessions'); // Navigate to sessions if `id` is not present
+              }
+            }} 
+            className="btn close-btn">
+            Cancel
+          </button>
+          <button type="submit" className="btn primary-btn">
+            Submit
+          </button>
         </div>
       </form>
     </div>
