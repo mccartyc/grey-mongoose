@@ -7,9 +7,12 @@ const ProtectedRoute = ({ children }) => {
   // console.log('ProtectedRoute user state:', user);
 
   if (loading) {
-    // Show a loading spinner or skeleton while checking authentication
-    return <div>Loading...</div>;
-    
+    // Spinner while loading
+    return (
+      <div className="spinner-container">
+        <div className="spinner"></div>
+      </div>
+    );
   }
   
   if (!user) {
