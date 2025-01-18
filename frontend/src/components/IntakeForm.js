@@ -1,5 +1,5 @@
 // src/pages/IntakeForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -9,6 +9,8 @@ const IntakeForm = () => {
   const { id } = useParams(); // Get the client ID from the route
   const { user } = useAuth(); // Access the current user from AuthContext
   const navigate = useNavigate(); // Use navigate hook
+  const [client, setClient] = useState({});
+  const [isLoading, setIsLoading] = useState(true); // Spinner state
 
   const [formData, setFormData] = useState({
     // fullName: '',
@@ -72,17 +74,46 @@ const IntakeForm = () => {
       navigate(`/clients/${id}`);
     } catch (error) {
       console.error('Error submitting intake form:', error);
-      // Handle error (e.g., show an error message)
     }
   };
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      setIsLoading(true);
+      const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        },
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+        });
+        setClient(clientResponse.data);
+        setIsLoading(false);
+  };
+  fetchClients();
+}, [user, id]); // Re-run the effect when the user changes
+
+if (isLoading) {
+  // Spinner while loading
+  return (
+    <div className="spinner-container">
+      <div className="spinner"></div>
+    </div>
+  );
+}
+
 
   return (
     <div className="intake-form">
     
       <h1>Mental Health Intake Form</h1>
       <form onSubmit={handleSubmit}>
-        
-
+      <div className='intake-form-header intake-form-header-row'> 
+        <p><strong>Client:</strong> {client.firstName} {client.lastName}</p>
+        <p><strong>Id: </strong>{id}</p> 
+      </div>
       <h3>Part 1: Referral Information</h3>
       <div className="form-group">
         <label className="form-label">How did you hear about our services?</label>
