@@ -14,9 +14,6 @@ const SideNavBar = () => {
     return localStorage.getItem('sidebarCollapsed') === 'true';
   });
 
-  // const [userInfo, setUserInfo] = useState({ firstname: '', lastname: '' }); // Initialize the userInfo state
-  // const [loading, setLoading] = useState(true);
-
   const { userInfo, logout, loading} = useAuth(); // Access the current user from AuthContext
 
   const handleLogout = () => {
@@ -38,13 +35,10 @@ const SideNavBar = () => {
     const savedState = localStorage.getItem('sidebarCollapsed') === 'true';
     setCollapsed(savedState);
   }, []);
-
-    // Gracefully handle cases where userInfo is not yet available
-    // const userFirstName = userInfo?.firstname || 'User';
-    // const userLastName = userInfo?.lastname || '';
   
   const userFirstName = userInfo?.firstname || (loading ? 'Fetching...' : 'User');
   const userLastName = userInfo?.lastname || '';
+
 
   return (
     <div className={`side-navbar ${collapsed ? 'collapsed' : ''}`}>
