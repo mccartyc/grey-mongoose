@@ -234,6 +234,12 @@
 
 /*Client Nav Bar*/
 
+.client-nav-bar {
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+}
+
+
 .client-nav-button {
   background-color: transparent;
   color: #000;
