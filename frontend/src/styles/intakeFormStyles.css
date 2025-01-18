@@ -21,8 +21,15 @@
   margin-top: 30px;
   margin-bottom: 15px;
   font-size: 18px;
-  color: #444;
+  color: #333;
   border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.intake-form-header-row p {
+  flex-direction: row;
+  font-size: 15px;
+  color: #333;
   padding-bottom: 5px;
 }
 
