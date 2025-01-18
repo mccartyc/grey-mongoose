@@ -168,7 +168,7 @@ return (
     <div className="sessions-section">
     <h3>Session Details</h3>
       <div className="header-container">
-        <button onClick={() => navigate('/sessions/newsession')} className="btn create-btn">New Session</button>
+        <button onClick={() => navigate(`/clients/${id}/new-session`)} className="btn create-btn">New Session</button>
         <input
           type="text"
           placeholder="Search..."
