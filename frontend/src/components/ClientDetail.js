@@ -20,6 +20,7 @@ const ClientDetail = () => {
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [currentSessionNotes, setCurrentSessionNotes] = useState('');
   const [isEditing, setIsEditing] = useState(false); // State to control editing mode
+  const [isLoading, setIsLoading] = useState(true); // Spinner state
   const navigate = useNavigate();
 
   const { user } = useAuth(); // Access the current user from AuthContext
@@ -32,6 +33,8 @@ useEffect(() => {
       return;
     }
     try {
+
+      setIsLoading(true);
 
       const sessions = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
         params: {
@@ -68,6 +71,7 @@ useEffect(() => {
     } catch (error) {
       console.error("Error fetching client sessions:", error);
       // Handle the error (e.g., show a notification)
+      setIsLoading(false);
     }
   }
 fetchClients();
@@ -118,20 +122,28 @@ const handleSaveNotes = async () => {
   }
 };
   
-
+if (isLoading) {
+  // Spinner while loading
+  return (
+    <div className="spinner-container">
+      <div className="spinner"></div>
+    </div>
+  );
+}
 
 return (
   <div className="client-detail-page">
     <div className="top-section">
       <div className="client-details">
         <h3>Client Details</h3>
+        <p><strong>Id:</strong> {id}</p>
         <p><strong>First Name:</strong> {client.firstName}</p>
         <p><strong>Last Name:</strong> {client.lastName}</p>
         <p><strong>Email:</strong> {client.email}</p>
         <p><strong>Address:</strong> {client.streetAddress}</p>
         <p><strong>City:</strong> {client.city}</p>
         <p><strong>State:</strong> {client.state}</p>
-        <p><strong>Birthday:</strong> {client.birthday}</p>
+        <p><strong>Birthday:</strong> {new Date(client.birthday).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })}</p>
         <p><strong>Gender:</strong> {client.gender}</p>
       </div>
 

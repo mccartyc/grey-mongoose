@@ -9,6 +9,8 @@ const MentalHealthIntakeAssessment = () => {
   const { user } = useAuth(); // Access the current user from AuthContext
   const navigate = useNavigate(); // Use navigate hook
   const [client, setClient] = useState({});
+  const [isLoading, setIsLoading] = useState(true); // Spinner state
+
 
   const [medications, setMedications] = useState([
     { name: '', dosage: '', physician: '' },
@@ -64,6 +66,7 @@ const MentalHealthIntakeAssessment = () => {
 
   useEffect(() => {
     const fetchClients = async () => {
+      setIsLoading(true);
 
       const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, {
         params: {
@@ -75,6 +78,8 @@ const MentalHealthIntakeAssessment = () => {
         },
         });
         setClient(clientResponse.data);
+        setIsLoading(false);
+
   };
   fetchClients();
 }, [user, id]); // Re-run the effect when the user changes
@@ -118,14 +123,23 @@ const MentalHealthIntakeAssessment = () => {
     }
   };
 
+  if (isLoading) {
+    // Spinner while loading
+    return (
+      <div className="spinner-container">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="intake-form">
       <h1>Mental Health Intake Assessment</h1>
       <form onSubmit={handleSubmit}>
         {/* Client Information */}
         <div className='intake-form-header intake-form-header-row'> 
-        <p>Client: {client.firstName} {client.lastName}</p>
-        <p>{id}</p> 
+        <p><strong>Client:</strong> {client.firstName} {client.lastName}</p>
+        <p><strong>Id: </strong>{id}</p> 
         </div>
         {/* Presenting Concerns */}
         <h3>Presenting Concerns</h3>
