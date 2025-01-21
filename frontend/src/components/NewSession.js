@@ -211,10 +211,10 @@ useEffect(() => {
             <span className="recording-indicator">Recording in progress...</span>
           )}
         </div>
-        {transcriptionInProgress &&  (
+        {transcriptionInProgress && (finalTranscript || interimTranscript) &&  (
         <label className="new-session-label">Transcription (Live):</label>
         )}
-        {transcriptionInProgress &&  (
+        {transcriptionInProgress && (finalTranscript || interimTranscript) &&  (
         <div
           id="transcription-box"
           className="transcription-box"
