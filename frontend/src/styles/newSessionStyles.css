@@ -7,6 +7,23 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
   }
+
+  .transcription-box {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    height: 100px;
+    overflow-y: scroll;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    color: gray;
+    white-space: pre-wrap;
+  }
+
+  .recording-indicator {
+    margin-left: 4px;
+    color: red;
+  }
   
   /* Custom style for the React Quill editor */
   .react-quill {
@@ -27,6 +44,7 @@
     background: white; /* Set background for visibility */
     border: none; /* Optional: If you want to remove the border */
   }
+
   
   /* Preventing resizing and keeping consistent spacing */
   .react-quill .ql-editor {
@@ -36,6 +54,7 @@
   
   .react-quill .ql-container {
     border: none; /* Remove the default border */
+    background-color: white;
   }
   #toolbar {
     display: flex;

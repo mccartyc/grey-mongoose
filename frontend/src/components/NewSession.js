@@ -14,9 +14,68 @@ const CreateSessionPage = () => {
   const [type, setType] = useState('');
   const [notes, setNotes] = useState('');
   const [message, setMessage] = useState('');
+  const [finalTranscript, setFinalTranscript] = useState(''); // For finalized transcription
+  const [interimTranscript, setInterimTranscript] = useState(''); // Live transcript
+  const [isRecording, setIsRecording] = useState(false); // For recording status
+  const [transcriptionInProgress, setTranscriptionInProgress] = useState(false); // Indicate ongoing transcription
   const navigate = useNavigate();
-
   const { user } = useAuth(); // Access the current user from AuthContext
+  const recognition = React.useRef(null); // Store SpeechRecognition instance
+
+// Initialize SpeechRecognition
+useEffect(() => {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition =
+      window.webkitSpeechRecognition || window.SpeechRecognition;
+    recognition.current = new SpeechRecognition();
+    recognition.current.continuous = true;
+    recognition.current.interimResults = true;
+    recognition.current.lang = 'en-US';
+
+    // Track last processed result
+    let lastResultIndex = 0;
+
+    recognition.current.onresult = (event) => {
+      let interimText = '';
+      for (let i = lastResultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          // Append finalized transcript to finalTranscript state
+          setFinalTranscript((prev) => `${prev}${transcript}.`.trim());
+          lastResultIndex = i + 1; // Update to skip processed results
+        } else {
+          interimText += transcript; // Append interim results
+        }
+      }
+
+      // Update interim transcript state for live UI updates
+      setInterimTranscript(interimText);
+    };
+
+    recognition.current.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+    };
+  } else {
+    alert('Speech recognition is not supported in this browser.');
+  }
+}, []);
+
+  const handleStartStopTranscription = () => {
+    if (isRecording) {
+      recognition.current?.stop();
+      setIsRecording(false);
+      setTranscriptionInProgress(false);
+    } else {
+      const confirmStart = window.confirm(
+        'Do you want to start recording your notes?'
+      );
+      if (confirmStart) {
+        setIsRecording(true);
+        setTranscriptionInProgress(true);
+        recognition.current?.start();
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -137,6 +196,34 @@ const CreateSessionPage = () => {
             </select>
           </label>
         </div>
+        <label className="new-session-label">
+          Transcribe:
+        </label>
+        <div>
+          <button
+            type="button"
+            className= {isRecording ? "btn close-btn" : "btn secondary-btn"}
+            onClick={handleStartStopTranscription}
+          >
+            {isRecording ? 'Stop Transcript' : 'Start Transcript'}
+          </button>
+          {transcriptionInProgress && (
+            <span className="recording-indicator">Recording in progress...</span>
+          )}
+        </div>
+        {transcriptionInProgress &&  (
+        <label className="new-session-label">Transcription (Live):</label>
+        )}
+        {transcriptionInProgress &&  (
+        <div
+          id="transcription-box"
+          className="transcription-box"
+        >
+          {/* Display final and live transcripts together */}
+          {finalTranscript}
+          {interimTranscript && <span style={{ color: 'gray' }}>{interimTranscript}</span>}
+        </div>
+        )}
         <label className="new-session-label">
           Notes:
         </label>
