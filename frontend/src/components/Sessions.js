@@ -30,13 +30,17 @@ const SessionPage = () => {
       console.log("Selected User:", userId);
 
       try {
-        const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}`,
+        const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}&sortBy=date&order=desc`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setSessions(response.data);
+        const sortedSessions = response.data.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date); // Sort by date descending
+      });
+
+      setSessions(sortedSessions);
       } catch (error) {
         console.error('Error fetching sessions:', error);
         setMessage('Failed to load sessions.');

@@ -55,11 +55,11 @@ router.post("/", protect, async (req, res) => {
 });
 
 
-// GET: Retrieve sessions for a specific tenantId and userId
+// GET: Retrieve sessions for a specific tenantId and userId with optional sorting
 router.get("/", protect, async (req, res) => {
-  const { tenantId, userId } = req.query;
+  const { tenantId, userId, sortBy, order } = req.query; // Destructure sortBy and order from req.query
 
-  console.log("Request to get sessions:", { tenantId, userId });
+  console.log("Request to get sessions:", { tenantId, userId, sortBy, order });
 
   if (!tenantId || !userId) {
     console.error("Validation error: Missing tenantId or userId");
@@ -67,7 +67,16 @@ router.get("/", protect, async (req, res) => {
   }
 
   try {
-    const sessions = await Session.find({ tenantId, userId, isActive: true }); // Including isActive filter if needed
+    // Base query for sessions
+    const query = { tenantId, userId, isActive: true }; 
+    
+    // Determine sorting
+    const sortOptions = {};
+    if (sortBy) {
+      sortOptions[sortBy] = order === 'desc' ? -1 : 1; // Sort by the specified field and order
+    }
+
+    const sessions = await Session.find(query).sort(sortOptions); // Include sort on query
     console.log("Retrieved sessions:", sessions);
     res.status(200).json(sessions);
   } catch (error) {
@@ -76,12 +85,12 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
-// New GET: Retrieve session details for a specific client
+// New GET: Retrieve session details for a specific client with optional sorting
 router.get("/client/:clientId", protect, async (req, res) => {
-  const { tenantId, userId } = req.query;
+  const { tenantId, userId, sortBy, order } = req.query; // Destructure sortBy and order from req.query
   const { clientId } = req.params;
 
-  console.log("Request to get session details for client:", { tenantId, userId, clientId });
+  console.log("Request to get session details for client:", { tenantId, userId, clientId, sortBy, order });
 
   if (!tenantId || !userId || !clientId) {
     console.error("Validation error: Missing tenantId, userId, or clientId");
@@ -89,8 +98,17 @@ router.get("/client/:clientId", protect, async (req, res) => {
   }
 
   try {
-    const sessions = await Session.find({ tenantId, userId, clientId, isActive: true });
-    
+    // Base query for sessions
+    const query = { tenantId, userId, clientId, isActive: true };
+
+    // Determine sorting
+    const sortOptions = {};
+    if (sortBy) {
+      sortOptions[sortBy] = order === 'desc' ? -1 : 1; // Sort by the specified field and order
+    }
+
+    const sessions = await Session.find(query).sort(sortOptions); // Apply sorting on query
+
     if (sessions.length === 0) {
       console.log("No sessions found for this client.");
       return res.status(404).json({ error: "No sessions found" });

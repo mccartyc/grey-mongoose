@@ -40,6 +40,8 @@ useEffect(() => {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
+          sortBy: 'date',  // Specify the field you want to sort by
+          order: 'desc'    // Specify the sorting order, 'asc' or 'desc'
         },
         headers: {
           Authorization: `Bearer ${user.token}`,
