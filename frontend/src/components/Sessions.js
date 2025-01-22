@@ -6,6 +6,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 
+const ITEMS_PER_PAGE = 10; // Number of items per page
 
 const SessionPage = () => {
   const [sessions, setSessions] = useState([]);
@@ -16,6 +17,8 @@ const SessionPage = () => {
   const [currentSessionNotes, setCurrentSessionNotes] = useState('');
   const [isEditing, setIsEditing] = useState(false); // State to control editing mode
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+
 
   const { user } = useAuth(); // Access the current user from AuthContext
 
@@ -59,6 +62,19 @@ const SessionPage = () => {
     session.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     session.notes?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredSessions.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentSessions = filteredSessions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prevPage) => prevPage - 1);
+  };
 
   
   const handleViewNotes = (session) => {
@@ -122,7 +138,7 @@ const SessionPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredSessions.map((session) => (
+            {currentSessions.map((session) => (
               <tr
                 key={session.sessionId}
                 className={selectedSessionId === session.sessionId ? 'selected' : ''}
@@ -140,6 +156,18 @@ const SessionPage = () => {
             ))}
           </tbody>
         </table>
+        {/* Pagination Controls */}
+        <div className="pagination">
+          <button onClick={handlePrevPage} disabled={currentPage === 1}>
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Next
+          </button>
+        </div>
 
         {showModal && (
           <div className="modal">
