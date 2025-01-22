@@ -6,104 +6,158 @@ import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 
 const CreateSessionPage = () => {
-  const { id } = useParams(); // Get client ID from the URL (if available)
+  const { id } = useParams();
   const [filteredClients, setFilteredClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // Set today's date as default
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [length, setLength] = useState('');
   const [type, setType] = useState('');
   const [notes, setNotes] = useState('');
   const [message, setMessage] = useState('');
-  const [finalTranscript, setFinalTranscript] = useState(''); // For finalized transcription
-  const [interimTranscript, setInterimTranscript] = useState(''); // Live transcript
-  const [isRecording, setIsRecording] = useState(false); // For recording status
-  const [transcriptionInProgress, setTranscriptionInProgress] = useState(false); // Indicate ongoing transcription
+  const [finalTranscript, setFinalTranscript] = useState('');
+  const [interimTranscript, setInterimTranscript] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcriptionInProgress, setTranscriptionInProgress] = useState(false);
+  // const [transcriptionLog, setTranscriptionLog] = useState([]); // Log for start/stop times
+  const [hasTranscriptionStarted, setHasTranscriptionStarted] = useState(false); // To track if transcription started in this session
   const navigate = useNavigate();
-  const { user } = useAuth(); // Access the current user from AuthContext
-  const recognition = React.useRef(null); // Store SpeechRecognition instance
+  const { user } = useAuth();
+  const recognition = React.useRef(null);
 
-// Initialize SpeechRecognition
-useEffect(() => {
-  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition =
-      window.webkitSpeechRecognition || window.SpeechRecognition;
-    recognition.current = new SpeechRecognition();
-    recognition.current.continuous = true;
-    recognition.current.interimResults = true;
-    recognition.current.lang = 'en-US';
+  // useEffect(() => {
+  //   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  //     const SpeechRecognition =
+  //       window.webkitSpeechRecognition || window.SpeechRecognition;
+  //     recognition.current = new SpeechRecognition();
+  //     recognition.current.continuous = true;
+  //     recognition.current.interimResults = true;
+  //     recognition.current.lang = 'en-US';
 
-    // Track last processed result
-    let lastResultIndex = 0;
+  //     let lastResultIndex = 0;
 
-    recognition.current.onresult = (event) => {
-      let interimText = '';
-      for (let i = lastResultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          // Append finalized transcript to finalTranscript state
-          setFinalTranscript((prev) => `${prev}${transcript}.`.trim());
-          lastResultIndex = i + 1; // Update to skip processed results
-        } else {
-          interimText += transcript; // Append interim results
-        }
-      }
+  //     recognition.current.onresult = (event) => {
+  //       let interimText = '';
+  //       for (let i = lastResultIndex; i < event.results.length; i++) {
+  //         const transcript = event.results[i][0].transcript;
+  //         if (event.results[i].isFinal) {
+  //           setFinalTranscript((prev) => `${prev} ${transcript}`.trim());
+  //           lastResultIndex = i + 1;
+  //         } else {
+  //           interimText += transcript;
+  //         }
+  //       }
+  //       setInterimTranscript(interimText);
+  //     };
 
-      // Update interim transcript state for live UI updates
-      setInterimTranscript(interimText);
-    };
-
-    recognition.current.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-    };
-  } else {
-    alert('Speech recognition is not supported in this browser.');
-  }
-}, []);
+  //     recognition.current.onerror = (event) => {
+  //       console.error('Speech recognition error:', event.error);
+  //     };
+  //   } else {
+  //     alert('Speech recognition is not supported in this browser.');
+  //   }
+  // }, []);
 
   const handleStartStopTranscription = () => {
     if (isRecording) {
       recognition.current?.stop();
       setIsRecording(false);
       setTranscriptionInProgress(false);
+  
+      // Log the stop event directly into the transcript
+      setFinalTranscript((prev) => `${prev}\n[Transcript stopped at ${new Date().toLocaleString()}]\n`);
     } else {
       const confirmStart = window.confirm(
         'Do you want to start recording your notes?'
       );
       if (confirmStart) {
+        // Reinitialize the SpeechRecognition instance
+        const SpeechRecognition =
+          window.webkitSpeechRecognition || window.SpeechRecognition;
+        recognition.current = new SpeechRecognition();
+        recognition.current.continuous = true;
+        recognition.current.interimResults = true;
+        recognition.current.lang = 'en-US';
+  
+        // Reset the last processed result index
+        let lastResultIndex = 0;
+  
+        recognition.current.onresult = (event) => {
+          let interimText = '';
+          for (let i = lastResultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              // Append finalized transcript to finalTranscript state
+              setFinalTranscript((prev) => `${prev} ${transcript}`.trim());
+              lastResultIndex = i + 1; // Update to skip processed results
+            } else {
+              setHasTranscriptionStarted(true);
+              interimText += transcript; // Append interim results
+            }
+          }
+  
+          // Update interim transcript state for live UI updates
+          setInterimTranscript(interimText);
+        };
+  
+        recognition.current.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+        };
+  
         setIsRecording(true);
         setTranscriptionInProgress(true);
-        recognition.current?.start();
+  
+        // Log the start event directly into the transcript
+        setFinalTranscript((prev) => `${prev}\n[Transcript started at ${new Date().toLocaleString()}]\n`);
+  
+        recognition.current.start();
       }
     }
   };
+  
+  // Clean up the recognition instance when the component unmounts
+  useEffect(() => {
+    return () => {
+      recognition.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
-    const fetchClients = async () => {
-      const { tenantId, userId, token } = user;
-
-      try {
-        const response = await axios.get(
-          `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition =
+        window.webkitSpeechRecognition || window.SpeechRecognition;
+      recognition.current = new SpeechRecognition();
+      recognition.current.continuous = true;
+      recognition.current.interimResults = true;
+      recognition.current.lang = 'en-US';
+  
+      // Track last processed result
+      let lastResultIndex = 0;
+  
+      recognition.current.onresult = (event) => {
+        let interimText = '';
+        for (let i = lastResultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            // Append finalized transcript to finalTranscript state
+            setFinalTranscript((prev) => `${prev}${transcript}.`.trim());
+            lastResultIndex = i + 1; // Update to skip processed results
+          } else {
+            setHasTranscriptionStarted(true);
+            interimText += transcript; // Append interim results
           }
-        );
-        setFilteredClients(response.data);
-
-        // If `id` is available, auto-select the client
-        if (id) {
-          setSelectedClientId(id);
         }
-      } catch (error) {
-        console.error('Error fetching clients:', error);
-        setMessage('Failed to load clients.');
-      }
-    };
-
-    fetchClients();
-  }, [user, id]);
+  
+        // Update interim transcript state for live UI updates
+        setInterimTranscript(interimText);
+      };
+  
+      recognition.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+      };
+    } else {
+      alert('Speech recognition is not supported in this browser.');
+    }
+  }, []);
 
   const handleCreateSession = async (e) => {
     e.preventDefault();
@@ -125,7 +179,9 @@ useEffect(() => {
           date,
           length,
           type,
-          notes, // The notes will now be in rich text format
+          notes,
+          transcription: finalTranscript, // Submit the finalized transcript
+          // transcriptionLog, // Include transcription log
         },
         {
           headers: {
@@ -135,15 +191,42 @@ useEffect(() => {
       );
 
       setMessage(`Session created successfully for client ID: ${response.data.clientId}`);
-      navigate('/sessions'); // Redirect to the sessions page
+      navigate('/sessions');
     } catch (error) {
       console.error('Error creating session:', error);
       setMessage(error.response?.data?.error || 'Failed to create session');
     }
   };
 
+  useEffect(() => {
+    const fetchClients = async () => {
+      const { tenantId, userId, token } = user;
+
+      try {
+        const response = await axios.get(
+          `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setFilteredClients(response.data);
+
+        if (id) {
+          setSelectedClientId(id);
+        }
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+        setMessage('Failed to load clients.');
+      }
+    };
+
+    fetchClients();
+  }, [user, id]);
+
   return (
-    <div className="create-session-page">
+    <div className="sessions-section">
       <h3>New Session</h3>
       {message && <p className="error-message">{message}</p>}
       <form className="form-group" onSubmit={handleCreateSession} autoComplete="off">
@@ -154,7 +237,7 @@ useEffect(() => {
               value={selectedClientId}
               onChange={(e) => setSelectedClientId(e.target.value)}
               required
-              disabled={!!id} // Disable if `id` is available
+              disabled={!!id}
             >
               <option value="">Client</option>
               {filteredClients.map((client) => (
@@ -196,13 +279,10 @@ useEffect(() => {
             </select>
           </label>
         </div>
-        <label className="new-session-label">
-          Transcribe:
-        </label>
         <div>
           <button
             type="button"
-            className= {isRecording ? "btn close-btn" : "btn secondary-btn"}
+            className={isRecording ? 'btn close-btn' : 'btn secondary-btn'}
             onClick={handleStartStopTranscription}
           >
             {isRecording ? 'Stop Transcript' : 'Start Transcript'}
@@ -211,22 +291,16 @@ useEffect(() => {
             <span className="recording-indicator">Recording in progress...</span>
           )}
         </div>
-        {transcriptionInProgress && (finalTranscript || interimTranscript) &&  (
+        {transcriptionInProgress && (finalTranscript || interimTranscript) && (
         <label className="new-session-label">Transcription (Live):</label>
-        )}
-        {transcriptionInProgress && (finalTranscript || interimTranscript) &&  (
-        <div
-          id="transcription-box"
-          className="transcription-box"
-        >
-          {/* Display final and live transcripts together */}
-          {finalTranscript}
-          {interimTranscript && <span style={{ color: 'gray' }}>{interimTranscript}</span>}
-        </div>
-        )}
-        <label className="new-session-label">
-          Notes:
-        </label>
+          )}
+          {hasTranscriptionStarted && (finalTranscript || interimTranscript) && (
+            <div id="transcription-box" className="transcription-box">
+              {finalTranscript}
+              {interimTranscript && <span style={{ color: 'gray' }}>{interimTranscript}</span>}
+            </div>
+          )}
+        <label className="new-session-label">Notes:</label>
         <div className="form-row">
           <ReactQuill
             className="react-quill"
@@ -236,15 +310,17 @@ useEffect(() => {
           />
         </div>
         <div className="button-container">
-          <button type="button" 
+          <button
+            type="button"
             onClick={() => {
               if (id) {
-                navigate(`/clients/${id}/overview`); // Navigate to client overview if `id` is present
+                navigate(`/clients/${id}/overview`);
               } else {
-                navigate('/sessions'); // Navigate to sessions if `id` is not present
+                navigate('/sessions');
               }
-            }} 
-            className="btn close-btn">
+            }}
+            className="btn close-btn"
+          >
             Cancel
           </button>
           <button type="submit" className="btn primary-btn">
