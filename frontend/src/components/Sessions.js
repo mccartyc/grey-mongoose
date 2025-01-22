@@ -112,91 +112,93 @@ const SessionPage = () => {
 
   return (
     <div className="session-page">
-      <div className="content-container">
-        <div className="header-container">
-          <div>
-            <button onClick={() => navigate('/sessions/newsession')} className="btn create-btn">New Session</button> {/* Navigate to CreateSessionPage */}
+      <div className="sessions-section">
+        <div className="content-container">
+          <div className="header-container">
+            <div>
+              <button onClick={() => navigate('/sessions/newsession')} className="btn create-btn">New Session</button> {/* Navigate to CreateSessionPage */}
+            </div>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        {message && <p className="error-message">{message}</p>}
+          {message && <p className="error-message">{message}</p>}
 
-        <table className="session-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Client Name</th>
-              <th>Type</th>
-              <th>Length</th>
-              <th>Detail</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentSessions.map((session) => (
-              <tr
-                key={session.sessionId}
-                className={selectedSessionId === session.sessionId ? 'selected' : ''}
-                onClick={() => handleSelectSession(session)}
-              >
-                <td>{(() => {
-                    const [year, month, day] = session.date.split('T')[0].split('-');
-                    return `${month}/${day}/${year}`;
-                  })()}</td>
-                <td>{session.clientId}</td>
-                <td>{session.type}</td>
-                <td>{session.length}</td>
-                <td><button onClick={() => handleViewNotes(session)}>View Notes</button></td>
+          <table className="session-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Client Name</th>
+                <th>Type</th>
+                <th>Length</th>
+                <th>Detail</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* Pagination Controls */}
-        <div className="pagination">
-          <button onClick={handlePrevPage} disabled={currentPage === 1}>
-            Previous
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-            Next
-          </button>
-        </div>
+            </thead>
+            <tbody>
+              {currentSessions.map((session) => (
+                <tr
+                  key={session.sessionId}
+                  className={selectedSessionId === session.sessionId ? 'selected' : ''}
+                  onClick={() => handleSelectSession(session)}
+                >
+                  <td>{(() => {
+                      const [year, month, day] = session.date.split('T')[0].split('-');
+                      return `${month}/${day}/${year}`;
+                    })()}</td>
+                  <td>{session.clientId}</td>
+                  <td>{session.type}</td>
+                  <td>{session.length}</td>
+                  <td><button onClick={() => handleViewNotes(session)}>View Notes</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* Pagination Controls */}
+          <div className="pagination">
+            <button onClick={handlePrevPage} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+              Next
+            </button>
+          </div>
 
-        {showModal && (
-          <div className="modal">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h2>Session Notes</h2>
-                <button onClick={() => setShowModal(false)}>X</button>
-              </div>
-              <div className="modal-body">
-                {isEditing ? (
-                  <ReactQuill
-                    value={currentSessionNotes}
-                    onChange={setCurrentSessionNotes}
-                  />
-                ) : (
-                  <div dangerouslySetInnerHTML={{ __html: currentSessionNotes }} />
-                )}
-              </div>
-              <div className="modal-footer">
-                {isEditing ? (
-                  <button onClick={handleSaveNotes}>Save Changes</button>
-                ) : (
-                  <button onClick={handleEditNotes}>Edit</button>
-                )}
-                <button onClick={() => window.print()}>Print</button>
+          {showModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h2>Session Notes</h2>
+                  <button onClick={() => setShowModal(false)}>X</button>
+                </div>
+                <div className="modal-body">
+                  {isEditing ? (
+                    <ReactQuill
+                      value={currentSessionNotes}
+                      onChange={setCurrentSessionNotes}
+                    />
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: currentSessionNotes }} />
+                  )}
+                </div>
+                <div className="modal-footer">
+                  {isEditing ? (
+                    <button onClick={handleSaveNotes}>Save Changes</button>
+                  ) : (
+                    <button onClick={handleEditNotes}>Edit</button>
+                  )}
+                  <button onClick={() => window.print()}>Print</button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
