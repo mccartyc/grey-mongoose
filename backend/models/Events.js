@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Using ObjectId as the primary key
   userId: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User'},
   title: {type: String, required: true},
   description: {type: String},

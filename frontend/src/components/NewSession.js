@@ -24,39 +24,6 @@ const CreateSessionPage = () => {
   const { user } = useAuth();
   const recognition = React.useRef(null);
 
-  // useEffect(() => {
-  //   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  //     const SpeechRecognition =
-  //       window.webkitSpeechRecognition || window.SpeechRecognition;
-  //     recognition.current = new SpeechRecognition();
-  //     recognition.current.continuous = true;
-  //     recognition.current.interimResults = true;
-  //     recognition.current.lang = 'en-US';
-
-  //     let lastResultIndex = 0;
-
-  //     recognition.current.onresult = (event) => {
-  //       let interimText = '';
-  //       for (let i = lastResultIndex; i < event.results.length; i++) {
-  //         const transcript = event.results[i][0].transcript;
-  //         if (event.results[i].isFinal) {
-  //           setFinalTranscript((prev) => `${prev} ${transcript}`.trim());
-  //           lastResultIndex = i + 1;
-  //         } else {
-  //           interimText += transcript;
-  //         }
-  //       }
-  //       setInterimTranscript(interimText);
-  //     };
-
-  //     recognition.current.onerror = (event) => {
-  //       console.error('Speech recognition error:', event.error);
-  //     };
-  //   } else {
-  //     alert('Speech recognition is not supported in this browser.');
-  //   }
-  // }, []);
-
   const handleStartStopTranscription = () => {
     if (isRecording) {
       recognition.current?.stop();
@@ -241,7 +208,7 @@ const CreateSessionPage = () => {
             >
               <option value="">Client</option>
               {filteredClients.map((client) => (
-                <option key={client.clientId} value={client.clientId}>
+                <option key={client._id} value={client._id}>
                   {client.firstName} {client.lastName}
                 </option>
               ))}

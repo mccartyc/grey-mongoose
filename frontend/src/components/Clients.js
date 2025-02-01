@@ -36,12 +36,13 @@ const ClientPage = () => {
         return;
       }
       const { tenantId, userId, token } = user; // Get tenantId and userId from user context
-      console.log("User Info:", user);
-      console.log("Selected Tenant:", tenantId);
-      console.log("Selected User:", userId);
+
 
       try {
         setIsLoading(true); // Start loading
+        console.log("User Info:", user);
+        console.log("Selected Tenant:", tenantId);
+        console.log("Selected User:", userId);
 
         const response = await axios.get(
             `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
@@ -140,6 +141,7 @@ const ClientPage = () => {
   
   return (
     <div className="client-page">
+    <div className="sessions-section">
       <div className="content-container">
         <div className="header-container">
           <div>
@@ -159,7 +161,10 @@ const ClientPage = () => {
         {showForm && (
           <div className="overlay">
             <div className="popup-form">
-              <form className="form-group" onSubmit={handleCreateClient} autoComplete="nope">
+              <form className="form-group" onSubmit={handleCreateClient}   
+                autoComplete="off" 
+                autoCorrect="off" 
+                spellCheck="false">
                 <h3>Create New Client</h3>
                 <div className="form-row">
                   <label>
@@ -240,7 +245,7 @@ const ClientPage = () => {
                 key={client._id}
                 className={selectedClientId === client._id ? 'selected' : ''}
                 onClick={() => handleSelectClient(client)}
-                onDoubleClick={() => handleRowDoubleClick(client.clientId, client.firstName, client.lastName)} // Handle double-click
+                onDoubleClick={() => handleRowDoubleClick(client._id, client.firstName, client.lastName)} // Handle double-click
               >
                 <td>{client.firstName}</td>
                 <td>{client.lastName}</td>
@@ -262,6 +267,7 @@ const ClientPage = () => {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

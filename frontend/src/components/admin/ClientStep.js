@@ -46,7 +46,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       const { token } = user; // Get tenantId and userId from user context
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/clients?tenantId=${selectedTenant.tenantId}&userId=${selectedUser.userId}`,
+          `http://localhost:5001/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -89,8 +89,8 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
         city,
         state,
         zipcode,
-        tenantId: selectedTenant.tenantId,
-        userId: selectedUser.userId,
+        tenantId: selectedTenant._id,
+        userId: selectedUser._id,
       },
       {
         headers: {
@@ -126,11 +126,11 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   };
 
   const handleSelectClient = (client) => {
-    setSelectedClientId(client.clientID);
+    setSelectedClientId(client._id);
   };
 
   const handleEditClient = (client) => {
-    setSelectedClientId(client.clientID);
+    setSelectedClientId(client._id);
     setFirstName(client.firstName); // Populate the form with the selected tenant's name
     setLastName(client.lastName); // Populate the form with the selected tenant's name
     setGender(client.gender);
@@ -145,9 +145,9 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     setShowForm(true); // Show the form for editing
   };
 
-  const handleDeleteClick = (clientId, event) => {
+  const handleDeleteClick = (client, event) => {
     event.stopPropagation(); // Prevent row selection
-    setClientToDelete(clientId); // Set tenant to delete
+    setClientToDelete(client._id); // Set tenant to delete
     setShowDeleteModal(true); // Show confirmation modal
   };
 
@@ -163,7 +163,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
           },
         }
       );
-      setClients((prev) => prev.filter((client) => client.clientID !== clientToDelete));
+      setClients((prev) => prev.filter((client) => client._id !== clientToDelete));
       setShowDeleteModal(false); // Close modal after successful delete
       setClientToDelete(null); // Reset tenant to delete
     } catch (error) {
@@ -198,7 +198,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     client.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.clientId.toLowerCase().includes(searchTerm.toLowerCase())
+    client._id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -332,7 +332,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
             {filteredClients.map((client) => (
               <tr
                 key={client._id}
-                className={selectedClientId === client.clientId ? 'selected' : ''}
+                className={selectedClientId === client._id ? 'selected' : ''}
                 onClick={() => handleSelectClient(client)}
               >
                 <td>{client.firstName}</td>
@@ -345,7 +345,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                 <td>{client.city}</td>
                 <td>{client.state}</td>
                 <td>{client.zipcode}</td>
-                <td>{client.clientId}</td>
+                <td>{client._id}</td>
                 <td className="action-column">
                 <span
                     role="img"
@@ -363,7 +363,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteClick(client.clientId, event)}
+                    onClick={(event) => handleDeleteClick(client._id, event)}
                   >
                     🗑️
                   </span>

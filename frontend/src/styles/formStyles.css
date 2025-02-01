@@ -29,7 +29,7 @@
 .form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
   }
   
 .form-group {
@@ -132,6 +132,7 @@
     z-index: 1001;
 }
 
+
 .popup-form .form-row,
 .popup-form .form-row-three-item {
     display: flex;
@@ -152,7 +153,7 @@
 
 .popup-form label {
     display: block;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 
 .popup-form textarea,
@@ -208,6 +209,9 @@
     text-align: center;
   }
   
+  input[data-lastpass-icon-root] {
+    display: none !important;
+  }
 
   .medication-row {
     display: flex;

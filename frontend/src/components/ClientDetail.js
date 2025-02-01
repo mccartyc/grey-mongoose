@@ -36,6 +36,9 @@ useEffect(() => {
 
       setIsLoading(true);
 
+      console.log("Fetching sessions with", { id, tenantId: user?.tenantId, userId: user?.userId });
+
+
       const sessions = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
         params: {
           tenantId: user.tenantId,
@@ -60,6 +63,9 @@ useEffect(() => {
           Authorization: `Bearer ${user.token}`,
         },
         });
+        console.log('clientReesponseTenantId:', user.tenantId);
+        console.log('clientReesponseUserId:', user.userId);
+        console.log('Fetching data for client:', clientResponse.data);
         setClient(clientResponse.data);
       // setClient(clientResponse.data);
       

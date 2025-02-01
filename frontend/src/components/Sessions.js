@@ -29,10 +29,9 @@ const SessionPage = () => {
 
       const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
-      console.log("Selected Tenant:", tenantId);
-      console.log("Selected User:", userId);
-
       try {
+        console.log("Get Sessions for Selected Tenant:", tenantId);
+        console.log("Get Sessions for Selected User:", userId);
         const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}&sortBy=date&order=desc`,
         {
           headers: {
@@ -101,7 +100,7 @@ const SessionPage = () => {
 
       // Refresh session data
   
-      const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}`);
+      const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user._id}`);
       setSessions(response.data);
       setShowModal(false); // Close modal after saving
     } catch (error) {
