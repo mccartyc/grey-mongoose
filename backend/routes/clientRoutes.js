@@ -45,8 +45,8 @@ router.post("/", protect, async (req, res) => {
   try {
     // Create the new client
     const newClient = new Client({
-      tenantId: tenantId,
-      userId: userId,
+      tenantId,
+      userId,
       firstName,
       lastName,
       streetAddress,
@@ -72,19 +72,19 @@ router.post("/", protect, async (req, res) => {
 
 // PUT: Deactivate a client
 router.put("/:clientId/deactivate", protect, async (req, res) => {
-  const { clientId } = req.params;
+  const { _id } = req.params;
   try {
     const updateData = { isActive: false, deactivatedAt: new Date() };
     console.log("Update Data:", updateData); // Log the update data
 
     const client = await Client.findOneAndUpdate(
-      { clientId },
+      { _id },
       updateData,
       { new: true }
     );
 
     if (!client) {
-      console.log(`Client with ID ${clientId} not found`); // Log if client not found
+      console.log(`Client with ID ${_id} not found`); // Log if client not found
       return res.status(404).json({ error: "Client not found" });
     }
 
@@ -109,8 +109,8 @@ router.get("/", protect, async (req, res) => {
 
   try {
     // Filter clients by tenantId and isActive field
-    console.log("Tenant ID:", tenantId);
-    console.log("User ID:", userId);
+    console.log("Get Client Route - Tenant ID:", tenantId);
+    console.log("Get Client Route - User ID:", userId);
     const clients = await Client.find({ tenantId: tenantId, userId: userId, isActive: true });
     console.log("Active clients fetched successfully:", clients);
     res.status(200).json(clients);
@@ -137,7 +137,7 @@ router.get("/:clientId", protect, async (req, res) => {
     console.log("User ID:", userId);
 
     const client = await Client.findOne({
-      clientId: clientId,
+      _id: clientId,
       tenantId: tenantId,
       userId: userId,
       isActive: true,

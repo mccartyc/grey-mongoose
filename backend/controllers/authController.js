@@ -33,8 +33,8 @@ exports.login = async (req, res) => {
 
     // const { accessToken, refreshToken } = generateTokens(user);
     // Generate tokens
-    const accessToken = jwt.sign({ userId: user.userId, tenantId: user.tenantId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
-    const refreshToken = jwt.sign({ userId: user.userId, tenantId: user.tenantId }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+    const accessToken = jwt.sign({ userId: user._id, tenantId: user.tenantId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
+    const refreshToken = jwt.sign({ userId: user._id, tenantId: user.tenantId }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
 
     // Save refresh token in DB
     user.refreshToken = refreshToken;

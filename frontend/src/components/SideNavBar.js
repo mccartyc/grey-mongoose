@@ -105,12 +105,6 @@ const SideNavBar = () => {
               {!collapsed && <span className="nav-text">Logout</span>}
             </button>
           </li>
-          {/* <li className="logout"> 
-            <NavLink to="/login" className={({ isActive }) => isActive ? "active-link" : ""}>
-              <FaSignOutAlt className="nav-icon" />
-              {!collapsed && <span className="nav-text">Logout</span>}
-            </NavLink>
-          </li> */}
         </ul>
       </div>
     </div>

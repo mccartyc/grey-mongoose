@@ -22,11 +22,11 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
   useEffect(() => {
     if (selectedTenant) {
-      console.log("Selected Tenant in UserStep:", selectedTenant.tenantId); // Debug log
+      console.log("Selected Tenant in UserStep:", selectedTenant._id); // Debug log
       const { token } = user; // Get tenantId and userId from user context
       const fetchUsers = async () => {
         try {
-          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant.tenantId}`,
+          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant._id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -46,20 +46,20 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     e.preventDefault();
 
     // Check if selectedTenant is defined before proceeding
-    if (!selectedTenant || !selectedTenant.tenantId) {
+    if (!selectedTenant || !selectedTenant._id) {
       setMessage('Error: Tenant not selected or tenant ID not available.');
       return;
     }
     const { token } = user; // Get tenantId and userId from user context
     try {
-      console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant.tenantId });
+      console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant._id });
       const response = await axios.post('http://localhost:5001/api/users', {
         firstname,
         lastname,
         email,
         password,
         role,
-        tenantId: selectedTenant.tenantId,
+        tenantId: selectedTenant._id,
       },
       {
         headers: {
@@ -82,13 +82,13 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   };
 
   const handleSelectUser = (user) => {
-    setSelectedUserId(user.userId);
+    setSelectedUserId(user._id);
     console.log('Selected User:', user); // Debug log
     onSelectUser(user);
   };
 
   const handleEditUser = (user) => {
-    setSelectedUserId(user.userId);
+    setSelectedUserId(user._id);
     setFirstName(user.firstname); // Populate the form with the selected user's name
     setLastName(user.lastname); // Populate the form with the selected user's name
     setEmail(user.email);
@@ -98,9 +98,9 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     setShowForm(true); // Show the form for editing
   };
 
-  const handleDeleteClick = (userId, event) => {
+  const handleDeleteClick = (user, event) => {
     event.stopPropagation(); // Prevent row selection
-    setUserToDelete(userId); // Set tenant to delete
+    setUserToDelete(user._id); // Set tenant to delete
     setShowDeleteModal(true); // Show confirmation modal
   };
 
@@ -115,7 +115,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-      setUsers((prev) => prev.filter((user) => user.userId !== userToDelete));
+      setUsers((prev) => prev.filter((user) => user._id !== userToDelete));
       setShowDeleteModal(false); // Close modal after successful delete
       setUserToDelete(null); // Reset tenant to delete
     } catch (error) {
@@ -233,13 +233,13 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
           <tbody>
             {filteredUsers.map((user) => (
               <tr
-                key={user.userId}
-                className={selectedUserId === user.userId ? 'selected' : ''}
+                key={user._id}
+                className={selectedUserId === user._id ? 'selected' : ''}
                 onClick={() => handleSelectUser(user)}
               >
                 <td>{user.firstname}</td>
                 <td>{user.lastname}</td>
-                <td>{user.userId}</td>
+                <td>{user._id}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{formatTimestamp(user.createdAt)}</td>
@@ -260,7 +260,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteClick(user.userId, event)}
+                    onClick={(event) => handleDeleteClick(user._id, event)}
                   >
                     🗑️
                   </span>
