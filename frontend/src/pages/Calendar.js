@@ -213,6 +213,8 @@ const MyCalendar = () => {
       category: category,
       color: categoryColors[category],
       clientId: category === "Client Session" ? clientId : null,
+      userId: user.userId,
+      tenantId: user.tenantId,
     };
 
     console.log("Sending event data:", newEvent); // Debug log

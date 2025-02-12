@@ -18,7 +18,7 @@ router.get('/', protect, async (req, res) => {
 
 // POST a new event
 router.post('/', protect, async (req, res) => {
-  const { title, description, category, start, end, allDay } = req.body;
+  const { title, description, category, start, end, allDay, clientId, userId, tenantId } = req.body;
 
   console.log("Incoming event request:", req.body); // Debug log
 
@@ -29,9 +29,8 @@ router.post('/', protect, async (req, res) => {
 
   try {
     const event = new Event({
-      tenantId: req.user.tenantId,
-      userId: req.user.id,
-      // clientId,
+      tenantId,
+      userId,
       clientId: category === "Client Session" ? clientId : null,
       title,
       description,
