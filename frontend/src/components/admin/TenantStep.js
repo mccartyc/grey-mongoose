@@ -66,7 +66,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
         });
       setMessage(`Tenant updated: ${response.data.name}`);
       setTenants((prev) =>
-        prev.map((tenant) => (tenant.tenantId === selectedTenantId ? { ...tenant, name: response.data.name } : tenant))
+        prev.map((tenant) => (tenant._id === selectedTenantId ? { ...tenant, name: response.data.name } : tenant))
       );
       resetForm(); // Reset form after update
     } catch (error) {
@@ -81,21 +81,21 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   };
 
   const handleSelectTenant = (tenant) => {
-    setSelectedTenantId(tenant.tenantId);
+    setSelectedTenantId(tenant._id);
     setName(tenant.name);  // Store the selected tenant's name if you want to show it somewhere (if needed)
     onSelectTenant(tenant);
   };
 
   const handleEditTenant = (tenant) => {
-    setSelectedTenantId(tenant.tenantId);
+    setSelectedTenantId(tenant._id);
     setName(tenant.name); // Populate the form with the selected tenant's name
     setMessage(false);
     setShowForm(true); // Show the form for editing
   };
 
-  const handleDeleteClick = (tenantId, event) => {
+  const handleDeleteClick = (tenant, event) => {
     event.stopPropagation(); // Prevent row selection
-    setTenantToDelete(tenantId); // Set tenant to delete
+    setTenantToDelete(tenant._id); // Set tenant to delete
     setShowDeleteModal(true); // Show confirmation modal
   };
 
@@ -108,7 +108,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-      setTenants((prev) => prev.filter((tenant) => tenant.tenantId !== tenantToDelete));
+      setTenants((prev) => prev.filter((tenant) => tenant._id !== tenantToDelete));
       setShowDeleteModal(false); // Close modal after successful delete
       setTenantToDelete(null); // Reset tenant to delete
     } catch (error) {
@@ -215,12 +215,16 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
           </thead>
           <tbody>
             {filteredTenants.map((tenant) => (
-              <tr key={tenant.tenantId}
-                  className={selectedTenantId === tenant.tenantId ? 'selected' : ''}
+              <tr key={tenant._id}
+                  className={selectedTenantId === tenant._id ? 'selected' : ''}
                   onClick={() => handleSelectTenant(tenant)} 
+                  onDoubleClick={() => {
+                    handleSelectTenant(tenant);  // Select the tenant
+                    handleNextStep(); // Immediately move to next step
+                  }}
               >
                 <td>{tenant.name}</td>
-                <td>{tenant.tenantId}</td>
+                <td>{tenant._id}</td>
                 <td>{formatTimestamp(tenant.createdAt)}</td>
                 <td className="action-column">
                   <span
@@ -239,7 +243,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteClick(tenant.tenantId, event)}
+                    onClick={(event) => handleDeleteClick(tenant._id, event)}
                   >
                     🗑️
                   </span>

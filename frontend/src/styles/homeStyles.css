@@ -56,7 +56,7 @@ body, h1, h2, h3, p, a, ul, li {
     margin-top: 20px;
   }
   .header-container { 
-    margin-top: 25px;
+    /* margin-top: 25px; */
     display: flex; 
     justify-content: space-between;
     align-items: center; 

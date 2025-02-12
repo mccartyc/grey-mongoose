@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const clientSchema = new mongoose.Schema({
-  tenantId: {  type: String, required: true },
-  userId: {  type: String, required: true },
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Using ObjectId as the primary key
+  tenantId: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant
+  userId: {  type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true },
   clientId: { type: String, default: uuidv4, unique: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -21,7 +22,7 @@ const clientSchema = new mongoose.Schema({
 
 // Middleware to ensure tenantId and userId are valid
 clientSchema.pre('save', async function(next) {
-  const user = await mongoose.model('User').findOne({ userId: this.userId });
+  const user = await mongoose.model('User').findOne({ _id: this.userId });
   if (!user) {
     throw new Error('User not found');
   }

@@ -50,19 +50,19 @@ router.post("/", protect, async (req, res) => {
 
 /*deactivate user*/
 router.put('/:userId/deactivate', protect, async (req, res) => {
-  const { userId } = req.params;
+  const { _id } = req.params;
   try {
     const updateData = { isActive: false, deactivatedAt: new Date() };
     console.log('Update Data:', updateData); // Log the update data
 
     const user = await User.findOneAndUpdate(
-      { userId },
+      { _id },
       updateData,
       { new: true }
     );
 
     if (!user) {
-      console.log(`User with ID ${userId} not found`); // Log if tenant not found
+      console.log(`User with ID ${_id} not found`); // Log if tenant not found
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -99,19 +99,19 @@ router.get("/", protect, async (req, res) => {
 
 // Get a single user for a specific tenant and user combination
 router.get("/user", protect, async (req, res) => {
-  const { tenantId, userId } = req.query;
+  const { tenantId, _id } = req.query;
 
-  if (!tenantId || !userId) {
+  if (!tenantId || !_id) {
     console.error("Validation error: Tenant ID and User ID are required");
     return res.status(400).json({ error: "Tenant ID and User ID are required" });
   }
 
   try {
     // Find the user by tenantId and userId
-    const user = await User.findOne({ tenantId, userId, isActive: true });
+    const user = await User.findOne({ tenantId, _id, isActive: true });
     
     if (!user) {
-      console.log(`No active user found for Tenant ID: ${tenantId} and User ID: ${userId}`);
+      console.log(`No active user found for Tenant ID: ${tenantId} and User ID: ${_id}`);
       return res.status(404).json({ error: 'User not found' });
     }
 

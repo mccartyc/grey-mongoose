@@ -24,7 +24,7 @@ export const AuthContextProvider = ({ children }) => {
   const fetchUserInfo = async (token, tenantId, userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5001/api/users/user?tenantId=${tenantId}&userId=${userId}`,
+        `http://localhost:5001/api/users/user?tenantId=${tenantId}&_id=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

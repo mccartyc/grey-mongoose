@@ -29,19 +29,25 @@ const SessionPage = () => {
 
       const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
-      console.log("Selected Tenant:", tenantId);
-      console.log("Selected User:", userId);
-
       try {
+        console.log("Get Sessions for Selected Tenant:", tenantId);
+        console.log("Get Sessions for Selected User:", userId);
         const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${tenantId}&userId=${userId}&sortBy=date&order=desc`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const sortedSessions = response.data.sort((a, b) => {
-          return new Date(b.date) - new Date(a.date); // Sort by date descending
-      });
+        // Format sessions with full client name
+      const formattedSessions = response.data.map((session) => ({
+        ...session,
+        clientName: session.clientId
+          ? `${session.clientId.firstName} ${session.clientId.lastName}`
+          : "Unknown", // Handle missing client data
+      }));
+
+      // Ensure sorting by date (descending)
+      const sortedSessions = formattedSessions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       setSessions(sortedSessions);
       } catch (error) {
@@ -57,11 +63,17 @@ const SessionPage = () => {
     setSelectedSessionId(session.sessionId);
   };
 
-  const filteredSessions = sessions.filter((session) =>
-    session.clientId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    session.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    session.notes?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSessions = sessions.filter((session) => {
+      const clientName = session.clientId
+      ? `${session.clientId.firstName} ${session.clientId.lastName}`.toLowerCase()
+      : ""; // Ensure it's a string
+
+      return (
+        clientName.includes(searchTerm.toLowerCase()) || 
+        session.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        session.notes?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      });
 
   // Pagination logic
   const totalPages = Math.ceil(filteredSessions.length / ITEMS_PER_PAGE);
@@ -101,7 +113,7 @@ const SessionPage = () => {
 
       // Refresh session data
   
-      const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}`);
+      const response = await axios.get(`http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user._id}`);
       setSessions(response.data);
       setShowModal(false); // Close modal after saving
     } catch (error) {
@@ -149,7 +161,11 @@ const SessionPage = () => {
                       const [year, month, day] = session.date.split('T')[0].split('-');
                       return `${month}/${day}/${year}`;
                     })()}</td>
-                  <td>{session.clientId}</td>
+                  <td>
+                    {session.clientId
+                    ? `${session.clientId.firstName} ${session.clientId.lastName}`
+                    : "Unknown"}
+                  </td>
                   <td>{session.type}</td>
                   <td>{session.length}</td>
                   <td><button onClick={() => handleViewNotes(session)}>View Notes</button></td>

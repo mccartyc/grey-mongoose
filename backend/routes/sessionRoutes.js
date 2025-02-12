@@ -15,6 +15,7 @@ router.post("/", protect, async (req, res) => {
     length,
     type,
     notes,
+    transcript
   } = req.body;
 
   console.log("Request to create session:", {
@@ -23,8 +24,7 @@ router.post("/", protect, async (req, res) => {
     userId,
     date,
     length,
-    type,
-    notes,
+    type
   });
 
   // Check if all required fields are provided
@@ -43,6 +43,7 @@ router.post("/", protect, async (req, res) => {
       length,
       type,
       notes,
+      transcript,
     });
 
     await newSession.save();
@@ -76,7 +77,9 @@ router.get("/", protect, async (req, res) => {
       sortOptions[sortBy] = order === 'desc' ? -1 : 1; // Sort by the specified field and order
     }
 
-    const sessions = await Session.find(query).sort(sortOptions); // Include sort on query
+    const sessions = await Session.find(query)
+      .populate("clientId", "firstName lastName")
+      .sort(sortOptions); // Include sort on query
     console.log("Retrieved sessions:", sessions);
     res.status(200).json(sessions);
   } catch (error) {
