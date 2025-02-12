@@ -147,7 +147,7 @@ const CreateSessionPage = () => {
           length,
           type,
           notes,
-          transcription: finalTranscript, // Submit the finalized transcript
+          transcript: finalTranscript, // Submit the finalized transcript
           // transcriptionLog, // Include transcription log
         },
         {

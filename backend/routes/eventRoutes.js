@@ -3,8 +3,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require("mongoose");
 const { protect } = require("../middleware/authMiddleware");
-const Event = require('../models/Event');
-
+const Event = require('../models/Events');
 
 
 // GET all events for the logged-in user
@@ -21,9 +20,19 @@ router.get('/', protect, async (req, res) => {
 router.post('/', protect, async (req, res) => {
   const { title, description, category, start, end, allDay } = req.body;
 
+  console.log("Incoming event request:", req.body); // Debug log
+
+  if (!title || !start || !end || allDay === undefined) {
+    console.error("Missing required fields:", { title, start, end, allDay });
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+
   try {
     const event = new Event({
+      tenantId: req.user.tenantId,
       userId: req.user.id,
+      // clientId,
+      clientId: category === "Client Session" ? clientId : null,
       title,
       description,
       category,
@@ -33,8 +42,10 @@ router.post('/', protect, async (req, res) => {
     });
 
     await event.save();
+    console.log("Event saved:", event);
     res.status(201).json(event);
   } catch (err) {
+    console.error("Error saving event:", err.message);
     res.status(400).json({ message: err.message });
   }
 });

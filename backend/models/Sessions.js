@@ -4,13 +4,14 @@ const { v4: uuidv4 } = require('uuid');
 const sessionSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Using ObjectId as the primary key
   tenantId: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true },
-  clientId: { type: mongoose.Schema.Types.ObjectId, ref: "Clients", required: true },
+  clientId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true },
   sessionId: { type: String, default: uuidv4, unique: true },
   date: { type: Date, required: true },
   length: { type: String, required: true },
   type: { type: String, required: true },
   notes: String,
+  transcript: String,
   createdAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, required: true, default: true }
 });

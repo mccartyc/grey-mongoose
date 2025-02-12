@@ -36,24 +36,6 @@ useEffect(() => {
 
       setIsLoading(true);
 
-      console.log("Fetching sessions with", { id, tenantId: user?.tenantId, userId: user?.userId });
-
-
-      const sessions = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
-        params: {
-          tenantId: user.tenantId,
-          userId: user.userId,
-          sortBy: 'date',  // Specify the field you want to sort by
-          order: 'desc'    // Specify the sorting order, 'asc' or 'desc'
-        },
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      console.log("Client Detail Sessions:", sessions.data);
-      setSessions(sessions.data);
-
-
       const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, {
         params: {
           tenantId: user.tenantId,
@@ -69,6 +51,20 @@ useEffect(() => {
         setClient(clientResponse.data);
       // setClient(clientResponse.data);
       
+      console.log("Fetching sessions with", { id, tenantId: user?.tenantId, userId: user?.userId });
+      const sessions = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+          sortBy: 'date',  // Specify the field you want to sort by
+          order: 'desc'    // Specify the sorting order, 'asc' or 'desc'
+        },
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      console.log("Client Detail Sessions:", sessions.data);
+      setSessions(sessions.data);
 
       const upcomingResponse = await axios.get(`http://localhost:5001/api/appointments/upcoming/${id}`, {
           headers: { Authorization: `Bearer ${user.token}` },
@@ -143,14 +139,15 @@ return (
   <div className="client-detail-page">
     <div className="top-section">
       <div className="client-details">
-        <h3>Client Details</h3>
+        <h3>Detail</h3>
         <p><strong>Id:</strong> {id}</p>
         <p><strong>First Name:</strong> {client.firstName}</p>
         <p><strong>Last Name:</strong> {client.lastName}</p>
+        <p><strong>Phone:</strong> {client.phone}</p>
         <p><strong>Email:</strong> {client.email}</p>
-        <p><strong>Address:</strong> {client.streetAddress}</p>
-        <p><strong>City:</strong> {client.city}</p>
-        <p><strong>State:</strong> {client.state}</p>
+        <p><strong>Address:</strong> {client.streetAddress} {client.city}, {client.state} {client.zipcode}</p>
+        {/* <p><strong>City:</strong> {client.city}</p>
+        <p><strong>State:</strong> {client.state}</p> */}
         <p><strong>Birthday:</strong> {new Date(client.birthday).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })}</p>
         <p><strong>Gender:</strong> {client.gender}</p>
       </div>
@@ -174,7 +171,7 @@ return (
     
 
     <div className="sessions-section">
-    <h3>Session Details</h3>
+    <h3>Sessions</h3>
       <div className="header-container">
         <button onClick={() => navigate(`/clients/${id}/new-session`)} className="btn create-btn">New Session</button>
         <input

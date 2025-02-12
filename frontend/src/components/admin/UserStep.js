@@ -136,6 +136,11 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     formatTimestamp(user.createdAt).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleNextStep = () => { 
+    console.log('Selected User ID:', selectedUserId); 
+    onNext(selectedUserId); 
+  };
+
   return (
     <div className="user-step">
 
@@ -236,6 +241,10 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
                 key={user._id}
                 className={selectedUserId === user._id ? 'selected' : ''}
                 onClick={() => handleSelectUser(user)}
+                onDoubleClick={() => {
+                  handleSelectUser(user);  // Select the tenant
+                  handleNextStep(); // Immediately move to next step
+                }}
               >
                 <td>{user.firstname}</td>
                 <td>{user.lastname}</td>
@@ -273,7 +282,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
           <button className="btn create-btn" onClick={onPrevious}>
             Previous
           </button>
-          <button className="btn create-btn" onClick={onNext} disabled={!selectedUserId}>
+          <button className="btn create-btn" onClick={handleNextStep} disabled={!selectedUserId}>
             Next
           </button>
         </div>

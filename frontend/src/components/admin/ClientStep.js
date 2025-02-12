@@ -321,9 +321,6 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
               <th>Email</th>
               <th>Phone</th>
               <th>Street Address</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Zip Code</th>
               <th>Client Id</th>
               <th className="action-column">Action</th>
             </tr>
@@ -341,10 +338,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                 <td>{client.gender}</td>
                 <td>{client.email}</td>
                 <td>{client.phone}</td>
-                <td>{client.streetAddress}</td>
-                <td>{client.city}</td>
-                <td>{client.state}</td>
-                <td>{client.zipcode}</td>
+                <td>{client.streetAddress} {client.city}, {client.state} {client.zipcode}</td>
                 <td>{client._id}</td>
                 <td className="action-column">
                 <span
