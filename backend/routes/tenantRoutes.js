@@ -28,19 +28,19 @@ router.post('/', protect, async (req, res) => {
 
 //Deactivate Tenant
 router.put('/:tenantId/deactivate', protect, async (req, res) => {
-    const { tenantId } = req.params;
+    const { _id } = req.params;
     try {
       const updateData = { isActive: false, deactivatedAt: new Date() };
       console.log('Update Data:', updateData); // Log the update data
   
       const tenant = await Tenant.findOneAndUpdate(
-        { tenantId },
+        { _id },
         updateData,
         { new: true }
       );
   
       if (!tenant) {
-        console.log(`Tenant with ID ${tenantId} not found`); // Log if tenant not found
+        console.log(`Tenant with ID ${_id} not found`); // Log if tenant not found
         return res.status(404).json({ error: 'Tenant not found' });
       }
   
@@ -55,13 +55,13 @@ router.put('/:tenantId/deactivate', protect, async (req, res) => {
 
 //Update Tenant
 router.put('/:tenantId', protect, async (req, res) => {
-  const { tenantId } = req.params;
+  const { _id } = req.params;
   const { name } = req.body;
 
   try {
     // Update the tenant in the database
     const updatedTenant = await Tenant.findOneAndUpdate(
-      { tenantId }, // Assuming tenantId is a field in your schema
+      { _id }, // Assuming tenantId is a field in your schema
       { name },
       { new: true, runValidators: true } // new: return the updated doc, runValidators: ensure validators run
     );

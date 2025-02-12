@@ -8,6 +8,7 @@ const tenantRoutes = require('./routes/tenantRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const userRoutes = require('./routes/userRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 const cors = require('cors');
 require('dotenv').config(); // Load .env variables
 
@@ -42,6 +43,7 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);
 app.use('/api/debug', debugRoutes); // Prefix the route with `/api/debug`
 
 // Start the server
