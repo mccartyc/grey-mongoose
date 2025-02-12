@@ -218,6 +218,10 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
               <tr key={tenant._id}
                   className={selectedTenantId === tenant._id ? 'selected' : ''}
                   onClick={() => handleSelectTenant(tenant)} 
+                  onDoubleClick={() => {
+                    handleSelectTenant(tenant);  // Select the tenant
+                    handleNextStep(); // Immediately move to next step
+                  }}
               >
                 <td>{tenant.name}</td>
                 <td>{tenant._id}</td>
