@@ -37,8 +37,8 @@ const MyCalendar = () => {
   const [clients, setClients] = useState([]); // Store clients list
 
   const [events, setEvents] = useState([
-    { title: 'Client Session', start: '2025-01-15T10:00:00', category: 'Client Session' },
-    { title: 'Internal Meeting', start: '2025-01-16T14:30:00', category: 'Internal Meeting' },
+    { title: 'Client Session', start: '2025-02-15T10:00:00', category: 'Client Session' },
+    { title: 'Internal Meeting', start: '2025-02-13T14:30:00', category: 'Internal Meeting' },
   ]);
   const [message, setMessage] = useState('');
   // Toggle sidebar state
@@ -114,33 +114,35 @@ const MyCalendar = () => {
   }, [user]);
 
 
+  const fetchEvents = useCallback(async () => {
+    if (!user) return;
+    const { token } = user;
+  
+    try {
+      const response = await axios.get('http://localhost:5001/api/events', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const formattedEvents = response.data.map(event => ({
+        id: event._id,
+        title: event.title,
+        start: event.start,
+        end: event.end || event.start, // Default end time to start if missing
+        allDay: event.allDay,
+        color: categoryColors[event.category] || '#808080',
+      }));
+  
+      console.log("✅ Events fetched:", formattedEvents);
+      setEvents(formattedEvents); // ✅ Store events in state
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  }, [user]);
+
   useEffect(() => {
-    
-    const fetchEvents = async () => {
-      if (!user) return;
-      const { token } = user;
   
-      try {
-        const response = await axios.get('http://localhost:5001/api/events', {
-          // params: {
-          //   tenantId: user.tenantId,
-          //   userId: user.userId,
-          // },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        const formattedEvents = response.data.map(event => ({
-          ...event,
-          color: categoryColors[event.category] || '#808080',
-        }));
-  
-        setEvents(formattedEvents);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      }
-    };
   
     fetchEvents();
 
@@ -195,7 +197,7 @@ const MyCalendar = () => {
     return () => {
       calendar.destroy();
     };
-  }, []);
+  }, [fetchEvents]);
 
   const handleAddEvent = async (e) => {
     e.preventDefault();
@@ -229,6 +231,7 @@ const MyCalendar = () => {
 
     setEvents((prev) => [...prev, response.data]);
     setMessage('Event added successfully!');
+    fetchEvents();
   } catch (error) {
     console.error('Error saving event:', error);
     setMessage('Failed to save event');
