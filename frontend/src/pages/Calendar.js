@@ -11,12 +11,12 @@ import axios from 'axios';
 
 
 const categoryColors = {
-  'Client Session': '#1E90FF',
-  'Internal Meeting': '#FF4500',
-  'Preparation': '#32CD32',
-  'Out of Office': '#FFD700',
-  'Personal': '#FF69B4',
-  'Other': '#808080',
+  'Client Session': '#2563eb',    // Medium blue - primary color for client sessions
+  'Internal Meeting': '#0891b2',  // Blue-teal - complementary professional tone
+  'Preparation': '#4f46e5',       // Indigo - distinct but harmonious with blues
+  'Out of Office': '#7c3aed',     // Purple - stands out while matching theme
+  'Personal': '#6366f1',          // Blue-violet - personal but professional
+  'Other': '#64748b',            // Slate blue-gray - neutral but cohesive
 };
 
 
@@ -35,12 +35,14 @@ const MyCalendar = () => {
   const [category, setCategory] = useState('Other');
   const [clientId, setClientId] = useState(null); // Store selected client ID
   const [clients, setClients] = useState([]); // Store clients list
-
-  const [events, setEvents] = useState([
-    { title: 'Client Session', start: '2025-02-15T10:00:00', category: 'Client Session' },
-    { title: 'Internal Meeting', start: '2025-02-13T14:30:00', category: 'Internal Meeting' },
-  ]);
+  const [events, setEvents] = useState([]);
   const [message, setMessage] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [eventToDelete, setEventToDelete] = useState(null);
+
   // Toggle sidebar state
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
@@ -50,6 +52,7 @@ const MyCalendar = () => {
     const { event } = changeInfo;
   
     const updatedEvent = {
+      id:  event.id,
       title: event.title,
       start: event.start.toISOString(),
       end: event.end ? event.end.toISOString() : null,
@@ -59,7 +62,12 @@ const MyCalendar = () => {
   
     try {
       const { token } = user;
+      console.log('Outgoing event change request:', updatedEvent, ' for event:',  event.id);
       await axios.put(`http://localhost:5001/api/events/${event.id}`, updatedEvent, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -73,12 +81,21 @@ const MyCalendar = () => {
     }
   }, [user, setEvents]);
 
+
+
   const handleEventDelete = useCallback(async (eventId) => {
+
+    if (!eventToDelete) return;
+
     if (!window.confirm('Are you sure you want to delete this event?')) return;
   
     try {
       const { token } = user;
       await axios.delete(`http://localhost:5001/api/events/${eventId}`, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,6 +103,7 @@ const MyCalendar = () => {
   
       setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
       setMessage('Event deleted successfully!');
+      setShowContextMenu(false);
     } catch (error) {
       console.error('Error deleting event:', error);
       setMessage('Failed to delete event');
@@ -120,6 +138,10 @@ const MyCalendar = () => {
   
     try {
       const response = await axios.get('http://localhost:5001/api/events', {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -128,76 +150,94 @@ const MyCalendar = () => {
       const formattedEvents = response.data.map(event => ({
         id: event._id,
         title: event.title,
-        start: event.start,
-        end: event.end || event.start, // Default end time to start if missing
+        start: new Date(event.start).toISOString(),
+        end: event.end ? new Date(event.end).toISOString() : new Date(event.start).toISOString(), // Default end time to start if missing
         allDay: event.allDay,
         color: categoryColors[event.category] || '#808080',
       }));
   
-      console.log("✅ Events fetched:", formattedEvents);
-      setEvents(formattedEvents); // ✅ Store events in state
+      console.log("Events fetched:", formattedEvents);
+      setEvents(formattedEvents); // Store events in state
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   }, [user]);
+  
+
 
   useEffect(() => {
-  
-  
-    fetchEvents();
-
 
     window.scrollTo(0, 0);
 
-    const calendarEl = calendarContainerRef.current;
+    if (!user || !calendarContainerRef.current) return;
 
-    console.log("Setting up FullCalendar with custom buttons");
-    const calendar = new Calendar(calendarEl, {
-      plugins: [dayGridPlugin, interactionPlugin, timegrid],
-      initialView: 'timeGridWeek',
-      events: events.map(event => ({
-        id: event._id,
-        ...event,
-        color: categoryColors[event.category] || '#808080',
-      })),
-      editable: true, // Enable dragging and resizing
-      eventDrop: handleEventChange, // Handle event movement
-      eventResize: handleEventChange, // Handle event resizing
-      eventClick: (info) => handleEventDelete(info.event.id), // ✅ Now handleEventDelete is used
-      headerToolbar: { // Add header toolbar for navigation
-        left: 'prev,next today addEvent',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-      },
-      buttonText: {
-        today: 'Today', // This will set the button text to "Today"
-        dayGridMonth: 'Month',
-        timeGridWeek: 'Week',
-        timeGridDay: 'Day'
-      },
-      customButtons: {
-        addEvent: {
-          text: 'Add Event',
-          click: () => {
-            console.log("Add Event button clicked");
-            setShowEventForm(true)}, // Open the form when clicked
-          className: 'btn primary-btn'
+    const fetchDataAndInitializeCalendar = async () => {
+      console.log("🔍 Fetching events before initializing calendar...");
+      await fetchEvents(); // Wait for events to be fetched
+  
+      if (calendarRef.current) {
+        console.log("🔄 Updating events dynamically...");
+        calendarRef.current.removeAllEvents();
+        events.forEach(event => calendarRef.current.addEvent(event));
+        return;
+      }
+  
+      console.log("📅 Initializing FullCalendar...");
+      const calendar = new Calendar(calendarContainerRef.current, {
+        plugins: [dayGridPlugin, timegrid, interactionPlugin],
+        initialView: 'timeGridWeek',
+        editable: true,
+        eventDrop: handleEventChange,
+        eventResize: handleEventChange,
+        eventContextMenu: (info, jsEvent) => {
+          jsEvent.preventDefault();
+          setEventToDelete(info.event.id);
+          setContextMenuPosition({ x: jsEvent.pageX, y: jsEvent.pageY });
+          setShowContextMenu(true);
         },
-      },
-      height: 'auto', // Automatically set height for better responsiveness
-      // Set the height to show only one month
-      contentHeight: 'auto', // This will adapt based on the content
-      slotDuration: '00:30:00', // 30-minute time slots
-      slotMinTime: '08:00:00', // Calendar start time (8 AM)
-      slotMaxTime: '20:00:00', // Calendar end time (8 PM)
-      scrollTime: '08:00:00',
-    });
-    calendar.render();
-    calendarRef.current = calendar;
-    return () => {
-      calendar.destroy();
+        headerToolbar: {
+          left: 'prev,next today addEvent',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+          today: 'Today',
+          dayGridMonth: 'Month',
+          timeGridWeek: 'Week',
+          timeGridDay: 'Day'
+        },
+        customButtons: {
+          addEvent: {
+            text: 'Add Event',
+            click: () => setShowEventForm(true),
+            className: 'btn primary-btn'
+          },
+        },
+        height: 'auto',
+      });
+  
+      calendar.render();
+      calendarRef.current = calendar;
     };
-  }, [fetchEvents]);
+  
+    fetchDataAndInitializeCalendar();
+  
+    return () => {
+      if (calendarRef.current) {
+        calendarRef.current.destroy();
+      }
+    };
+  }, [user]); 
+
+  useEffect(() => {
+    if (!calendarRef.current) return;
+  
+    console.log("🔄 Updating events dynamically...");
+    calendarRef.current.removeAllEvents();
+    calendarRef.current.addEventSource(events);
+  }, [events]); // ✅ Now updates when `events` change
+
+
 
   const handleAddEvent = async (e) => {
     e.preventDefault();
@@ -224,6 +264,10 @@ const MyCalendar = () => {
     try {
       const { token } = user; // Ensure user authentication
       const response = await axios.post('http://localhost:5001/api/events', newEvent, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -231,7 +275,17 @@ const MyCalendar = () => {
 
     setEvents((prev) => [...prev, response.data]);
     setMessage('Event added successfully!');
-    fetchEvents();
+    if (calendarRef.current) {
+      calendarRef.current.addEvent({
+        id: response.data._id,
+        title: response.data.title,
+        start: response.data.start,
+        end: response.data.end || response.data.start,
+        allDay: response.data.allDay,
+        color: categoryColors[response.data.category] || '#808080',
+      });
+    }
+    await fetchEvents();
   } catch (error) {
     console.error('Error saving event:', error);
     setMessage('Failed to save event');
@@ -270,6 +324,21 @@ const MyCalendar = () => {
     };
   }, []);
 
+  const resetFormFields = () => {
+    setEventTitle('');
+    setEventDate('');
+    setStartTime('');
+    setEndTime('');
+    setAllDay('');
+    setCategory('');
+    setClientId('');
+  };
+
+  const handleCloseForm = () => {
+    resetFormFields(); // Clear all form fields
+    setShowEventForm(false); // Hide the form
+  };
+
   return (
     <div className={`main-content no-scroll ${collapsed ? 'collapsed' : ''}`}>
       <SideNavBar collapsed={collapsed} toggleSidebar={toggleSidebar} />
@@ -306,7 +375,7 @@ const MyCalendar = () => {
                     <label>
                       Start Time:
                       <input
-                         type="time"
+                        type="time"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
                         step="900"  // 15 minutes = 900 seconds
@@ -362,11 +431,12 @@ const MyCalendar = () => {
                 </label>
               )}
                 <div>
-                <button type="button" className="btn close-btn" onClick={() => setShowEventForm(false)}>Cancel</button>
-                <button type="submit" className="btn primary-btn">Add Event</button>
+                <button type="button" className="btn close-btn" onClick={handleCloseForm}>Cancel</button>
+                <button type="submit" className="btn primary-btn" onClick={handleCloseForm}>Add Event</button>
                 </div>
               </form>
               {message && <p>{message}</p>}
+
             </div>
           </div>
         )}

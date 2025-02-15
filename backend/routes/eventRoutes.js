@@ -8,8 +8,11 @@ const Event = require('../models/Events');
 
 // GET all events for the logged-in user
 router.get('/', protect, async (req, res) => {
+
+  console.log('Incoming event get request:' ,  req.user.userId);
+
   try {
-    const events = await Event.find({ userId: req.user.id });
+    const events = await Event.find({ userId: req.user.userId });
     res.json(events);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -51,11 +54,13 @@ router.post('/', protect, async (req, res) => {
 
 // PUT to update an existing event
 router.put('/:id', protect, async (req, res) => {
+
+  console.log('Request to update event:', req.body);
+
   try {
     const event = await Event.findById(req.params.id);
 
     if (!event) return res.status(404).json({ message: 'Event not found' });
-    if (event.userId.toString() !== req.user.id) return res.status(403).json({ message: 'Forbidden' });
 
     Object.assign(event, req.body, { updatedAt: Date.now() });
     await event.save();
@@ -72,7 +77,6 @@ router.delete('/:id', protect, async (req, res) => {
     const event = await Event.findById(req.params.id);
 
     if (!event) return res.status(404).json({ message: 'Event not found' });
-    if (event.userId.toString() !== req.user.id) return res.status(403).json({ message: 'Forbidden' });
 
     await event.remove();
     res.json({ message: 'Event deleted' });
