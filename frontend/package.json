@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -11,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "core-js": "^3.39.0",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^11.18.1",
     "fullcalendar": "^6.1.15",
     "jwt-decode": "^4.0.0",
