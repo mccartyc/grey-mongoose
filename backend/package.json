@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
@@ -18,12 +19,18 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "4.1",
     "mongoose": "^8.8.2",
     "openai": "^4.72.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "jest": "^29.7.0",
@@ -39,5 +46,5 @@
       "/tests/setup.js"
     ]
   },
-    "proxy": "http://localhost:5000"
+  "proxy": "http://localhost:5000"
 }

@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true // Enable sending cookies with cross-origin requests
 });
 
 // Request interceptor to include the access token in headers

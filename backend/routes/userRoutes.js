@@ -1,31 +1,70 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const { protect } = require("../middleware/authMiddleware");
-const User = require("../models/Users"); // Ensure this path is correct
+const { authenticateToken } = require("../middleware/authMiddleware");
+const User = require("../models/Users");
 const bcrypt = require("bcryptjs");
+const rateLimit = require('express-rate-limit');
+const { validateObjectId, sanitizeData } = require('../middleware/validation');
 
-// POST: Create a new user
-router.post("/", protect, async (req, res) => {
-  const { firstname, lastname, email, password, role, tenantId } = req.body;
+// Rate limiting for user operations
+const userLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 user operations per window
+});
 
-  console.log("Request to create user:", { firstname, lastname, email, password, role, tenantId });
+// Ensure all routes require authentication
+router.use(authenticateToken);
+router.use(sanitizeData);
 
-  // Check if all required fields are provided
-  if (!firstname || !lastname || !email || !password || !tenantId) {
-    console.error("Validation error: All fields are required");
-    return res.status(400).json({ error: "All fields are required" });
+// Validate user update data
+const validateUserUpdate = (req, res, next) => {
+  const { email, firstName, lastName, phoneNumber } = req.body;
+
+  if (email && !validateEmail(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
   }
 
+  if (phoneNumber && !validatePhone(phoneNumber)) {
+    return res.status(400).json({ error: 'Invalid phone number format' });
+  }
+
+  next();
+};
+
+// Audit logging middleware
+const auditUserAction = (action) => (req, res, next) => {
+  const log = {
+    timestamp: new Date(),
+    userId: req.user?.userId,
+    tenantId: req.user?.tenantId,
+    action,
+    targetUserId: req.params.id || req.user.userId,
+    ipAddress: req.ip,
+    userAgent: req.get('user-agent')
+  };
+  
+  console.log('User Action Audit:', JSON.stringify(log));
+  next();
+};
+
+// POST: Create a new user
+router.post("/", userLimiter, async (req, res) => {
+  const { firstname, lastname, email, password, role, tenantId } = req.body;
+
   try {
+    // Check if all required fields are provided
+    if (!firstname || !lastname || !email || !password || !tenantId) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
     // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.error("Validation error: Email already exists");
       return res.status(400).json({ error: "Email already exists" });
     }
 
-    // Hash the password before saving
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create the new user
@@ -36,10 +75,10 @@ router.post("/", protect, async (req, res) => {
       password: hashedPassword,
       role,
       tenantId,
+      isActive: true
     });
 
     await newUser.save();
-    console.log("User created successfully:", newUser);
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
@@ -47,79 +86,94 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-
-/*deactivate user*/
-router.put('/:userId/deactivate', protect, async (req, res) => {
-  const { _id } = req.params;
-  try {
-    const updateData = { isActive: false, deactivatedAt: new Date() };
-    console.log('Update Data:', updateData); // Log the update data
-
-    const user = await User.findOneAndUpdate(
-      { _id },
-      updateData,
-      { new: true }
-    );
-
-    if (!user) {
-      console.log(`User with ID ${_id} not found`); // Log if tenant not found
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    console.log('Deactivated User:', user); // Log the deactivated tenant
-    res.status(200).json(user);
-  } catch (error) {
-    console.error('Error Deactivating Tenant:', error);
-    res.status(400).json({ error: 'Failed to deactivate user' });
-  }
-});
-
-
 // Get all users for a specific tenant
-router.get("/", protect, async (req, res) => {
+router.get("/", async (req, res) => {
   const { tenantId } = req.query;
 
-  if (!tenantId) {
-    console.error("Validation error: Tenant ID is required");
-    return res.status(400).json({ error: "Tenant ID is required" });
-  }
-
   try {
+    if (!tenantId) {
+      return res.status(400).json({ error: "Tenant ID is required" });
+    }
+
+    // Validate tenantId format
+    if (!mongoose.Types.ObjectId.isValid(tenantId)) {
+      return res.status(400).json({ error: "Invalid tenant ID format" });
+    }
+
     // Filter users by tenantId and isActive field
-    console.log("User Tenant Filter:", tenantId);
-    const users = await User.find({ tenantId: tenantId, isActive: true });
-    console.log("Active users fetched successfully:", users);
+    const users = await User.find({ 
+      tenantId: mongoose.Types.ObjectId(tenantId), 
+      isActive: true 
+    }).select('-password');
+
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Server error" });
   }
-
 });
 
 // Get a single user for a specific tenant and user combination
-router.get("/user", protect, async (req, res) => {
+router.get("/user", async (req, res) => {
   const { tenantId, _id } = req.query;
 
-  if (!tenantId || !_id) {
-    console.error("Validation error: Tenant ID and User ID are required");
-    return res.status(400).json({ error: "Tenant ID and User ID are required" });
-  }
-
   try {
+    // Validate required parameters
+    if (!tenantId || !_id) {
+      return res.status(400).json({ error: "Tenant ID and User ID are required" });
+    }
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(tenantId) || !mongoose.Types.ObjectId.isValid(_id)) {
+      return res.status(400).json({ error: "Invalid ID format" });
+    }
+
     // Find the user by tenantId and userId
-    const user = await User.findOne({ tenantId, _id, isActive: true });
+    const user = await User.findOne({
+      tenantId: new mongoose.Types.ObjectId(tenantId),
+      _id: new mongoose.Types.ObjectId(_id),
+      isActive: true
+    }).select('-password');
     
     if (!user) {
-      console.log(`No active user found for Tenant ID: ${tenantId} and User ID: ${_id}`);
       return res.status(404).json({ error: 'User not found' });
     }
 
-    console.log("User fetched successfully:", user);
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
+});
+
+// Deactivate user
+router.put('/:userId/deactivate', auditUserAction('DEACTIVATE_USER'), async (req, res) => {
+  const { userId } = req.params;
+  
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user ID format" });
+    }
+
+    const updateData = { 
+      isActive: false, 
+      deactivatedAt: new Date() 
+    };
+
+    const user = await User.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(userId) },
+      updateData,
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error Deactivating User:', error);
+    res.status(500).json({ error: 'Failed to deactivate user' });
   }
 });
 

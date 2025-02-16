@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   // console.log('ProtectedRoute user state:', user);
+
+  useEffect(() => {
+    if (user) {
+      console.log('ProtectedRoute user state:', user);
+    }
+  }, [user]);
 
   if (loading) {
     // Spinner while loading
@@ -18,8 +24,6 @@ const ProtectedRoute = ({ children }) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-
-  console.log('ProtectedRoute user state:', user);
 
   // if (!loading) {
     return children;

@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
 import ClientNavBar from '../components/ClientNavBar.js';
-import NewSession from '../components/NewSession.js';
+import NewSession from '../components/sessions/NewSession.js';
 
 const NewClientSession = () => {
 
