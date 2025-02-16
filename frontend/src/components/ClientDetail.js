@@ -22,11 +22,13 @@ const ClientDetail = () => {
   const [isEditing, setIsEditing] = useState(false); // State to control editing mode
   const [isLoading, setIsLoading] = useState(true); // Spinner state
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
+
 
   const { user } = useAuth(); // Access the current user from AuthContext
 
 useEffect(() => {
-  const fetchClients = async () => {
+  const fetchClientDetails = async () => {
 
     if (!id) {
       console.error('User is not logged in or data is missing.');
@@ -35,6 +37,7 @@ useEffect(() => {
     try {
 
       setIsLoading(true);
+      setError(null);
 
       const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, {
         params: {
@@ -66,21 +69,36 @@ useEffect(() => {
       console.log("Client Detail Sessions:", sessions.data);
       setSessions(sessions.data);
 
-      const upcomingResponse = await axios.get(`http://localhost:5001/api/appointments/upcoming/${id}`, {
+      const upcomingResponse = await axios.get(`http://localhost:5001/api/events/client/${id}`, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+          sortBy: 'start',  // Specify the field you want to sort by
+          order: 'asc'    // Specify the sorting order, 'asc' or 'desc'
+        },
           headers: { Authorization: `Bearer ${user.token}` },
         });
+      console.log("Upcoming events response:", upcomingResponse.data);
       setUpcomingAppointments(upcomingResponse.data);
       // setUpcomingAppointments(null);
       // Navigate to a detail view or show session information
     } catch (error) {
       console.error("Error fetching client sessions:", error);
       // Handle the error (e.g., show a notification)
+      setError(error.response?.data?.error || 'Failed to fetch client details');
+    } finally {
       setIsLoading(false);
     }
-  }
-fetchClients();
-}, [user, id]); // Re-run the effect when the user changes
+  };
 
+  if (user && id) {
+    fetchClientDetails();
+  }
+}, [id, user]);
+
+if (error) {
+  return <div>Error: {error}</div>;
+}
 
 const handleSelectSession = (session) => {
   setSelectedSessionId(session.sessionId);

@@ -1,72 +1,60 @@
 // File: backend/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const User = require('../models/Users'); // Make sure this path is correct
-const { promisify } = require('util');
+const User = require('../models/Users'); 
 
-const verifyToken = promisify(jwt.verify);
-
-const protect = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1];
-
-  if (!token) {
-    // console.log("Incoming headers:", req.headers);
-    console.error("Authorization header missing or malformed:", authHeader, token);
-    return res.status(401).json({ message: 'Not authorized, no token' });
-  }
-
+const authenticateToken = async (req, res, next) => {
   try {
-    const decoded = await verifyToken(token, process.env.JWT_SECRET);
-    // console.log("Token decoded successfully:", decoded);
-    req.user = decoded; // Attach user data to the request object
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Authorization header must start with Bearer' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Check if user exists and is active
+    const user = await User.findOne({ 
+      _id: decoded.userId,
+      isActive: true 
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found or inactive' });
+    }
+
+    // Attach user info to request
+    req.user = {
+      userId: decoded.userId,
+      tenantId: decoded.tenantId,
+      role: decoded.role
+    };
+
     next();
   } catch (error) {
-    console.error("JWT verification failed:", error.message);
-    if (error.name === 'TokenExpiredError') {
-      // If the token is expired, call the refresh token function
-      return handleTokenRefresh(req, res, next);
+    console.error("Token verification failed:", error);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Middleware to check if user has required role
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
     }
-    res.status(401).json({ message: 'Not authorized, token failed' });
-  }
-};
-
-const handleTokenRefresh = async (req, res, next) => {
-  const refreshToken = req.cookies.refreshToken; // Assuming the refresh token is stored in cookies
-
-  if (!refreshToken) {
-    return res.status(401).json({ message: 'No refresh token provided' });
-  }
-
-  try {
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findById(payload.id);
-
-    if (!user || user.refreshToken !== refreshToken) {
-      return res.status(403).json({ message: 'Invalid refresh token' });
+    
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'Not authorized for this action' });
     }
-
-    // Generate new tokens
-    const { accessToken } = generateTokens(user); // Define generateTokens function to create new tokens
-
-    // Update the request object with the new access token
-    req.user = { ...req.user, newAccessToken: accessToken }; // Attach the new token to the request object
-    return res.status(200).json({ message: 'Token refreshed successfully', accessToken });
-  } catch (error) {
-    console.error("Error refreshing token:", error.message);
-    return res.status(403).json({ message: 'Invalid or expired refresh token' });
-  }
+    
+    next();
+  };
 };
 
-const generateTokens = (user) => {
-  // Generate new access token
-  const accessToken = jwt.sign(
-    { id: user._id, tenantId: user.tenantId, role: user.role, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRATION }
-  );
-
-  return { accessToken };
-};
-
-
-module.exports = { protect };
+module.exports = { authenticateToken, authorize };

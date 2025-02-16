@@ -1,0 +1,23 @@
+.sessions-side-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sessions-panel-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .sessions-panel-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  

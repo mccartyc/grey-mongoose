@@ -147,29 +147,61 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
 
   const handleDeleteClick = (client, event) => {
     event.stopPropagation(); // Prevent row selection
-    setClientToDelete(client._id); // Set tenant to delete
+    setClientToDelete(client); // Store the entire client object instead of just the ID
     setShowDeleteModal(true); // Show confirmation modal
   };
 
   const handleDeleteClient = async () => {
-    const { token } = user; // Get tenantId and userId from user context
+    if (!clientToDelete || !clientToDelete._id) {
+      console.error('No client selected for deletion');
+      return;
+    }
+
+    if (!selectedTenant || !selectedTenant._id) {
+      console.error('No tenant selected');
+      setMessage('Error: No tenant selected');
+      return;
+    }
+
+    const { token } = user;
 
     try {
-      await axios.put(`http://localhost:5001/api/clients/${clientToDelete}/deactivate`,
-      {},
+      console.log('Attempting to delete client:', {
+        clientId: clientToDelete._id,
+        tenantId: selectedTenant._id,
+        client: clientToDelete
+      });
+      
+      const response = await axios.put(
+        `http://localhost:5001/api/clients/${clientToDelete._id}/deactivate`,
+        {
+          tenantId: selectedTenant._id,
+          reason: 'User requested deletion'
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           },
         }
       );
-      setClients((prev) => prev.filter((client) => client._id !== clientToDelete));
-      setShowDeleteModal(false); // Close modal after successful delete
-      setClientToDelete(null); // Reset tenant to delete
+
+      console.log('Deactivation response:', response.data);
+      
+      setClients((prev) => prev.filter((client) => client._id !== clientToDelete._id));
+      setShowDeleteModal(false);
+      setClientToDelete(null);
+      setMessage('Client successfully deactivated');
+      await fetchClients(); // Refresh the client list
     } catch (error) {
       console.error('Error deleting client:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to delete client';
+      setMessage(errorMessage);
+      
+      if (error.response?.data?.details) {
+        console.error('Error details:', error.response.data.details);
+      }
     }
-    fetchClients()
   };
 
   const formatPhoneNumber = (value) => {
@@ -357,7 +389,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                     role="img"
                     aria-label="delete"
                     className="trash-icon"
-                    onClick={(event) => handleDeleteClick(client._id, event)}
+                    onClick={(event) => handleDeleteClick(client, event)}
                   >
                     🗑️
                   </span>
