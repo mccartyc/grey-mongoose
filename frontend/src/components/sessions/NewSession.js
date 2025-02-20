@@ -275,6 +275,7 @@ const NewSession = () => {
         />
 
         <SessionDetails
+          className={'form-row form-row-three-item'}
           date={date}
           length={length}
           type={type}
@@ -296,12 +297,12 @@ const NewSession = () => {
         />
 
         <div className="form-actions">
-          <button type="submit" className="submit-button" disabled={isLoading}>
+          <button type="submit" className="btn create-btn" disabled={isLoading}>
             Create Session
           </button>
           <button
             type="button"
-            className="cancel-button"
+            className="btn secondary-btn"
             onClick={() => navigate('/sessions')}
           >
             Cancel
