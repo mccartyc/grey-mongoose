@@ -32,7 +32,7 @@ const SessionDetails = ({
             onChange={(e) => onLengthChange(e.target.value)}
             required
             min="1"
-            max="300"
+            max="480"
           />
         </label>
       </div>

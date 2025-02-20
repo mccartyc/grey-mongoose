@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Session = require("../models/Sessions"); // Adjust the path as necessary
 const rateLimit = require('express-rate-limit');
+const CryptoJS = require('crypto-js');
 
 // Rate limiting for session operations
 const sessionLimiter = rateLimit({
@@ -39,8 +40,25 @@ const validateSessionData = (req, res, next) => {
   }
 
   // Validate duration (in minutes)
-  if (!Number.isInteger(length) || length <= 0 || length > 480) {
-    return res.status(400).json({ error: 'Invalid session duration' });
+  const sessionLength = parseInt(length, 10);
+  if (isNaN(sessionLength) || sessionLength <= 0 || sessionLength > 480) {
+    return res.status(400).json({ error: 'Session duration must be between 1 and 480 minutes' });
+  }
+  // Convert length to number for storage
+  req.body.length = sessionLength;
+
+  // Decrypt transcript if present
+  if (req.body.transcript) {
+    try {
+      const decryptedTranscript = CryptoJS.AES.decrypt(
+        req.body.transcript,
+        process.env.ENCRYPTION_KEY
+      ).toString(CryptoJS.enc.Utf8);
+      req.body.transcript = decryptedTranscript;
+    } catch (error) {
+      console.error('Error decrypting transcript:', error);
+      return res.status(400).json({ error: 'Invalid transcript format' });
+    }
   }
 
   next();
@@ -101,10 +119,13 @@ router.post("/", sessionLimiter, validateSessionData, auditSessionAction('CREATE
 
     await newSession.save();
     console.log("Session created successfully:", newSession);
+    
+    // Only send back non-sensitive data
     res.status(201).json({
       _id: newSession._id,
       date: newSession.date,
-      type: newSession.type
+      type: newSession.type,
+      length: newSession.length
     });
   } catch (error) {
     console.error("Error creating session:", error);
@@ -129,6 +150,18 @@ router.get("/", auditSessionAction('VIEW_SESSIONS'), async (req, res) => {
   try {
     // Base query for sessions
     const query = { tenantId, userId, isActive: true }; 
+    
+    // Helper function to encrypt transcript
+    const encryptTranscript = (session) => {
+      const data = session.toObject();
+      if (data.transcript) {
+        data.transcript = CryptoJS.AES.encrypt(
+          data.transcript,
+          process.env.ENCRYPTION_KEY
+        ).toString();
+      }
+      return data;
+    };
     
     // Determine sorting
     const sortOptions = {};
@@ -172,7 +205,8 @@ router.get("/client/:clientId", auditSessionAction('VIEW_CLIENT_SESSIONS'), asyn
       sortOptions[sortBy] = order === 'desc' ? -1 : 1; // Sort by the specified field and order
     }
 
-    const sessions = await Session.find(query).sort(sortOptions); // Apply sorting on query
+    const sessions = await Session.find(query).sort(sortOptions);
+    const encryptedSessions = sessions.map(encryptTranscript); // Apply sorting on query
 
     if (sessions.length === 0) {
       console.log("No sessions found for this client.");
