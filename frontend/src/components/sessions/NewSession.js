@@ -7,6 +7,7 @@ import ClientSelector from './ClientSelector';
 import SessionDetails from './SessionDetails';
 import TranscriptSection from './TranscriptSection';
 import NotesEditor from './NotesEditor';
+import CryptoJS from 'crypto-js';
 import '../../styles/Transcript.css';
 
 const NewSession = () => {
@@ -26,6 +27,8 @@ const NewSession = () => {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptBoxContent, setTranscriptBoxContent] = useState('');
   const [transcriptText, setTranscriptText] = useState('');
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -54,13 +57,82 @@ const NewSession = () => {
 
   const handleStartTranscript = async () => {
     try {
+      const now = new Date();
+      setStartTime(now);
       setIsTranscribing(true);
-      setTranscriptBoxContent('Transcription started...\n');
-      await startTranscript();
+      setTranscriptBoxContent(`Session started at ${now.toLocaleTimeString()}: `);
+      
+      // Initialize speech recognition
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      // Configure recognition settings
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      // Store recognition instance for later cleanup
+      window.recognition = recognition;
+      
+      // Handle results
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          let transcript = event.results[i][0].transcript;
+          
+          // Capitalize first letter if it's the start of a sentence
+          if (i === 0 || transcript.match(/^[a-z]/) && event.results[i-1]?.isFinal) {
+            transcript = transcript.charAt(0).toUpperCase() + transcript.slice(1);
+          }
+          
+          // Add punctuation if it's a final result and doesn't end with punctuation
+          if (event.results[i].isFinal) {
+            if (!transcript.match(/[.!?]$/)) {
+              transcript += '.';
+            }
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        // Update transcript with final results
+        if (finalTranscript) {
+          setTranscriptBoxContent(prev => {
+            // Remove extra spaces and format properly
+            const formattedTranscript = finalTranscript.replace(/\s+/g, ' ').trim();
+            return prev + (prev && !prev.endsWith(' ') ? ' ' : '') + formattedTranscript;
+          });
+          setTranscriptText(prev => {
+            const formattedTranscript = finalTranscript.replace(/\s+/g, ' ').trim();
+            return prev + (prev && !prev.endsWith(' ') ? ' ' : '') + formattedTranscript;
+          });
+        }
+      };
+      
+      // Handle errors
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setMessage(`Transcription error: ${event.error}`);
+      };
+      
+      // Start recognition
+      recognition.start();
+      
+      // Store session info
+      window.sessionStorage.setItem('recognition', JSON.stringify({ 
+        active: true,
+        startTime: now.toISOString()
+      }));
+      
       setMessage('Transcription started successfully');
     } catch (error) {
-      setMessage('Failed to start transcription');
+      console.error('Transcription start error:', error);
+      setMessage('Failed to start transcription. Please check microphone permissions.');
       setIsTranscribing(false);
+      setStartTime(null);
     }
   };
 
@@ -68,16 +140,78 @@ const NewSession = () => {
     if (!isTranscribing) return;
     
     try {
-      const response = await stopTranscript();
-      if (response.transcript) {
-        setTranscriptBoxContent(prev => prev + response.transcript);
-        setTranscriptText(response.transcript);
-        setMessage('Transcription completed successfully');
+      const now = new Date();
+      setEndTime(now);
+      
+      // Stop speech recognition if it exists
+      if (window.recognition) {
+        window.recognition.stop();
+        window.recognition = null;
       }
-    } catch (error) {
-      setMessage('Failed to stop transcription');
-    } finally {
+      
+      // Clean up
+      window.sessionStorage.removeItem('recognition');
       setIsTranscribing(false);
+      
+      // Append end time to transcript
+      setTranscriptBoxContent(prev => 
+        `${prev} (Session ended at ${now.toLocaleTimeString()})`);
+      
+      setMessage('Transcription completed');
+      
+    } catch (error) {
+      console.error('Transcription stop error:', error);
+      setMessage('Failed to stop transcription');
+      setIsTranscribing(false);
+      setEndTime(null);
+    }
+  };
+
+  const handleAudioTranscription = async (audioBlob) => {
+    try {
+      // Convert audio blob to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      
+      reader.onloadend = async () => {
+        const base64Audio = reader.result.split(',')[1];
+        
+        // Encrypt audio data before transmission
+        const encryptedAudio = CryptoJS.AES.encrypt(
+          base64Audio,
+          process.env.REACT_APP_ENCRYPTION_KEY
+        ).toString();
+        
+        // Send to backend for Anthropic processing
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/transcribe`,
+          { 
+            audioData: encryptedAudio,
+            tenantId: user.tenantId,
+            sessionId: id || 'new'
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (response.data.transcript) {
+          const decryptedTranscript = CryptoJS.AES.decrypt(
+            response.data.transcript,
+            process.env.REACT_APP_ENCRYPTION_KEY
+          ).toString(CryptoJS.enc.Utf8);
+          
+          setTranscriptBoxContent(prev => prev + decryptedTranscript);
+          setTranscriptText(decryptedTranscript);
+          setMessage('Transcription completed successfully');
+        }
+      };
+    } catch (error) {
+      console.error('Audio transcription error:', error);
+      setMessage('Failed to process transcription');
     }
   };
 
@@ -97,6 +231,8 @@ const NewSession = () => {
         type,
         notes,
         transcript: transcriptText,
+        transcriptStartTime: startTime?.toISOString(),
+        transcriptEndTime: endTime?.toISOString(),
       });
 
       setMessage('Session created successfully');

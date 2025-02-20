@@ -17,6 +17,7 @@ const userRoutes = require('./routes/userRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const transcriptRoutes = require('./routes/transcriptRoutes');
+const transcribeRoutes = require('./routes/transcribe');
 const encryptionMiddleware = require('./middleware/encryption');
 
 const app = express();
@@ -44,9 +45,9 @@ app.use(cors(corsOptions));
 // Handle preflight requests
 app.options('*', cors(corsOptions));
 
-// Body parsing middleware
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// Body parsing middleware with increased limits for audio data
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // Session configuration
@@ -89,6 +90,7 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/transcripts', transcriptRoutes);
+app.use('/api/transcribe', transcribeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/debug', debugRoutes);
 
