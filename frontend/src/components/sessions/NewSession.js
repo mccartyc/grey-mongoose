@@ -20,7 +20,7 @@ const NewSession = () => {
   const [filteredClients, setFilteredClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [length, setLength] = useState('');
+  const [length, setLength] = useState('60');  // Default to 60 minutes
   const [type, setType] = useState('');
   const [notes, setNotes] = useState('');
   const [message, setMessage] = useState('');
@@ -223,21 +223,39 @@ const NewSession = () => {
       return;
     }
 
+    // Validate length
+    const sessionLength = parseInt(length, 10);
+    if (isNaN(sessionLength) || sessionLength < 1 || sessionLength > 480) {
+      setMessage('Session length must be between 1 and 480 minutes.');
+      return;
+    }
+
     try {
+      // Format the date to ensure it's a valid ISO string
+      const formattedDate = new Date(date).toISOString();
+      
+      // Ensure transcript text is a string and encrypt it
+      const formattedTranscript = transcriptText || '';
+      const encryptedTranscript = CryptoJS.AES.encrypt(
+        formattedTranscript,
+        process.env.REACT_APP_ENCRYPTION_KEY
+      ).toString();
+      
       await createSession({
         clientId: selectedClientId,
-        date,
-        length,
+        date: formattedDate,
+        length: sessionLength.toString(),
         type,
-        notes,
-        transcript: transcriptText,
-        transcriptStartTime: startTime?.toISOString(),
-        transcriptEndTime: endTime?.toISOString(),
+        notes: notes || '',
+        transcript: encryptedTranscript,
+        transcriptStartTime: startTime?.toISOString() || null,
+        transcriptEndTime: endTime?.toISOString() || null,
       });
 
       setMessage('Session created successfully');
       navigate('/sessions');
     } catch (error) {
+      console.error('Session creation error:', error.response?.data);
       setMessage(error.response?.data?.error || 'Failed to create session');
     }
   };
