@@ -151,18 +151,6 @@ router.get("/", auditSessionAction('VIEW_SESSIONS'), async (req, res) => {
     // Base query for sessions
     const query = { tenantId, userId, isActive: true }; 
     
-    // Helper function to encrypt transcript
-    const encryptTranscript = (session) => {
-      const data = session.toObject();
-      if (data.transcript) {
-        data.transcript = CryptoJS.AES.encrypt(
-          data.transcript,
-          process.env.ENCRYPTION_KEY
-        ).toString();
-      }
-      return data;
-    };
-    
     // Determine sorting
     const sortOptions = {};
     if (sortBy) {
@@ -206,15 +194,26 @@ router.get("/client/:clientId", auditSessionAction('VIEW_CLIENT_SESSIONS'), asyn
     }
 
     const sessions = await Session.find(query).sort(sortOptions);
-    const encryptedSessions = sessions.map(encryptTranscript); // Apply sorting on query
+    
+    // Convert sessions to plain objects and encrypt transcripts
+    const processedSessions = sessions.map(session => {
+      const data = session.toObject();
+      if (data.transcript) {
+        data.transcript = CryptoJS.AES.encrypt(
+          data.transcript,
+          process.env.ENCRYPTION_KEY
+        ).toString();
+      }
+      return data;
+    });
 
-    if (sessions.length === 0) {
+    if (processedSessions.length === 0) {
       console.log("No sessions found for this client.");
       return res.status(404).json({ error: "No sessions found" });
     }
 
-    console.log("Retrieved client sessions:", sessions);
-    res.status(200).json(sessions);
+    console.log("Retrieved client sessions:", processedSessions);
+    res.status(200).json(processedSessions);
   } catch (error) {
     console.error("Error retrieving client sessions:", error);
     res.status(500).json({ 

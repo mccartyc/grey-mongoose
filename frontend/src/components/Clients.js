@@ -30,22 +30,17 @@ const ClientPage = () => {
 
   useEffect(() => {
     const fetchClients = async () => {
-
-      if (!user) {
+      if (!user?.tenantId || !user?.userId || !user?.token) {
         console.error('User is not logged in or data is missing.');
         return;
       }
-      const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
+      const { tenantId, userId, token } = user;
 
       try {
-        setIsLoading(true); // Start loading
-        console.log("User Info:", user);
-        console.log("Selected Tenant:", tenantId);
-        console.log("Selected User:", userId);
-
+        setIsLoading(true);
         const response = await axios.get(
-            `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
+          `http://localhost:5001/api/clients?tenantId=${tenantId}&userId=${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -57,12 +52,12 @@ const ClientPage = () => {
         console.error('Error fetching clients:', error);
         setMessage('Failed to load clients.');
       } finally {
-        setIsLoading(false); // Stop loading after fetching
+        setIsLoading(false);
       }
     };
 
     fetchClients();
-  }, [user]); // Re-run the effect when the user changes
+  }, [user?.tenantId, user?.userId]); // Only re-run when tenant or user ID changes
 
   const handleRowDoubleClick = (clientId, firstName, lastName) => {
     console.log('Double Click Client:', clientId, firstName, lastName);

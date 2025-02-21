@@ -35,14 +35,24 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-
-      await login({ email, password });  // Just pass email and password
+      await login({ email, password });
       setFormData({ email: "", password: "" });
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.response?.data?.error || "Failed to login. Please try again.");
+      setError(error.message || "Failed to login. Please try again.");
+      
+      // If it's a rate limit error, disable the form for a short time
+      if (error.message.includes('Too many login attempts')) {
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          setError('');
+        }, 30000); // Wait 30 seconds before allowing another attempt
+      }
     } finally {
-      setIsLoading(false);
+      if (!error?.message?.includes('Too many login attempts')) {
+        setIsLoading(false);
+      }
     }
   };
 
