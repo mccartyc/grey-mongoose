@@ -130,7 +130,6 @@ export const AuthContextProvider = ({ children }) => {
       };
 
       localStorage.setItem('accessToken', token);
-      // setUser(authData);
 
       const userInfoData = await fetchUserInfo(
         token,
@@ -147,7 +146,14 @@ export const AuthContextProvider = ({ children }) => {
     } catch (error) {
       console.error('Login error:', error);
       clearAuthData();
-      throw error;
+      
+      if (error.response?.status === 429) {
+        throw new Error('Too many login attempts. Please wait a few minutes and try again.');
+      } else if (error.response?.data?.error) {
+        throw new Error(error.response.data.error);
+      } else {
+        throw new Error('Failed to login. Please try again.');
+      }
     }
   };
 
