@@ -2,7 +2,7 @@
 import React, {useEffect} from 'react';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
-import NewSession from '../components/NewSession';
+import NewSession from '../components/sessions/NewSession';
 
 const SessionList = () => {
   useEffect(() => {

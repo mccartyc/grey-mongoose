@@ -12,6 +12,8 @@ const sessionSchema = new mongoose.Schema({
   type: { type: String, required: true },
   notes: String,
   transcript: String,
+  transcriptStartTime: { type: Date },
+  transcriptEndTime: { type: Date },
   createdAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, required: true, default: true }
 });

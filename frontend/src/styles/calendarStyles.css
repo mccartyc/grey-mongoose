@@ -1,203 +1,461 @@
-/* FullCalendar Styles */
-
-body.no-scroll { 
-    overflow: hidden; /* Disable main window scrolling */ 
-    margin: 0;
-  }
-  
-  .calendar-container {
-    max-height: 100%;
-    overflow-y: auto;
-    overflow: hidden; /* Prevent overflow */
-    position: relative;
-    height: 100%; /*Set a fixed height for the calendar*/
-    margin-top: 20px; /* Add spacing above the calendar */
-    /* margin-bottom: 20px; Add spacing above the calendar */
-    padding-left: 20px; /*Add padding for better spacing*/
-    padding-right: 20px; /*Add padding for better spacing*/
-    padding-top: 20px; /*Add padding for better spacing*/
-    border-radius: 8px; /* Rounded corners */
-    background-color: #fff; /* Background color matching other sections */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    max-width: 100%; /* Ensure calendar does not overflow */
-    width: 100%; /* Ensures the calendar takes full width of its container */
-  }
-  
-  .calendar-container .fc-timegrid-body {
-    overflow-y: auto;
-    max-height: 700px; /* Adjust height to allow scrolling within the time grid */
-  }
-
-    /* Header styles within FullCalendar */
-  .fc-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    border-radius: 8px 8px 0 0;
-  }
-
-  /* Header Title */
-  .fc-toolbar-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #012d56;
-  }
-
-  /* Add hover effect */
-.fc-prev-button:hover,
-.fc-next-button:hover,
-.fc-today-button:hover,
-.fc-addEvent-button:hover,
-.fc-dayGridMonth-button:hover,
-.fc-timeGridDay-button:hover,
-.fc-timeGridWeek-button:hover
- {
-  background-color: #0066cc !important;
-}
-
-.fc-prev-button,
-.fc-next-button,
-.fc-today-button,
-.fc-addEvent-button,
-.fc-dayGridMonth-button,
-.fc-timeGridDay-button,
-.fc-timeGridWeek-button
- {
-  background-color: #012d56 !important;
-  color: #fff !important;
-  border: none !important;
-}
-
-
-  .fc .fc-day-today 
-  .fc-daygrid-day-frame { 
-    background-color: #fff; 
-  }
-  
-  .fc .fc-day-today
-  .fc-timegrid-col-frame { 
-    flex-grow: 1; /* Ensure the highlight covers the entire column */ 
-    background-color: #fff;
-  }
-  
-  .fc-timegrid-slots,
-  .fc-scrollgrid-sync-inner { 
-    overflow-y: auto !important; /* Ensure the time slots are scrollable */ 
-    overflow-x: hidden;
-  } 
-
-  /* Calendar Table */
-.fc-scrollgrid {
-  border: 1px solid #ddd;
+/* FullCalendar Container */
+.calendar-container {
+  position: relative;
+  height: calc(100vh - 100px);
+  margin: 10px;
+  padding: 15px;
   border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-.fc-daygrid-day {
-  font-size: 14px;
-  text-align: center;
-  padding: 5px;
+/* FullCalendar Base */
+.fc {
+  height: 100% !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
-  
-  .calendar-container .fc-timegrid-header {
-    position: sticky;
-    top: 0;
-    background-color: white; /* Ensure headers are distinguishable */
-    z-index: 2;
-  }
-  
-  /* Force the calendar to fit the available height */
-  .fc {
-    height: 100%; /* Take full height of the container */
-  }
-  
-  .fc-daygrid-view {
-    height: auto; /* Adjust the height based on the view */
-  }
 
-  /* Time Grid Event */
-  .fc-timegrid-event {
-    background-color: #012d56;
-    color: white;
-    border-radius: 4px;
-    border: none;
-  }
+/* Calendar Header */
+.fc-header-toolbar {
+  padding: 0.75rem !important;
+  margin-bottom: 1rem !important;
+  border-bottom: 1px solid #eee;
+}
 
-  /* Today Highlight */
-  .fc-day-today {
-    background-color: #e1f0ff;
-  }
+/* Time Grid */
+.fc-timegrid {
+  height: calc(100% - 40px) !important;
+}
 
-  /* Weekend Days */
-  .fc-day-sat,
-  .fc-day-sun {
-    background-color: #f8f9fa;
-  }
+.fc-timegrid-body {
+  height: 100% !important;
+}
 
-  
-  .fc-toolbar button {
-    background-color: #012d56; /* Matching your theme */
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .fc-toolbar button:hover {
-    background-color: #7AB2D3; /* Hover effect  */
-  }
+.fc-timegrid-body .fc-scroller {
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+}
 
-  .fc-button-primary:hover {
-    background-color: #7AB2D3; /* Hover effect  */
-  }
-  
-  /* Additional FullCalendar Styles for better visuals */
-  .fc-daygrid-event {
-    background-color: #7AB2D3; /* Event background */
-    color: white; /* Event text color */
-    border-radius: 4px; /* Rounded events */
-  }
-  
-  /* Ensure that when not in a specific month, the calendar is still properly sized */
-  @media (max-width: 768px) {
-    .calendar-container {
-      padding: 10px; /* Adjusted padding for smaller screens */
-    }
-  }
-  
-  .calendar-container {
-    width: 100%; /* Ensure it takes the full width */
-    height: calc(100vh - 100px); /* Dynamically set height if needed */
-    min-height: 600px; /* Minimum height for usability */
-  }
+/* Time Grid Slots */
+.fc-timegrid-slots {
+  height: auto !important;
+}
 
-  /* Event Styling */
+.fc-timegrid-slot {
+  height: 12px !important;
+  border-bottom: 1px solid #eee !important;
+}
+
+.fc-timegrid-slot.fc-timegrid-slot-lane {
+  border-bottom: 1px solid #ddd !important;
+}
+
+.fc-timegrid-slot.fc-timegrid-slot-minor {
+  border-bottom-color: #f5f5f5 !important;
+}
+
+/* Time Grid Columns */
+.fc-timegrid-col {
+  min-height: 100% !important;
+  border-right: 1px solid #eee !important;
+}
+
+.fc-timegrid-col-frame {
+  min-height: 100% !important;
+}
+
+/* Time Labels */
+.fc-timegrid-axis {
+  width: 70px !important;
+  font-size: 0.75rem !important;
+  color: #666;
+}
+
+.fc-timegrid-slot-label {
+  font-size: 0.75rem !important;
+  color: #666;
+  vertical-align: middle !important;
+}
+
+/* Calendar Header */
+.fc-toolbar {
+  padding: 0.75rem !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid #eee;
+}
+
+.fc-toolbar-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: #012d56 !important;
+}
+
+/* Calendar Buttons */
+.fc-button {
+  height: 32px !important;
+  padding: 0 0.75rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  border: none !important;
+  background-color: #012d56 !important;
+  color: white !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.fc-button:hover {
+  background-color: #0066cc !important;
+}
+
+.fc-button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.fc-button-active {
+  background-color: #0066cc !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Button Group */
+.fc-button-group {
+  gap: 2px !important;
+}
+
+.fc-button-group .fc-button {
+  border-radius: 4px !important;
+  margin: 0 1px !important;
+}
+
+/* Add Event Button */
+.fc-addEvent-button {
+  background-color: #28a745 !important;
+}
+
+.fc-addEvent-button:hover {
+  background-color: #218838 !important;
+}
+
+
+/* Calendar Grid */
+.fc-scrollgrid {
+  border: none !important;
+}
+
+.fc-scrollgrid-section > * {
+  border: 1px solid #eee !important;
+}
+
+/* Day Headers */
+.fc-col-header-cell {
+  padding: 0.75rem 0 !important;
+  font-weight: 600 !important;
+  background-color: #f8f9fa !important;
+  border-color: #eee !important;
+}
+
+/* Today Column */
+.fc-day-today {
+  background-color: #f0f9ff !important;
+}
+
+.fc-day-today .fc-timegrid-col-frame {
+  background-color: #f0f9ff !important;
+}
+
+/* Time Slots */
+.fc-timegrid-slot {
+  height: 40px !important;
+  border-bottom: 1px solid #eee !important;
+}
+
+.fc-timegrid-slot-label {
+  font-size: 0.75rem !important;
+  color: #666 !important;
+}
+
+/* Events */
 .fc-event {
-  background-color: #012d56;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
+  border: none !important;
+  border-radius: 2px !important;
+  padding: 0 3px !important;
+  font-size: 0.75rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  margin: 0 !important;
+  min-height: 12px !important;
+  line-height: 12px !important;
 }
 
-/* .fc-event:hover {
-  background-color: #0066cc;
-} */
+.fc-event:hover {
+  transform: scale(1.02) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
 
-  /*Events*/
-  .event-form {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #fff; /* Ensure a consistent background */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.fc-event-main {
+  padding: 0 3px !important;
+}
+
+/* Time Grid Events */
+.fc-timegrid-event {
+  border-radius: 2px !important;
+  border: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  margin: 0 !important;
+  min-height: 12px !important;
+}
+
+.fc-timegrid-event .fc-event-main {
+  padding: 0 3px !important;
+  min-height: 12px !important;
+  line-height: 12px !important;
+}
+
+.fc-timegrid-event:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Event Colors by Category */
+.fc-event[data-category='Client Session'] {
+  background-color: #2563eb !important;
+}
+
+.fc-event[data-category='Internal Meeting'] {
+  background-color: #0891b2 !important;
+}
+
+.fc-event[data-category='Preparation'] {
+  background-color: #4f46e5 !important;
+}
+
+.fc-event[data-category='Out of Office'] {
+  background-color: #7c3aed !important;
+}
+
+.fc-event[data-category='Personal'] {
+  background-color: #6366f1 !important;
+}
+
+.fc-event[data-category='Other'] {
+  background-color: #64748b !important;
+}
+
+/* Weekend Days */
+.fc-day-sat,
+.fc-day-sun {
+  background-color: #fafafa !important;
+}
+
+/* Today Column */
+.fc-day-today {
+  background-color: #f0f9ff !important;
+}
+
+.fc-day-today .fc-timegrid-col-frame {
+  background-color: #f0f9ff !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .calendar-container {
+    margin: 10px;
+    padding: 10px;
+    height: calc(100vh - 80px);
   }
+
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.25rem !important;
+  }
+
+  .fc-button {
+    padding: 0 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Event Form and Details Modal */
+.popup-form {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #012d56;
+}
+
+.modal-content {
+  padding: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Form Elements */
+.popup-form input,
+.popup-form select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.popup-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: auto;
+  margin: 0;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primary-btn {
+  background-color: #012d56;
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: #0066cc;
+}
+
+.secondary-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.secondary-btn:hover {
+  background-color: #5a6268;
+}
+
+.danger-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.danger-btn:hover {
+  background-color: #c82333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+/* Event Details */
+.event-details-modal .modal-content p {
+  margin: 0.5rem 0;
+}
+
+.event-notes {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+/* Messages */
+.message {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Loading State */
+.calendar-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Scrollbars */
+.fc-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: #012d56 #f0f0f0;
+}
+
+.fc-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background-color: #012d56;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
+}
   
   .event-form label {
     display: block;

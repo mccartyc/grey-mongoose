@@ -12,10 +12,8 @@ const Admin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    // Scroll to the top of the page when the component is mounted
     window.scrollTo(0, 0);
-  }, []); // Empty dependency array ensures this runs only once on mount
-
+  }, []); 
 
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);
@@ -25,20 +23,31 @@ const Admin = () => {
     setStep((prevStep) => prevStep - 1);
   };
 
+  const handleSelectTenant = (tenant) => {
+    setSelectedTenant(tenant);
+  };
+
+  const handleSelectUser = (user) => {
+    setSelectedUser(user);
+  };
+
   const renderStepComponent = () => {
     switch (step) {
       case 1:
-        return <TenantStep onNext={handleNextStep} onSelectTenant={setSelectedTenant} />;
+        return <TenantStep onNext={handleNextStep} onSelectTenant={handleSelectTenant} />;
       case 2:
+        if (!selectedTenant) return null;
         return (
           <UserStep
+            key={selectedTenant._id}
             selectedTenant={selectedTenant}
             onNext={handleNextStep}
             onPrevious={handlePreviousStep}
-            onSelectUser={setSelectedUser}
+            onSelectUser={handleSelectUser}
           />
         );
       case 3:
+        if (!selectedTenant || !selectedUser) return null;
         return (
           <ClientStep
             onPrevious={handlePreviousStep}
@@ -47,7 +56,7 @@ const Admin = () => {
           />
         );
       default:
-        return <TenantStep onNext={handleNextStep} onSelectTenant={setSelectedTenant} />;
+        return <TenantStep onNext={handleNextStep} onSelectTenant={handleSelectTenant} />;
     }
   };
 
