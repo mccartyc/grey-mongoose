@@ -176,3 +176,46 @@ router.get('/metrics', async (req, res) => {
 });
 
 module.exports = router;
+            isActive: true,
+            date: { $lte: now }
+          }
+        },
+        {
+          $sort: { date: -1 }
+        },
+        {
+          $limit: 5
+        },
+        {
+          $lookup: {
+            from: 'clients',
+            localField: 'clientId',
+            foreignField: '_id',
+            as: 'client'
+          }
+        },
+        {
+          $project: {
+            date: 1,
+            type: 1,
+            clientName: { $concat: [{ $arrayElemAt: ['$client.firstName', 0] }, ' ', { $arrayElemAt: ['$client.lastName', 0] }] }
+          }
+        }
+      ])
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard metrics:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+      userId: req.user?.userId,
+      tenantId: req.user?.tenantId
+    });
+    res.status(500).json({ 
+      error: 'Failed to fetch dashboard metrics',
+      details: error.message
+    });
+  }
+});
+
+module.exports = router;

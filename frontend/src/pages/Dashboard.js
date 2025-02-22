@@ -109,12 +109,12 @@ const Dashboard = () => {
     datasets: [{
       data: metrics?.sessionTypes.map(type => type.count) || [],
       backgroundColor: [
-        '#3498db',
-        '#2ecc71',
-        '#e74c3c',
-        '#f1c40f',
-        '#9b59b6',
-        '#1abc9c'
+        '#012d56',
+        '#174E81',
+        '#3B75AC',
+        '#6DA3D6',
+        '#ADD7FF',
+        '#D7ECFF'
       ]
     }]
   };
@@ -159,49 +159,52 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="charts-grid">
-            <div className="chart-card">
-              <h3>Client Growth</h3>
-              <Line data={clientGrowthData} options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    display: false
-                  }
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    ticks: {
-                      stepSize: 1
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(73, 39, 74, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ fontSize: '0.875rem', color: '#49274A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(73, 39, 74, 0.1)' }}>Client Growth</h3>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Line data={clientGrowthData} options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: { stepSize: 1 }
                     }
                   }
-                }
-              }} />
+                }} />
+              </div>
             </div>
 
-            <div className="chart-card">
-              <h3>Session Types Distribution</h3>
-              <Pie data={sessionTypesData} options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'bottom'
+            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(73, 39, 74, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ fontSize: '0.875rem', color: '#49274A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(73, 39, 74, 0.1)' }}>Session Types</h3>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Pie data={sessionTypesData} options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                      labels: { boxWidth: 12, padding: 15, font: { size: 11 } }
+                    }
                   }
-                }
-              }} />
+                }} />
+              </div>
             </div>
 
-            <div className="chart-card">
-              <h3>Recent Sessions</h3>
-              <div className="recent-sessions">
+            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(73, 39, 74, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ fontSize: '0.875rem', color: '#49274A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(73, 39, 74, 0.1)' }}>Recent Sessions</h3>
+              <div style={{ flex: 1, overflowY: 'auto' }}>
                 {metrics.recentSessions?.length > 0 ? (
                   metrics.recentSessions.map((session, index) => (
-                    <div key={index} className="recent-session-item">
-                      <div className="session-client">{session.clientName}</div>
-                      <div className="session-details">
-                        <span className="session-type">{session.type}</span>
-                        <span className="session-date">
+                    <div key={index} style={{ padding: '8px', borderRadius: '6px', marginBottom: '8px', background: 'rgba(73, 39, 74, 0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#49274A' }}>{session.clientName}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ background: 'rgba(73, 39, 74, 0.1)', color: '#49274A', padding: '2px 6px', borderRadius: '12px', fontSize: '0.6875rem', fontWeight: 500 }}>{session.type}</span>
+                        <span style={{ color: '#666', fontSize: '0.6875rem' }}>
                           {new Date(session.date).toLocaleDateString(undefined, {
                             month: 'short',
                             day: 'numeric',
@@ -213,7 +216,7 @@ const Dashboard = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="no-sessions-message">
+                  <div style={{ textAlign: 'center', padding: '16px', color: '#666', fontSize: '0.8125rem' }}>
                     No recent sessions found
                   </div>
                 )}
