@@ -18,6 +18,7 @@ const sessionRoutes = require('./routes/sessionRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const transcriptRoutes = require('./routes/transcriptRoutes');
 const transcribeRoutes = require('./routes/transcribe');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const encryptionMiddleware = require('./middleware/encryption');
 
 const app = express();
@@ -31,7 +32,7 @@ app.use(helmet({
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: true, // Allow all origins in development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -83,6 +84,12 @@ app.use(encryptionMiddleware);
 // Connect to MongoDB
 connectDB();
 
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tenants', tenantRoutes);
@@ -93,6 +100,11 @@ app.use('/api/transcripts', transcriptRoutes);
 app.use('/api/transcribe', transcribeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/debug', debugRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+
+// Debug: Log all registered routes
+const listEndpoints = require('express-list-endpoints');
+console.log('Registered Routes:', JSON.stringify(listEndpoints(app), null, 2));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

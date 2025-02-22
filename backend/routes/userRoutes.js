@@ -102,7 +102,7 @@ router.get("/", async (req, res) => {
 
     // Filter users by tenantId and isActive field
     const users = await User.find({ 
-      tenantId: mongoose.Types.ObjectId(tenantId), 
+      tenantId: tenantId, 
       isActive: true 
     }).select('-password');
 
