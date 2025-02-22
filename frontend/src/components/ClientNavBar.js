@@ -9,12 +9,8 @@ const ClientNavBar = () => {
   const location = useLocation();
 
   if (!id) {
-    console.error('Error: No client ID found in URL.');
-    console.log('ClientNavBar: useParams id:', id);
     return <div>Client ID is missing. Please refresh the page.</div>;
-  } else {
-    console.log('ClientNavBar: useParams id:', id);
-  };
+  }
 
   // Define navigation links
   const links = [
@@ -41,4 +37,4 @@ const ClientNavBar = () => {
   );
 };
 
-export default ClientNavBar;
+export default React.memo(ClientNavBar);

@@ -9,6 +9,7 @@
 @import './intakeFormStyles.css';
 @import './spinnerStyles.css';
 @import './paginationStyles.css';
+@import './sessionStyles.css';
 
 /* General */
 body, h1, h2, h3, p, a, ul, li {
