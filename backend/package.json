@@ -31,7 +31,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "4.1",
     "mongoose": "^8.8.2",
+    "nodemailer": "^6.10.0",
     "openai": "^4.72.0",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
+    "twilio": "^5.4.5",
     "uuid": "^11.0.3",
     "xss-clean": "^0.1.4"
   },

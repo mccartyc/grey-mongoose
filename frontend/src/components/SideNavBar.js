@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-import { FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard, FaCog } from 'react-icons/fa';
 import '../styles/styles.css';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 import mindcloudLogo from '../assets/mindcloud_white.png';
@@ -93,6 +93,12 @@ const SideNavBar = () => {
       </ul>
       <div className="bottom-links">
         <ul className="nav-links">
+          <li>
+            <NavLink to="/settings" className={({ isActive }) => isActive ? "active-link" : ""}>
+              <FaCog className="nav-icon" />
+              {!collapsed && <span className="nav-text">Settings</span>}
+            </NavLink>
+          </li>
           <li>
             <NavLink to="/admin" className={({ isActive }) => isActive ? "active-link" : ""}>
               <FaUserCog className="nav-icon" />
