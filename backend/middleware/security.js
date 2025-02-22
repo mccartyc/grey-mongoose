@@ -4,11 +4,18 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const xss = require('xss-clean');
 
-// Rate limiting
-const limiter = rateLimit({
+// Rate limiting for general API endpoints
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
+});
+
+// More lenient rate limiting for authentication endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // Higher limit for auth endpoints
+  message: 'Too many authentication attempts. Please try again later.'
 });
 
 // Session configuration for secure cookies
@@ -107,8 +114,15 @@ module.exports = {
     // Prevent XSS attacks
     app.use(xss());
     
-    // Rate limiting
-    app.use('/api/', limiter);
+    // Rate limiting - exclude auth endpoints from strict limiting
+    app.use('/api/auth/', authLimiter);
+    app.use('/api/', (req, res, next) => {
+      // Skip API rate limiting for auth routes
+      if (req.path.startsWith('/auth/')) {
+        return next();
+      }
+      apiLimiter(req, res, next);
+    });
     
     // Audit logging
     app.use(auditLog);

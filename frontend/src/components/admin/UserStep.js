@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext'; // Import AuthContext
 
@@ -20,27 +20,27 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
   const { user } = useAuth(); // Access the current user from AuthContext
 
-  useEffect(() => {
-    if (selectedTenant) {
-      console.log("Selected Tenant in UserStep:", selectedTenant._id); // Debug log
-      const { token } = user; // Get tenantId and userId from user context
-      const fetchUsers = async () => {
-        try {
-          const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant._id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-          setUsers(response.data);
-        } catch (error) {
-          console.error('Error fetching users:', error);
-        }
-      };
+  const fetchInProgress = useRef(false);
 
-      fetchUsers();
-    }
-  }, [selectedTenant, user]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!selectedTenant?._id || !user?.token) return;
+      
+      try {
+        const response = await axios.get(`http://localhost:5001/api/users?tenantId=${selectedTenant._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [selectedTenant?._id, user?.token]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
