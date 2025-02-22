@@ -128,7 +128,13 @@ const Dashboard = () => {
             <h1>Dashboard</h1>
           </div>
 
-          <div className="metrics-grid">
+          {/* Top Row - Key Metrics */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '24px',
+            marginBottom: '32px'
+          }}>
             <div className="metric-card">
               <h3>Total Clients</h3>
               <div className="metric-value">{formatNumber(metrics.totalClients || 0)}</div>
@@ -159,6 +165,7 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Bottom Row - Charts */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '24px' }}>
             <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(73, 39, 74, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
               <h3 style={{ fontSize: '0.875rem', color: '#49274A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(73, 39, 74, 0.1)' }}>Client Growth</h3>

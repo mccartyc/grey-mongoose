@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-// import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../context/AuthContext";
+import api from '../services/apiService';
 import "../styles/styles.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
+    mfaCode: ""
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [requireMFA, setRequireMFA] = useState(false);
+  const [mfaMethod, setMfaMethod] = useState("");
   const { login } = useAuth();
 
   const handleChange = (e) => {
@@ -21,13 +23,34 @@ const Login = () => {
     }));
   };
 
+  const handleGenerateMFA = async () => {
+    try {
+      const response = await api.post('/api/mfa/generate', {
+        email: formData.email
+      });
+
+      const { method, message } = response.data;
+      setMfaMethod(method);
+      setError(''); // Clear any previous errors
+      setRequireMFA(true);
+    } catch (err) {
+      console.error('Error generating MFA code:', err);
+      setError(err.response?.data?.message || 'Failed to generate MFA code');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
 
-    const { email, password } = formData;
+    const { email, password, mfaCode } = formData;
     if (!email || !password) {
       setError("Please provide both email and password");
+      return;
+    }
+
+    if (requireMFA && !mfaCode) {
+      setError("Please enter the MFA code");
       return;
     }
 
@@ -35,19 +58,34 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await login({ email, password });
-      setFormData({ email: "", password: "" });
+      const response = await login({ email, password, mfaCode });
+      
+      if (response?.requireMFA) {
+        setRequireMFA(true);
+        setMfaMethod(response.method);
+        if (response.method !== 'authenticator') {
+          await handleGenerateMFA();
+        }
+        setError(response.message || 'Please enter your MFA code');
+        setIsLoading(false);
+        return;
+      }
+
+      // Successful login
+      setFormData({ email: "", password: "", mfaCode: "" });
+      setRequireMFA(false);
+      setMfaMethod("");
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || "Failed to login. Please try again.");
+      setError(error.response?.data?.message || error.message || "Failed to login. Please try again.");
       
       // If it's a rate limit error, disable the form for a short time
-      if (error.message.includes('Too many login attempts')) {
+      if (error.message?.includes('Too many login attempts')) {
         setIsLoading(true);
         setTimeout(() => {
           setIsLoading(false);
           setError('');
-        }, 30000); // Wait 30 seconds before allowing another attempt
+        }, 30000);
       }
     } finally {
       if (!error?.message?.includes('Too many login attempts')) {
@@ -60,6 +98,15 @@ const Login = () => {
     <div className="form-container">
       <h1 className="form-title">Welcome Back</h1>
       <p className="form-subtitle">Login to your MindCloud account</p>
+      
+      {requireMFA && (
+        <div className="info-message">
+          {mfaMethod === 'authenticator' 
+            ? 'Please enter the code from your authenticator app'
+            : `Please enter the code sent to your ${mfaMethod}`
+          }
+        </div>
+      )}
       
       {error && (
         <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>

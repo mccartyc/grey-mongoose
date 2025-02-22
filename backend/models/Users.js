@@ -13,7 +13,14 @@ const userSchema = new mongoose.Schema({
   tenantId: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant
   refreshToken: { type: String }, // Store the latest refresh token
   createdAt: { type: Date, default: Date.now },
-  isActive: { type: Boolean, required: true, default: true } // Field to indicate if user is active
+  isActive: { type: Boolean, required: true, default: true }, // Field to indicate if user is active
+  mfaEnabled: { type: Boolean, default: false },
+  mfaMethod: { type: String, enum: ["sms", "email", "authenticator"], default: "email" },
+  mfaPhone: { type: String },
+  mfaSecret: { type: String }, // TOTP secret for authenticator app
+  mfaTempSecret: { type: String }, // For storing temporary verification codes
+  mfaTempSecretExpiry: { type: Date }, // Expiry time for temporary codes
+  mfaBackupCodes: [{ type: String }] // Backup codes for account recovery
 });
 
 
