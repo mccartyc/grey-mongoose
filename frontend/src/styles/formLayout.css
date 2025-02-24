@@ -1,0 +1,65 @@
+.form-row-group {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.form-row-group.top-row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.form-row-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.form-row-item.date-selector {
+  flex: 0 0 160px;
+  min-width: 160px;
+}
+
+.form-row-item.client-selector {
+  flex: 1 1 400px;
+  min-width: 300px;
+}
+
+.form-row-item.type-selector {
+  flex: 0 0 180px;
+  min-width: 180px;
+}
+
+.form-row-item.length-selector {
+  flex: 0 0 150px;
+  min-width: 150px;
+}
+
+.form-row-item label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.form-row-item input,
+.form-row-item select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-row-group {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .form-row-item,
+  .form-row-item.client-selector {
+    flex: none;
+    width: 100%;
+    min-width: auto;
+  }
+}

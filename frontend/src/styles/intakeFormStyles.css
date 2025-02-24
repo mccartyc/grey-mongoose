@@ -109,8 +109,4 @@ select:focus {
     font-size: 13px;
   }
 
-  .btn.primary-btn {
-    width: 100%;
-    font-size: 14px;
-  }
 }
