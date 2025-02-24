@@ -17,22 +17,27 @@ const TranscriptSection = ({
   };
 
   return (
-    <div className="form-row transcript-section">
-      <div className="transcript-controls">
-        <button 
-          type="button" 
-          onClick={handleTranscriptAction}
-          className={`transcript-button ${isTranscribing ? 'recording' : ''}`}
-        >
-          {isTranscribing ? 'Stop Transcript' : 'Start Transcript'}
-        </button>
-      </div>
-      
-      <div className="transcript-box">
-        <h4>Session Transcript:</h4>
-        <div className="transcript-content">
-          {transcriptBoxContent}
+    <div>
+      <div>
+        <label className="client-label new-session-label">
+        Transcript:
+        </label>
+        <div className="transcript-controls">
+          <button 
+            type="button" 
+            onClick={handleTranscriptAction}
+            className={`btn primary-btn ${isTranscribing ? 'recording' : ''}`}
+          >
+            {isTranscribing ? 'Stop Transcript' : 'Start Transcript'}
+          </button>
         </div>
+      </div>
+
+      <div className="form-row transcript-box">
+          <h4>Session Transcript:</h4>
+          <div className="transcript-content">
+            {transcriptBoxContent}
+          </div>
       </div>
     </div>
   );

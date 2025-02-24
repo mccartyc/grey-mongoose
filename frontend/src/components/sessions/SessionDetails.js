@@ -10,34 +10,8 @@ const SessionDetails = ({
   onTypeChange 
 }) => {
   return (
-    <>
-      <div className="form-row">
-        <label className="date-label new-session-label">
-          Date:
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => onDateChange(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-
-      <div className="form-row">
-        <label className="length-label new-session-label">
-          Length (minutes):
-          <input
-            type="number"
-            value={length}
-            onChange={(e) => onLengthChange(e.target.value)}
-            required
-            min="1"
-            max="480"
-          />
-        </label>
-      </div>
-
-      <div className="form-row">
+    <div className="form-row-group">
+      <div className="form-row-item type-selector">
         <label className="type-label new-session-label">
           Type:
           <select
@@ -55,7 +29,21 @@ const SessionDetails = ({
           </select>
         </label>
       </div>
-    </>
+
+      <div className="form-row-item length-selector">
+        <label className="length-label new-session-label">
+          Length (minutes):
+          <input
+            type="number"
+            value={length}
+            onChange={(e) => onLengthChange(e.target.value)}
+            required
+            min="1"
+            max="480"
+          />
+        </label>
+      </div>
+    </div>
   );
 };
 

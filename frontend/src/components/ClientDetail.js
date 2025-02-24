@@ -155,7 +155,6 @@ return (
       </div>
     </div>
 
-    <div className="sessions-section">
       <SessionList
         sessions={sessions}
         onSessionUpdate={handleSessionUpdate}
@@ -163,7 +162,6 @@ return (
         clientId={id}
       />
       {message && <p className="message error">{message}</p>}
-    </div>
   </div>
 );
 };
