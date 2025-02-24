@@ -17,6 +17,7 @@ import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
 import NewSession from './pages/NewSession';
+import Settings from './pages/Settings';
 
 const App = () => (
 
@@ -43,6 +44,14 @@ const App = () => (
           element={
             <ProtectedRoute>
               <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

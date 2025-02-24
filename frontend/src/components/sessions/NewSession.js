@@ -9,6 +9,8 @@ import TranscriptSection from './TranscriptSection';
 import NotesEditor from './NotesEditor';
 import CryptoJS from 'crypto-js';
 import '../../styles/Transcript.css';
+import '../../styles/formLayout.css';
+import '../../styles/sectionStyles.css';
 
 const NewSession = () => {
   const { id } = useParams();
@@ -262,27 +264,66 @@ const NewSession = () => {
 
   return (
     <div className="sessions-section">
-      <h3>New Session</h3>
+      <h3 className="section-title">New Session</h3>
       {message && <p className={`message ${error ? 'error' : 'success'}`}>{message}</p>}
       {isLoading && <div className="loading-spinner">Loading...</div>}
       
       <form className="form-group" onSubmit={handleCreateSession} autoComplete="off">
-        <ClientSelector
-          selectedClientId={selectedClientId}
-          filteredClients={filteredClients}
-          onClientSelect={setSelectedClientId}
-          disabled={!!id}
-        />
+        <div className="form-row-group top-row">
+          <div className="form-row-item date-selector">
+            <label className="date-label new-session-label">
+              Date:
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </label>
+          </div>
 
-        <SessionDetails
-          className={'form-row form-row-three-item'}
-          date={date}
-          length={length}
-          type={type}
-          onDateChange={setDate}
-          onLengthChange={setLength}
-          onTypeChange={setType}
-        />
+          <div className="form-row-item client-selector">
+            <ClientSelector
+              selectedClientId={selectedClientId}
+              filteredClients={filteredClients}
+              onClientSelect={setSelectedClientId}
+              disabled={!!id}
+            />
+          </div>
+
+          <div className="form-row-item type-selector">
+            <label className="type-label new-session-label">
+              Type:
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                required
+              >
+                <option value="">Select Type</option>
+                <option value="In Person">In Person</option>
+                <option value="Phone">Phone</option>
+                <option value="Virtual">Virtual</option>
+                <option value="Text">Text</option>
+                <option value="Email">Email</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="form-row-item length-selector">
+            <label className="length-label new-session-label">
+              Length (minutes):
+              <input
+                type="number"
+                value={length}
+                onChange={(e) => setLength(e.target.value)}
+                required
+                min="1"
+                max="480"
+              />
+            </label>
+          </div>
+        </div>
 
         <NotesEditor
           notes={notes}
@@ -297,16 +338,18 @@ const NewSession = () => {
         />
 
         <div className="form-actions">
-          <button type="submit" className="btn create-btn" disabled={isLoading}>
-            Create Session
-          </button>
-          <button
-            type="button"
-            className="btn secondary-btn"
-            onClick={() => navigate('/sessions')}
-          >
-            Cancel
-          </button>
+          <div className="button-container">
+            <button
+              type="button"
+              className="btn secondary-btn"
+              onClick={() => navigate('/sessions')}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn create-btn" disabled={isLoading}>
+              Create Session
+            </button>
+          </div>
         </div>
       </form>
     </div>

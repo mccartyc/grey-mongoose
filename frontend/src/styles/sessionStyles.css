@@ -28,18 +28,6 @@
   color: var(--text-color-dark, #2c3e50);
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text-color, #666);
-  padding: 0.5rem;
-}
-
-.close-btn:hover {
-  color: var(--text-color-dark, #333);
-}
 
 .session-info {
   padding: 1rem 1.5rem;
@@ -91,32 +79,3 @@
   background: var(--bg-color-light, #f8f9fa);
   border-top: 1px solid var(--border-color, #e0e0e0);
 }
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.primary-btn {
-  background-color: var(--primary-color, #4CAF50);
-  color: white;
-}
-
-.primary-btn:hover {
-  background-color: var(--primary-color-dark, #388E3C);
-}
-
-.secondary-btn {
-  background-color: var(--bg-color-light, #f8f9fa);
-  color: var(--text-color, #2c3e50);
-  border: 1px solid var(--border-color, #e0e0e0);
-}
-
-.secondary-btn:hover {
-  background-color: var(--bg-color-lighter, #f1f3f5);
-}
-  
