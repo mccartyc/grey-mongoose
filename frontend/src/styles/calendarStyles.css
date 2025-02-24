@@ -342,56 +342,6 @@
   margin: 0;
 }
 
-/* Buttons */
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.primary-btn {
-  background-color: #012d56;
-  color: white;
-}
-
-.primary-btn:hover {
-  background-color: #0066cc;
-}
-
-.secondary-btn {
-  background-color: #6c757d;
-  color: white;
-}
-
-.secondary-btn:hover {
-  background-color: #5a6268;
-}
-
-.danger-btn {
-  background-color: #dc3545;
-  color: white;
-}
-
-.danger-btn:hover {
-  background-color: #c82333;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-}
-
-.close-btn:hover {
-  color: #333;
-}
 
 /* Event Details */
 .event-details-modal .modal-content p {

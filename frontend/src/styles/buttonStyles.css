@@ -1,13 +1,16 @@
 /* Modern Button Styling */
 .btn {
   padding: 12px 20px;
-  background-color: #012d56;
   color: white;
   border: none;
   border-radius: 6px;
+  height: 38px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
@@ -38,6 +41,16 @@
   color: #012d56;
 }
 
+
+.danger-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.danger-btn:hover {
+  background-color: #c82333;
+}
+
 .button-container {
   display: flex;
   justify-content: space-between;
@@ -46,14 +59,11 @@
 
 .create-btn {
   display: inline-block;
-  padding: 12px 20px;
-  margin-bottom: 20px;
   background-color: #012d56;
   color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }

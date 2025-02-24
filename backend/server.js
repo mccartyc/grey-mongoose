@@ -19,6 +19,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const transcriptRoutes = require('./routes/transcriptRoutes');
 const transcribeRoutes = require('./routes/transcribe');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const mfaRoutes = require('./routes/mfaRoutes');
 const encryptionMiddleware = require('./middleware/encryption');
 
 const app = express();
@@ -101,6 +102,7 @@ app.use('/api/transcribe', transcribeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/debug', debugRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/mfa', mfaRoutes);
 
 // Debug: Log all registered routes
 const listEndpoints = require('express-list-endpoints');

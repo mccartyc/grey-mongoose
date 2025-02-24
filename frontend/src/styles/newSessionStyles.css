@@ -65,19 +65,7 @@
   #toolbar button {
     margin-left: 5px; /* Spacing between toolbar buttons */
   }
-  
-  
-  .form-group {
-    display: flex; /* Use flex for a column layout */
-    flex-direction: column; /* Stack form elements vertically */
-    gap: 20px; /* Space between form elements */
-  }
-  
-  .form-row {
-    display: flex; /* Use flex to create a row layout */
-    align-items: center; /* Center items vertically */
-    gap: 40px; /* Space between inputs */
-  }
+
   
   .new-session-label {
     display: flex;

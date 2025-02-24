@@ -112,11 +112,16 @@ export const AuthContextProvider = ({ children }) => {
     loadUser();
   }, [loadUser]);
 
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password, mfaCode }) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token, user: userData } = response.data;
+      const response = await api.post('/auth/login', { email, password, mfaCode });
       
+      // Check if MFA is required
+      if (response.data.requireMFA) {
+        return response.data;
+      }
+      
+      const { token, user: userData } = response.data;
       if (!token) {
         throw new Error('No token received from server');
       }

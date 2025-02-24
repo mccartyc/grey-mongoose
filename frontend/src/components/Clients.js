@@ -213,7 +213,7 @@ const ClientPage = () => {
                   </label>
                 </div>
                 <div className="button-container">
-                  <button onClick={() => setShowForm(false)} className="btn close-btn">Close</button>
+                  <button onClick={() => setShowForm(false)} className="btn secondary-btn">Close</button>
                   <button type="submit" className="btn primary-btn">Create Client</button>
                 </div>
               </form>
@@ -231,7 +231,7 @@ const ClientPage = () => {
               <th>Phone</th>
               <th>City</th>
               <th>State</th>
-              <th className="action-column">Action</th>
+              {/* <th className="action-column">Action</th> */}
             </tr>
           </thead>
           <tbody>
@@ -248,7 +248,7 @@ const ClientPage = () => {
                 <td>{client.phone}</td>
                 <td>{client.city}</td>
                 <td>{client.state}</td>
-                <td className="action-column">
+                {/* <td className="action-column">
                   <span
                     role="img"
                     aria-label="New Session"
@@ -256,8 +256,8 @@ const ClientPage = () => {
                     // onClick={(event) => handleNewSessionClient(client._id, event)}
                   >
                     <FaPlus/>
-                  </span>
-                </td>
+                  </span> */}
+                {/* </td> */}
               </tr>
             ))}
           </tbody>
