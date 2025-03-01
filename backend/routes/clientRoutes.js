@@ -117,11 +117,7 @@ router.post("/",
 
     await newClient.save();
     console.log("Client created successfully:", newClient);
-    res.status(201).json({
-      _id: newClient._id,
-      firstName: newClient.firstName,
-      lastName: newClient.lastName
-    });
+    res.status(201).json(newClient);
   } catch (error) {
     console.error("Error creating client:", error);
     res.status(500).json({ 

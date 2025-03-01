@@ -133,6 +133,23 @@
     z-index: 1001;
 }
 
+.login-form {
+    width: 100%;
+}
+
+.login-form input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form .login-form {
+    width: 100%;
+}
+
+.form .btn {
+    width: 100%;
+    box-sizing: border-box;
+}
 
 .popup-form .form-row,
 .popup-form .form-row-three-item {

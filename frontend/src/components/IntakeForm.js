@@ -11,6 +11,9 @@ const IntakeForm = () => {
   const navigate = useNavigate(); // Use navigate hook
   const [client, setClient] = useState({});
   const [isLoading, setIsLoading] = useState(true); // Spinner state
+  const [isSubmitting, setIsSubmitting] = useState(false); // Form submission state
+  const [submitSuccess, setSubmitSuccess] = useState(false); // Form submission success state
+  const [submitError, setSubmitError] = useState(''); // Form submission error
 
   const [formData, setFormData] = useState({
     // fullName: '',
@@ -58,6 +61,29 @@ const IntakeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Reset submission states
+    setSubmitError('');
+    setIsSubmitting(true);
+    
+    // Validate required fields
+    if (!formData.referralInfo.source) {
+      setSubmitError('Please select a referral source');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.presentingConcerns.concerns) {
+      setSubmitError('Please describe your presenting concerns');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.consent) {
+      setSubmitError('You must consent to the collection of this information');
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -70,10 +96,18 @@ const IntakeForm = () => {
         }
       );
       console.log("Intake form submitted:", response.data);
-      // Navigate to a confirmation page or back to client detail
-      navigate(`/clients/${id}`);
+      setSubmitSuccess(true);
+      
+      // Show success message for 2 seconds before navigating
+      setTimeout(() => {
+        // Navigate to the client detail page
+        navigate(`/clients/${id}/overview`);
+      }, 2000);
     } catch (error) {
       console.error('Error submitting intake form:', error);
+      setSubmitError(error.response?.data?.error || 'Failed to submit intake form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
