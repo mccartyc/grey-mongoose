@@ -189,7 +189,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
 
       <div className={`content-container ${showForm ? 'blur-background' : ''} ${showDeleteModal ? 'blur-background' : ''}`}>
         <div className="header-container">
-          <h2>Select or Create Tenant</h2>
+          <h2 className="section-heading">Select or Create Tenant</h2>
           <div className="right-button-container">
             <input
               type="text"

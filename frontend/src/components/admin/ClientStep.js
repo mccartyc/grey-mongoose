@@ -331,7 +331,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
 
       <div className={`content-container ${showForm ? 'blur-background' : ''}`}>
         <div className="header-container">
-          <h2>Select or Create Client</h2>
+          <h2 className="section-heading">Select or Create Client</h2>
           <div className="right-button-container">
             <input
               type="text"

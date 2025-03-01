@@ -11,6 +11,7 @@
 @import './paginationStyles.css';
 @import './sessionStyles.css';
 @import './settingsStyles.css';
+@import './headingStyles.css';
 
 /* CSS Variables */
 :root {

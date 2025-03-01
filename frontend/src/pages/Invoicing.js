@@ -13,7 +13,7 @@ const Invoicing = () => {
      <div className="main-content">
         <SideNavBar />
         <div className="content-area">
-          <h1>Invoicing</h1>
+          <h1 className="page-heading">Invoicing</h1>
           <p>Welcome to your Invoicing! Use the side navigation to access different sections.</p>
         </div>
       </div>

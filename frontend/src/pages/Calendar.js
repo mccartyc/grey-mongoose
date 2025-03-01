@@ -343,7 +343,7 @@ const MyCalendar = () => {
     <div className={`main-content no-scroll ${collapsed ? 'collapsed' : ''}`}>
       <SideNavBar collapsed={collapsed} toggleSidebar={toggleSidebar} />
       <div className="content-area">
-        <h1>Calendar</h1>
+        <h1 className="page-heading">Calendar</h1>
         <div ref={calendarContainerRef} id="calendar" className="calendar-container"></div>
 
         {/* Modal for adding events */}

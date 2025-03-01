@@ -77,7 +77,6 @@ const Dashboard = () => {
           <div className="dashboard-container">
             <div className="dashboard-header">
               <h1>Dashboard</h1>
-              <p>There was an issue loading your metrics</p>
             </div>
             <div className="error-message">
               <p>{error}</p>
