@@ -17,7 +17,7 @@ const SessionList = () => {
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
-          <h1>Sessions</h1>
+          <h1 className="page-heading">Sessions</h1>
             <Sessions />
         </div>
       </div>

@@ -64,6 +64,7 @@ const Admin = () => {
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
+          <h1 className="page-heading">Admin Panel</h1>
           <div className="progress-bar">
             <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>1. Tenant</div>
             <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>2. User</div>

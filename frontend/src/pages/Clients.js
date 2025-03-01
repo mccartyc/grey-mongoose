@@ -16,7 +16,7 @@ const ClientList = () => {
       <div className="main-content">
         <SideNavBar />
         <div className="content-area">
-          <h1>Clients</h1>
+          <h1 className="page-heading">Clients</h1>
           <Clients />
         </div>
       </div>

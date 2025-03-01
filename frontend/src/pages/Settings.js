@@ -9,7 +9,7 @@ const Settings = () => {
       <SideNavBar />
       <div className="content-area">
         <div className="dashboard-header">
-          <h1>Account Settings</h1>
+          <h1 className="page-heading">Account Settings</h1>
           <p>Manage your account preferences and security settings</p>
         </div>
         

@@ -292,6 +292,8 @@
 .client-nav-bar {
   position: -webkit-sticky; /* For Safari */
   position: sticky;
+  display: flex;
+  align-items: center;
 }
 
 

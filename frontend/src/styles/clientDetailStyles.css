@@ -74,6 +74,9 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    width: 100%;
+    border-bottom: 2px solid var(--surface-dark, #0F172A);
+    padding-bottom: 10px;
     /*
     position: -webkit-sticky; 
     position: sticky;

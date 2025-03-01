@@ -211,7 +211,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
 
       <div className={`content-container ${showForm ? 'blur-background' : ''}`}>
         <div className="header-container">
-          <h2>Select or Create User</h2>
+          <h2 className="section-heading">Select or Create User</h2>
           <div className="right-button-container">
             <input
               type="text"
