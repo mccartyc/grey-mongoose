@@ -75,7 +75,7 @@ a {
 
 /* Adjust Content When Sidebar is Collapsed */
 .content-area {
-  margin-left: 285px;
+  margin-left: 300px;
   transition: margin-left 0.3s ease;
   flex: 1;
   padding: 20px;
