@@ -2,9 +2,9 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css'; // Ensure styles are imported
-import { Calendar } from '@fullcalendar/core';
+import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timegrid from '@fullcalendar/timegrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // Required for event interaction
 import { useAuth } from '../context/AuthContext'; // Import auth context
 import axios from 'axios';
@@ -166,76 +166,36 @@ const MyCalendar = () => {
 
 
   useEffect(() => {
-
     window.scrollTo(0, 0);
 
-    if (!user || !calendarContainerRef.current) return;
+    if (!user) return;
 
-    const fetchDataAndInitializeCalendar = async () => {
-      console.log("🔍 Fetching events before initializing calendar...");
-      await fetchEvents(); // Wait for events to be fetched
-  
-      if (calendarRef.current) {
-        console.log("🔄 Updating events dynamically...");
-        calendarRef.current.removeAllEvents();
-        events.forEach(event => calendarRef.current.addEvent(event));
-        return;
-      }
-  
-      console.log("📅 Initializing FullCalendar...");
-      const calendar = new Calendar(calendarContainerRef.current, {
-        plugins: [dayGridPlugin, timegrid, interactionPlugin],
-        initialView: 'timeGridWeek',
-        editable: true,
-        eventDrop: handleEventChange,
-        eventResize: handleEventChange,
-        eventContextMenu: (info, jsEvent) => {
-          jsEvent.preventDefault();
-          setEventToDelete(info.event.id);
-          setContextMenuPosition({ x: jsEvent.pageX, y: jsEvent.pageY });
-          setShowContextMenu(true);
-        },
-        headerToolbar: {
-          left: 'prev,next today addEvent',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        buttonText: {
-          today: 'Today',
-          dayGridMonth: 'Month',
-          timeGridWeek: 'Week',
-          timeGridDay: 'Day'
-        },
-        customButtons: {
-          addEvent: {
-            text: 'Add Event',
-            click: () => setShowEventForm(true),
-            className: 'btn primary-btn'
-          },
-        },
-        height: 'auto',
-      });
-  
-      calendar.render();
-      calendarRef.current = calendar;
+    const fetchData = async () => {
+      console.log("🔍 Fetching events and clients...");
+      await Promise.all([fetchEvents(), fetchClients()]); 
     };
-  
-    fetchDataAndInitializeCalendar();
-  
-    return () => {
-      if (calendarRef.current) {
-        calendarRef.current.destroy();
-      }
-    };
-  }, [user]); 
 
-  useEffect(() => {
-    if (!calendarRef.current) return;
-  
-    console.log("🔄 Updating events dynamically...");
-    calendarRef.current.removeAllEvents();
-    calendarRef.current.addEventSource(events);
-  }, [events]); // ✅ Now updates when `events` change
+    fetchData();
+  }, [user, fetchEvents, fetchClients]);
+
+  // Handle calendar events
+  const handleEventDrop = useCallback((info) => {
+    handleEventChange(info);
+  }, [handleEventChange]);
+
+  const handleEventResize = useCallback((info) => {
+    handleEventChange(info);
+  }, [handleEventChange]);
+
+  const handleDateClick = useCallback((info) => {
+    setEventDate(info.dateStr);
+    setShowEventForm(true);
+  }, []);
+
+  const handleEventClick = useCallback((info) => {
+    console.log('Event clicked:', info.event);
+    // You can implement event details view here
+  }, []);
 
 
 
@@ -344,7 +304,39 @@ const MyCalendar = () => {
       <SideNavBar collapsed={collapsed} toggleSidebar={toggleSidebar} />
       <div className="content-area">
         <h1 className="page-heading">Calendar</h1>
-        <div ref={calendarContainerRef} id="calendar" className="calendar-container"></div>
+        <div className="calendar-container">
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="timeGridWeek"
+            headerToolbar={{
+              left: 'prev,next today addEvent',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            }}
+            customButtons={{
+              addEvent: {
+                text: 'Add Event',
+                click: () => setShowEventForm(true)
+              }
+            }}
+            events={events}
+            editable={true}
+            selectable={true}
+            selectMirror={true}
+            dayMaxEvents={true}
+            eventDrop={handleEventDrop}
+            eventResize={handleEventResize}
+            dateClick={handleDateClick}
+            eventClick={handleEventClick}
+            height="auto"
+            allDaySlot={true}
+            slotDuration="00:30:00"
+            slotMinTime="06:00:00"
+            slotMaxTime="22:00:00"
+            scrollTime="08:00:00"
+            expandRows={true}
+          />
+        </div>
 
         {/* Modal for adding events */}
         {showEventForm && (
