@@ -115,7 +115,7 @@ const Login = () => {
       )}
 
       <form className="form" onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-group login-form">
           <input
             type="email"
             id="email"
@@ -127,7 +127,7 @@ const Login = () => {
             required
           />
         </div>
-        <div className="form-group">
+        <div className="form-group login-form">
           <input
             type="password"
             id="password"

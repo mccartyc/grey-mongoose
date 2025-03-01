@@ -23,10 +23,158 @@ const ClientPage = () => {
   const [state, setState] = useState('');
   const [zipcode, setZipcode] = useState('');
   const [isLoading, setIsLoading] = useState(true); // Loading state for the spinner
+  
+  // US States array for dropdown
+  const usStates = [
+    { name: "Alabama", abbreviation: "AL" },
+    { name: "Alaska", abbreviation: "AK" },
+    { name: "Arizona", abbreviation: "AZ" },
+    { name: "Arkansas", abbreviation: "AR" },
+    { name: "California", abbreviation: "CA" },
+    { name: "Colorado", abbreviation: "CO" },
+    { name: "Connecticut", abbreviation: "CT" },
+    { name: "Delaware", abbreviation: "DE" },
+    { name: "Florida", abbreviation: "FL" },
+    { name: "Georgia", abbreviation: "GA" },
+    { name: "Hawaii", abbreviation: "HI" },
+    { name: "Idaho", abbreviation: "ID" },
+    { name: "Illinois", abbreviation: "IL" },
+    { name: "Indiana", abbreviation: "IN" },
+    { name: "Iowa", abbreviation: "IA" },
+    { name: "Kansas", abbreviation: "KS" },
+    { name: "Kentucky", abbreviation: "KY" },
+    { name: "Louisiana", abbreviation: "LA" },
+    { name: "Maine", abbreviation: "ME" },
+    { name: "Maryland", abbreviation: "MD" },
+    { name: "Massachusetts", abbreviation: "MA" },
+    { name: "Michigan", abbreviation: "MI" },
+    { name: "Minnesota", abbreviation: "MN" },
+    { name: "Mississippi", abbreviation: "MS" },
+    { name: "Missouri", abbreviation: "MO" },
+    { name: "Montana", abbreviation: "MT" },
+    { name: "Nebraska", abbreviation: "NE" },
+    { name: "Nevada", abbreviation: "NV" },
+    { name: "New Hampshire", abbreviation: "NH" },
+    { name: "New Jersey", abbreviation: "NJ" },
+    { name: "New Mexico", abbreviation: "NM" },
+    { name: "New York", abbreviation: "NY" },
+    { name: "North Carolina", abbreviation: "NC" },
+    { name: "North Dakota", abbreviation: "ND" },
+    { name: "Ohio", abbreviation: "OH" },
+    { name: "Oklahoma", abbreviation: "OK" },
+    { name: "Oregon", abbreviation: "OR" },
+    { name: "Pennsylvania", abbreviation: "PA" },
+    { name: "Rhode Island", abbreviation: "RI" },
+    { name: "South Carolina", abbreviation: "SC" },
+    { name: "South Dakota", abbreviation: "SD" },
+    { name: "Tennessee", abbreviation: "TN" },
+    { name: "Texas", abbreviation: "TX" },
+    { name: "Utah", abbreviation: "UT" },
+    { name: "Vermont", abbreviation: "VT" },
+    { name: "Virginia", abbreviation: "VA" },
+    { name: "Washington", abbreviation: "WA" },
+    { name: "West Virginia", abbreviation: "WV" },
+    { name: "Wisconsin", abbreviation: "WI" },
+    { name: "Wyoming", abbreviation: "WY" }
+  ];
+  
+  // Validation state variables
+  const [errors, setErrors] = useState({
+    email: '',
+    phone: '',
+    city: '',
+    state: '',
+    zipcode: ''
+  });
 
   const { user } = useAuth(); // Access the current user from AuthContext
   const navigate = useNavigate(); // Use navigate hook
 
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    return '';
+  };
+
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digit characters
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Format as ###-###-####
+    if (phoneNumber.length <= 3) {
+      return phoneNumber;
+    } else if (phoneNumber.length <= 6) {
+      return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+    } else {
+      return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    }
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+    if (!phoneRegex.test(phone)) {
+      return 'Phone must be in format: ###-###-####';
+    }
+    return '';
+  };
+
+  const validateCity = (city) => {
+    if (city.trim().length < 2) {
+      return 'City name must be at least 2 characters';
+    }
+    // Only allow letters, spaces, and hyphens
+    const cityRegex = /^[a-zA-Z\s-]+$/;
+    if (!cityRegex.test(city)) {
+      return 'City should only contain letters, spaces, and hyphens';
+    }
+    return '';
+  };
+
+  const validateState = (state) => {
+    if (!state) {
+      return 'Please select a state';
+    }
+    return '';
+  };
+
+  const validateZipcode = (zipcode) => {
+    // US zipcode validation (5 digits or 5+4)
+    const zipcodeRegex = /^\d{5}(-\d{4})?$/;
+    if (!zipcodeRegex.test(zipcode)) {
+      return 'Zipcode must be 5 digits or 5+4 format (e.g., 12345 or 12345-6789)';
+    }
+    return '';
+  };
+
+  const handlePhoneChange = (e) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    setPhone(formattedPhone);
+    setErrors({...errors, phone: validatePhone(formattedPhone)});
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setErrors({...errors, email: validateEmail(e.target.value)});
+  };
+
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
+    setErrors({...errors, city: validateCity(e.target.value)});
+  };
+
+  const handleStateChange = (e) => {
+    const stateValue = e.target.value;
+    setState(stateValue);
+    setErrors({...errors, state: validateState(stateValue)});
+  };
+
+  const handleZipcodeChange = (e) => {
+    setZipcode(e.target.value);
+    setErrors({...errors, zipcode: validateZipcode(e.target.value)});
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -70,6 +218,30 @@ const ClientPage = () => {
 
   const handleCreateClient = async (e) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    const emailError = validateEmail(email);
+    const phoneError = validatePhone(phone);
+    const cityError = validateCity(city);
+    const stateError = validateState(state);
+    const zipcodeError = validateZipcode(zipcode);
+    
+    const formErrors = {
+      email: emailError,
+      phone: phoneError,
+      city: cityError,
+      state: stateError,
+      zipcode: zipcodeError
+    };
+    
+    setErrors(formErrors);
+    
+    // Check if there are any validation errors
+    if (Object.values(formErrors).some(error => error !== '')) {
+      setMessage('Please correct the errors in the form.');
+      return;
+    }
+    
     if (!firstName || !lastName || !email || !phone || !streetAddress || !city || !state || !zipcode) {
       setMessage('All fields are required.');
       return;
@@ -98,7 +270,14 @@ const ClientPage = () => {
       }
     );
       setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
-      setClients((prev) => [...prev, response.data]);
+      
+      // Format the phone number in the response data before adding to clients array
+      const formattedClient = {
+        ...response.data,
+        phone: formatPhoneForDisplay(response.data.phone)
+      };
+      
+      setClients((prev) => [...prev, formattedClient]);
       resetFormFields();
       setShowForm(false); // Hide the form after creation
     } catch (error) {
@@ -118,6 +297,13 @@ const ClientPage = () => {
     setCity('');
     setState('');
     setZipcode('');
+    setErrors({
+      email: '',
+      phone: '',
+      city: '',
+      state: '',
+      zipcode: ''
+    });
   };
 
   const filteredClients = clients.filter((client) =>
@@ -125,6 +311,18 @@ const ClientPage = () => {
     client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Format phone numbers for display in the table
+  const formatPhoneForDisplay = (phone) => {
+    if (!phone) return '';
+    // Remove any existing formatting
+    const digits = phone.replace(/\D/g, '');
+    // Apply ###-###-#### format
+    if (digits.length === 10) {
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    }
+    return phone; // Return original if not 10 digits
+  };
 
   if (isLoading) {
     return (
@@ -156,7 +354,7 @@ const ClientPage = () => {
         {showForm && (
           <div className="overlay">
             <div className="popup-form">
-              <form className="form-group" onSubmit={handleCreateClient}   
+              <form className="form-group" onSubmit={handleCreateClient} 
                 autoComplete="off" 
                 autoCorrect="off" 
                 spellCheck="false">
@@ -164,39 +362,101 @@ const ClientPage = () => {
                 <div className="form-row">
                   <label>
                     First Name:
-                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="off" required />
+                    <input 
+                      type="text" 
+                      value={firstName} 
+                      onChange={(e) => setFirstName(e.target.value)} 
+                      autoComplete="new-password" 
+                      required 
+                    />
                   </label>
                   <label>
                     Last Name:
-                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="off" required />
+                    <input 
+                      type="text" 
+                      value={lastName} 
+                      onChange={(e) => setLastName(e.target.value)} 
+                      autoComplete="new-password" 
+                      required 
+                    />
                   </label>
                 </div>
                 <label>
                   Street Address:
-                  <input type="text" value={streetAddress} onChange={(e) => setStreetAddress(e.target.value)} autoComplete="off" required />
+                  <input 
+                    type="text" 
+                    value={streetAddress} 
+                    onChange={(e) => setStreetAddress(e.target.value)} 
+                    autoComplete="new-password" 
+                    required 
+                  />
                 </label>
                 <div className="form-row-three-item">
                   <label>
                     City:
-                    <input type="text" value={city} onChange={(e) => setCity(e.target.value)} autoComplete="off" required />
+                    <input 
+                      type="text" 
+                      value={city} 
+                      onChange={handleCityChange} 
+                      autoComplete="new-password" 
+                      required 
+                      className={errors.city ? "error-input" : ""}
+                      title={errors.city || ""}
+                    />
                   </label>
                   <label>
                     State:
-                    <input type="text" value={state} onChange={(e) => setState(e.target.value)} autoComplete="off" required />
+                    <select 
+                      value={state} 
+                      onChange={handleStateChange} 
+                      required 
+                      className={errors.state ? "error-input" : ""}
+                      title={errors.state || ""}
+                    >
+                      <option value="">Select State</option>
+                      {usStates.map((state) => (
+                        <option key={state.abbreviation} value={state.abbreviation}>{state.name}</option>
+                      ))}
+                    </select>
                   </label>
                   <label>
                     Zip Code:
-                    <input type="text" value={zipcode} onChange={(e) => setZipcode(e.target.value)} autoComplete="off" required />
+                    <input 
+                      type="text" 
+                      value={zipcode} 
+                      onChange={handleZipcodeChange} 
+                      autoComplete="new-password" 
+                      required 
+                      className={errors.zipcode ? "error-input" : ""}
+                      title={errors.zipcode || ""}
+                    />
                   </label>
                 </div>
                 <label>
                   Email:
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="new-email" required />
+                  <input 
+                    type="email" 
+                    value={email} 
+                    onChange={handleEmailChange} 
+                    autoComplete="new-password" 
+                    required 
+                    className={errors.email ? "error-input" : ""}
+                    title={errors.email || ""}
+                  />
                 </label>
                 <div className="form-row-three-item">
                   <label>
                     Phone:
-                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="off" required />
+                    <input 
+                      type="tel" 
+                      value={phone} 
+                      onChange={handlePhoneChange} 
+                      autoComplete="new-password" 
+                      placeholder="###-###-####"
+                      required 
+                      className={errors.phone ? "error-input" : ""}
+                      title={errors.phone || ""}
+                    />
                   </label>
                   <label>
                     Gender:
@@ -209,7 +469,13 @@ const ClientPage = () => {
                   </label>
                   <label>
                     Birthday:
-                    <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} autoComplete="off" required />
+                    <input 
+                      type="date" 
+                      value={birthday} 
+                      onChange={(e) => setBirthday(e.target.value)} 
+                      autoComplete="new-password" 
+                      required 
+                    />
                   </label>
                 </div>
                 <div className="button-container">
@@ -245,7 +511,7 @@ const ClientPage = () => {
                 <td>{client.firstName}</td>
                 <td>{client.lastName}</td>
                 <td>{client.email}</td>
-                <td>{client.phone}</td>
+                <td>{formatPhoneForDisplay(client.phone)}</td>
                 <td>{client.city}</td>
                 <td>{client.state}</td>
                 {/* <td className="action-column">

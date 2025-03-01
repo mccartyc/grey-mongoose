@@ -3,21 +3,19 @@ const mongoose = require('mongoose');
 const intakeFormSchema = new mongoose.Schema({
   clientId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Client', // Assuming you have a Client model
+    ref: 'Client',
     required: true,
   },
-  fullName: { type: String, required: true },
-  dateOfBirth: { type: Date, required: true },
-  gender: { type: String, required: true },
-  preferredPronouns: { type: String },
-  address: { type: String, required: true },
-  city: { type: String, required: true },
-  state: { type: String, required: true },
-  zipCode: { type: String, required: true },
-  phoneNumber: { type: String, required: true },
-  emailAddress: { type: String, required: true },
-  emergencyContactName: { type: String, required: true },
-  emergencyContactPhone: { type: String, required: true },
+  tenantId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tenant',
+    required: true,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   referralInfo: {
     source: { type: String, required: true },
     referralName: { type: String },
