@@ -12,6 +12,20 @@
 @import './sessionStyles.css';
 @import './settingsStyles.css';
 
+/* CSS Variables */
+:root {
+  --primary: #4F46E5;
+  --primary-dark: #4338CA;
+  --accent: #10B981;
+  --accent-dark: #059669;
+  --background: #0F172A;
+  --text: #E2E8F0;
+  --text-dark: #94A3B8;
+  --surface: #1E293B;
+  --surface-dark: #0F172A;
+  --border: rgba(255, 255, 255, 0.1);
+}
+
 /* General */
 body, h1, h2, h3, p, a, ul, li {
   margin: 0;
