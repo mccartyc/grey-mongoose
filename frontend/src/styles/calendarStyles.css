@@ -1,13 +1,15 @@
 /* FullCalendar Container */
 .calendar-container {
   position: relative;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 150px);
+  min-height: 600px;
   margin: 10px;
   padding: 15px;
   border-radius: 8px;
   background-color: #fff;
+  border: 2px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: auto; /* Changed from hidden to auto to enable scrolling */
 }
 
 /* FullCalendar Base */
@@ -25,15 +27,19 @@
 
 /* Time Grid */
 .fc-timegrid {
-  height: calc(100% - 40px) !important;
+  height: auto !important; /* Changed from fixed height to auto */
+  min-height: 800px; /* Ensure there's enough height to show all hours */
 }
 
 .fc-timegrid-body {
-  height: 100% !important;
+  height: auto !important; /* Changed from fixed height to auto */
+  overflow: visible !important; /* Make sure content doesn't get cut off */
 }
 
 .fc-timegrid-body .fc-scroller {
-  overflow-y: auto !important;
+  overflow-y: visible !important; /* Changed from auto to visible */
+  height: auto !important;
+  max-height: none !important; /* Remove max height restriction */
   scrollbar-width: thin;
 }
 
@@ -43,8 +49,33 @@
 }
 
 .fc-timegrid-slot {
-  height: 12px !important;
+  height: 25px !important; /* Increased height for better visibility */
   border-bottom: 1px solid #eee !important;
+}
+
+/* Ensure slots for all hours are visible */
+.fc-timegrid-slot-lane {
+  height: 25px !important;
+}
+
+/* Add custom scrollbar styling */
+.calendar-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.calendar-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.calendar-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.calendar-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .fc-timegrid-slot.fc-timegrid-slot-lane {
