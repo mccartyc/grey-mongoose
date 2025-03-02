@@ -15,18 +15,18 @@
 }
 
 .btn:hover {
-  background-color: #0066cc;
+  background-color: var(--primary-dark, #4338CA);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .primary-btn {
-  background-color: #012d56;
+  background-color: var(--surface-dark, #0F172A);
   color: #fff;
   border: none;
 }
 
 .primary-btn:hover {
-  background-color: #0066cc;
+  background-color: var(--primary-dark, #4338CA);
 }
 
 .secondary-btn {
@@ -59,7 +59,7 @@
 
 .create-btn {
   display: inline-block;
-  background-color: #012d56;
+  background-color: var(--surface-dark, #0F172A);
   color: #fff;
   border: none;
   border-radius: 6px;
