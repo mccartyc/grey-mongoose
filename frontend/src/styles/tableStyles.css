@@ -15,7 +15,7 @@
 .tenant-table th,
 .client-table th,
 .session-table th {
-  background-color: #012d56;
+  background-color: var(--surface-dark, #0F172A);
   color: #ffffff;
   text-align: left;
   padding: 8px 16px;
