@@ -48,16 +48,59 @@
   }
   
   .upcoming-appointments li {
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 8px;
-    background: #f4f4f4;
-    border: 1px solid #ddd;
+    background: #f8f9fa;
     border-radius: 4px;
     font-size: 14px;
+    border-left: 3px solid #4F46E5;
+    display: flex;
+    justify-content: space-between;
+    transition: all 0.2s ease;
   }
   
   .upcoming-appointments li:hover {
-    background: #e9ecef;
+    background: #f1f3f5;
+    transform: translateX(2px);
+  }
+  
+  .appointment-date {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .appointment-day {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #343a40;
+  }
+  
+  .appointment-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+  
+  .appointment-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .appointment-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #343a40;
+  }
+  
+  .appointment-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: white;
+    background-color: #4F46E5;
+    margin-top: 4px;
   }
   
   /* Sessions section */
