@@ -31,14 +31,14 @@
 
 .secondary-btn {
   background-color: #fff;
-  color: #012d56;
-  border: 2px solid #012d56;
+  color: var(--surface-dark, #0F172A);
+  border: 2px solid var(--surface-dark, #0F172A);
   font-weight: 600;
 }
 
 .secondary-btn:hover {
   background-color: #e1f0ff;
-  color: #012d56;
+  color: var(--surface-dark, #0F172A);
 }
 
 
@@ -69,7 +69,7 @@
 }
 
 .create-btn:hover {
-  background-color: #0066cc;
+  background-color: var(--primary-dark, #4338CA);
   transform: scale(1.05);
 }
 
@@ -88,7 +88,7 @@
 }
 
 .next-btn:hover {
-  background-color: #0066cc;
+  background-color: var(--primary-dark, #4338CA);
   transform: scale(1.05);
 }
 
