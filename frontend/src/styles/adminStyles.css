@@ -38,16 +38,6 @@
     transition: background-color 0.3s ease;
   }
   
-  .admin-tab.active {
-    background-color: #49274A;
-    color: #fff;
-    border: 1px solid #49274A;
-  }
-  
-  .admin-tab:hover {
-    background-color: #dfd8de;
-    color: #49274A;
-  }
   
   .admin-container {
     max-width: 1200px;
@@ -74,7 +64,7 @@
   }
   
   .progress-step.active {
-    background-color: #012d56;
+    background-color: var(--surface-dark, #0F172A);
     color: #fff;
   }
   
