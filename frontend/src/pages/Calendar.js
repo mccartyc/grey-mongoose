@@ -20,6 +20,33 @@ const categoryColors = {
 };
 
 
+// Generate time options in 15-minute increments (6:00 AM to 10:00 PM)
+const generateTimeOptions = () => {
+  const options = [];
+  for (let hour = 6; hour <= 22; hour++) {
+    for (let minute = 0; minute < 60; minute += 15) {
+      const formattedHour = hour.toString().padStart(2, '0');
+      const formattedMinute = minute.toString().padStart(2, '0');
+      const time = `${formattedHour}:${formattedMinute}`;
+      const displayTime = formatDisplayTime(hour, minute);
+      options.push(
+        <option key={time} value={time}>
+          {displayTime}
+        </option>
+      );
+    }
+  }
+  return options;
+};
+
+// Format time for display (12-hour format with AM/PM)
+const formatDisplayTime = (hour, minute) => {
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  const formattedMinute = minute.toString().padStart(2, '0');
+  return `${displayHour}:${formattedMinute} ${period}`;
+};
+
 const MyCalendar = () => {
   const { user } = useAuth(); // Get user authentication details
   const calendarRef = useRef(null); // Reference for FullCalendar instance
@@ -147,14 +174,29 @@ const MyCalendar = () => {
         },
       });
   
-      const formattedEvents = response.data.map(event => ({
-        id: event._id,
-        title: event.title,
-        start: new Date(event.start).toISOString(),
-        end: event.end ? new Date(event.end).toISOString() : new Date(event.start).toISOString(), // Default end time to start if missing
-        allDay: event.allDay,
-        color: categoryColors[event.category] || '#808080',
-      }));
+      const formattedEvents = response.data.map(event => {
+        // Store client information in the event
+        const formattedEvent = {
+          id: event._id,
+          title: event.title,
+          start: new Date(event.start).toISOString(),
+          end: event.end ? new Date(event.end).toISOString() : new Date(event.start).toISOString(),
+          allDay: event.allDay,
+          color: categoryColors[event.category] || '#808080',
+          extendedProps: {
+            category: event.category,
+            clientId: event.clientId,
+            clientName: event.clientName
+          }
+        };
+        
+        // For client sessions, include client name in the title if available
+        if (event.category === 'Client Session' && event.clientName) {
+          formattedEvent.title = `${event.title} - ${event.clientName}`;
+        }
+        
+        return formattedEvent;
+      });
   
       console.log("Events fetched:", formattedEvents);
       setEvents(formattedEvents); // Store events in state
@@ -206,11 +248,22 @@ const MyCalendar = () => {
       setMessage('Please enter all event details');
       return;
     }
+    
+    // Validate that end time is after start time
+    if (!allDay && startTime && endTime) {
+      const startDateTime = new Date(`${eventDate}T${startTime}:00`);
+      const endDateTime = new Date(`${eventDate}T${endTime}:00`);
+      
+      if (endDateTime <= startDateTime) {
+        setMessage('End time must be after start time');
+        return;
+      }
+    }
 
     const newEvent = {
       title: eventTitle,
-      start: allDay ? eventDate : `${eventDate}T${startTime}`,
-      end: allDay ? null : `${eventDate}T${endTime}`,
+      start: allDay ? `${eventDate}T00:00:00` : `${eventDate}T${startTime}:00`,
+      end: allDay ? `${eventDate}T23:59:59` : `${eventDate}T${endTime}:00`,
       allDay: allDay,
       category: category,
       color: categoryColors[category],
@@ -246,6 +299,14 @@ const MyCalendar = () => {
       });
     }
     await fetchEvents();
+    
+    // Reset form fields after successful submission
+    resetFormFields();
+    
+    // Close the form after a short delay to show the success message
+    setTimeout(() => {
+      setShowEventForm(false);
+    }, 1500);
   } catch (error) {
     console.error('Error saving event:', error);
     setMessage('Failed to save event');
@@ -289,9 +350,10 @@ const MyCalendar = () => {
     setEventDate('');
     setStartTime('');
     setEndTime('');
-    setAllDay('');
-    setCategory('');
-    setClientId('');
+    setAllDay(false);
+    setCategory('Other');
+    setClientId(null);
+    setMessage('');
   };
 
   const handleCloseForm = () => {
@@ -366,34 +428,38 @@ const MyCalendar = () => {
                   <>
                     <label>
                       Start Time:
-                      <input
-                        type="time"
+                      <select
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
-                        step="900"  // 15 minutes = 900 seconds
                         required
-                      />
+                      >
+                        <option value="">Select time</option>
+                        {generateTimeOptions()}
+                      </select>
                     </label>
                     <label>
                       End Time:
-                      <input
-                        type="time"
+                      <select
                         value={endTime}
                         onChange={(e) => setEndTime(e.target.value)}
-                        step="900"
                         required
-                      />
+                      >
+                        <option value="">Select time</option>
+                        {generateTimeOptions()}
+                      </select>
                     </label>
                   </>
                 )}
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={allDay}
-                    onChange={(e) => setAllDay(e.target.checked)}
-                  />
-                  All Day
-                </label>
+                <div className="checkbox-container">
+                  <label className="all-day-label">
+                    <input
+                      type="checkbox"
+                      checked={allDay}
+                      onChange={(e) => setAllDay(e.target.checked)}
+                    />
+                    <span>All Day</span>
+                  </label>
+                </div>
                 <label>
                   Category:
                   <select value={category} onChange={(e) => setCategory(e.target.value)} required>
@@ -422,9 +488,9 @@ const MyCalendar = () => {
                   </select>
                 </label>
               )}
-                <div>
-                <button type="button" className="btn close-btn" onClick={handleCloseForm}>Cancel</button>
-                <button type="submit" className="btn primary-btn" onClick={handleCloseForm}>Add Event</button>
+                <div className="form-buttons">
+                  <button type="button" className="btn secondary-btn" onClick={handleCloseForm}>Cancel</button>
+                  <button type="submit" className="btn primary-btn">Add Event</button>
                 </div>
               </form>
               {message && <p>{message}</p>}
