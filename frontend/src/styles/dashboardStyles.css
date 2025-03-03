@@ -4,6 +4,61 @@
   margin-right: 20px;
 }
 
+/* Dashboard Card */
+.dashboard-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card-title {
+  font-size: 1rem;
+  color: var(--surface-dark, #0F172A);
+  margin-bottom: 12px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dashboard-card-content {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+
+.dashboard-card-content.loading,
+.dashboard-card-content.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid var(--primary, #4F46E5);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.retry-button-small {
+  background-color: var(--primary, #4F46E5);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
 .dashboard-header {
   margin-bottom: 32px;
 }
@@ -17,6 +72,77 @@
   display: grid;
   gap: 32px;
   margin-bottom: 32px;
+}
+
+/* Upcoming Sessions List */
+.upcoming-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upcoming-session-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: rgba(73, 39, 74, 0.02);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  border-left: 3px solid rgba(73, 39, 74, 0.2);
+}
+
+.upcoming-session-item:hover {
+  background-color: rgba(73, 39, 74, 0.05);
+  border-left-color: #4F46E5;
+}
+
+.session-client {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #49274A;
+  max-width: 60%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-type-badge {
+  background: rgba(73, 39, 74, 0.1);
+  color: #49274A;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.session-datetime {
+  color: #666;
+  font-size: 0.6875rem;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 20px 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .top-row-metrics {

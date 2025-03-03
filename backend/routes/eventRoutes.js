@@ -56,14 +56,102 @@ const auditEventAction = (action) => (req, res, next) => {
   next();
 };
 
-// GET all events for the logged-in user
+// GET all events for the logged-in user with optional date filtering
 router.get('/',
   auditEventAction('VIEW_EVENTS'),
   async (req, res) => {
     try {
-      const events = await Event.find({ userId: req.user.userId });
+      const { tenantId, userId, startDate, endDate, sortBy = 'start', order = 'asc' } = req.query;
+      
+      // Build query
+      const query = { userId: req.user.userId };
+      
+      // Add date range filtering if provided
+      if (startDate || endDate) {
+        query.start = {};
+        if (startDate) query.start.$gte = new Date(startDate);
+        if (endDate) query.start.$lte = new Date(endDate);
+      }
+      
+      // Determine sort options
+      const sortOptions = {};
+      sortOptions[sortBy] = order === 'desc' ? -1 : 1;
+      
+      console.log('Query:', query);
+      
+      // Fetch events without population first
+      let events = await Event.find(query).sort(sortOptions);
+      console.log('Raw events:', events.map(e => ({ 
+        id: e._id, 
+        title: e.title, 
+        clientId: e.clientId
+      })));
+      
+      // If there are client sessions, populate client names
+      const clientEvents = events.filter(event => event.clientId && event.category === 'Client Session');
+      
+      if (clientEvents.length > 0) {
+        // Get all client IDs - ensure they're properly converted to ObjectId if needed
+        const clientIds = clientEvents.map(event => {
+          // Convert string IDs to ObjectId if needed
+          const clientId = event.clientId.toString();
+          return mongoose.Types.ObjectId.isValid(clientId) ? 
+            new mongoose.Types.ObjectId(clientId) : clientId;
+        });
+        
+        console.log('Client IDs to look up:', clientIds);
+        
+        // Fetch client information
+        const Client = require('../models/Clients');
+        const clients = await Client.find({ _id: { $in: clientIds } });
+        
+        console.log('Found clients:', clients.map(c => ({ 
+          id: c._id, 
+          name: `${c.firstName} ${c.lastName}` 
+        })));
+        
+        // Create a map of client IDs to names
+        const clientMap = {};
+        clients.forEach(client => {
+          clientMap[client._id.toString()] = `${client.firstName} ${client.lastName}`;
+        });
+        
+        // Add client names to events
+        events = events.map(event => {
+          const eventObj = event.toObject();
+          const eventClientId = event.clientId.toString();
+          
+          if (event.clientId && clientMap[eventClientId]) {
+            eventObj.clientName = clientMap[eventClientId];
+            console.log(`Added client name to event ${event._id}: ${eventObj.clientName}`);
+          } else if (event.clientId) {
+            // Try to fetch this specific client directly
+            console.log(`No client found in batch for ID ${eventClientId}, will try direct lookup`);
+            
+            // We'll add a placeholder for now
+            eventObj.clientName = `Client ID: ${eventClientId.substring(0, 8)}...`;
+            
+            // Set up an async lookup that will happen after this response
+            (async () => {
+              try {
+                const singleClient = await Client.findById(eventClientId);
+                if (singleClient) {
+                  console.log(`Found client by direct lookup: ${singleClient.firstName} ${singleClient.lastName}`);
+                } else {
+                  console.log(`Still no client found for ID ${eventClientId}`);
+                }
+              } catch (err) {
+                console.error(`Error in direct client lookup: ${err.message}`);
+              }
+            })();
+          }
+          return eventObj;
+        });
+      }
+      
       res.json(events);
     } catch (err) {
+      console.error('Error fetching events:', err);
       res.status(500).json({ message: err.message });
     }
   }

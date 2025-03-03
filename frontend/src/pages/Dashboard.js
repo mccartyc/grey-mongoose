@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import SideNavBar from '../components/SideNavBar';
 import { Line, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS } from 'chart.js/auto';
+import UpcomingSessions from '../components/dashboard/UpcomingSessions';
 import '../styles/styles.css';
 import '../styles/dashboardStyles.css';
 
@@ -165,7 +166,10 @@ const Dashboard = () => {
           </div>
 
           {/* Bottom Row - Charts */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+          {/* First Row - Charts and Upcoming Sessions */}
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px', marginBottom: '24px' }}>
+            {/* Charts Container */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(73, 39, 74, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
               <h3 style={{ fontSize: '0.875rem', color: '#49274A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(73, 39, 74, 0.1)' }}>Client Growth</h3>
               <div style={{ flex: 1, position: 'relative' }}>
@@ -227,6 +231,12 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+            </div>
+            </div>
+            
+            {/* Upcoming Sessions */}
+            <div>
+              <UpcomingSessions />
             </div>
           </div>
         </div>

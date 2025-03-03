@@ -317,6 +317,7 @@
   width: 90%;
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 20px;
 }
 
 .modal-header {
@@ -345,38 +346,97 @@
 }
 
 /* Form Elements */
-.popup-form input,
+.popup-form input[type="text"],
+.popup-form input[type="date"],
 .popup-form select {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  padding: 10px;
+  margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.popup-form select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 1em;
+  padding-right: 30px;
 }
 
 .popup-form label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
   font-weight: 500;
   color: #333;
+  font-size: 0.9rem;
 }
 
-.checkbox-label {
+.checkbox-container {
+  margin-bottom: 15px;
+}
+
+.all-day-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  cursor: pointer;
 }
 
-.checkbox-label input[type='checkbox'] {
+.all-day-label input[type='checkbox'] {
   width: auto;
   margin: 0;
+  margin-right: 8px;
+  height: 16px;
+  width: 16px;
+}
+
+.all-day-label span {
+  font-weight: 500;
 }
 
 
 /* Event Details */
 .event-details-modal .modal-content p {
   margin: 0.5rem 0;
+}
+
+/* Form Buttons */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-buttons button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-buttons .secondary-btn {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.form-buttons .secondary-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.form-buttons .primary-btn {
+  background-color: var(--primary, #4F46E5);
+  color: white;
+  border: none;
+}
+
+.form-buttons .primary-btn:hover {
+  background-color: var(--primary-dark, #4338CA);
 }
 
 .event-notes {
@@ -386,11 +446,15 @@
 }
 
 /* Messages */
-.message {
-  margin-top: 1rem;
-  padding: 0.5rem;
+.message,
+.popup-form p {
+  margin-top: 15px;
+  padding: 10px;
   border-radius: 4px;
   text-align: center;
+  background-color: #f8d7da;
+  color: #721c24;
+  font-size: 0.875rem;
 }
 
 .message.success {
@@ -415,6 +479,21 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
 }
 
 /* Scrollbars */

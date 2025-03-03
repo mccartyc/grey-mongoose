@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import CryptoJS from 'crypto-js';
+import DraggablePanel from './DraggablePanel';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -18,6 +19,8 @@ const SessionList = ({
   const [isEditing, setIsEditing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [panelWidth, setPanelWidth] = useState(500); // Track panel width for persistence
   
   const navigate = useNavigate();
 
@@ -42,7 +45,26 @@ const SessionList = ({
     };
     setSelectedSession(decryptedSession);
     setIsPanelOpen(true);
+    setIsClosing(false);
     setIsEditing(false);
+    
+    // Scroll to the top of the page to ensure good visibility
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Highlight the row of the selected session
+    setTimeout(() => {
+      const rows = document.querySelectorAll('.session-table tbody tr');
+      rows.forEach(row => {
+        if (row.dataset.sessionId === session.sessionId) {
+          row.classList.add('selected-session');
+        } else {
+          row.classList.remove('selected-session');
+        }
+      });
+    }, 100);
   };
 
   const handleEditNotes = () => {
@@ -98,8 +120,21 @@ const SessionList = ({
     if (currentPage > 1) setCurrentPage((prevPage) => prevPage - 1);
   };
 
+  // Update the main content margin when panel width changes
+  const updateMainContentMargin = (newWidth) => {
+    setPanelWidth(newWidth);
+    // Update the CSS variable for the panel width
+    document.documentElement.style.setProperty('--panel-width', `${newWidth}px`);
+    
+    // Also update the margin of the sessions section
+    const sessionsSection = document.querySelector('.sessions-section');
+    if (sessionsSection) {
+      sessionsSection.style.marginRight = `${newWidth}px`;
+    }
+  };
+
   return (
-    <div className="sessions-section">
+    <div className={`sessions-section ${isPanelOpen ? 'panel-open' : ''}`} style={isPanelOpen ? { marginRight: `${panelWidth}px` } : {}}>
       <div className="content-container">
         <div className="header-container">
           <button 
@@ -130,7 +165,7 @@ const SessionList = ({
           </thead>
           <tbody>
             {currentSessions.map((session) => (
-              <tr key={session.sessionId}>
+              <tr key={session.sessionId} data-session-id={session.sessionId} className={selectedSession?.sessionId === session.sessionId ? 'selected-session' : ''}>
                 <td>{new Date(session.date).toLocaleDateString()}</td>
                 {!clientId && <td>{session.clientName}</td>}
                 <td>{session.type}</td>
@@ -166,7 +201,30 @@ const SessionList = ({
 
       {/* Notes Side Panel */}
       {isPanelOpen && selectedSession && (
-        <div className="sessions-side-panel">
+        <DraggablePanel 
+          isOpen={isPanelOpen} 
+          onClose={() => {
+            setIsClosing(true);
+            // Animate the main content back
+            const sessionsSection = document.querySelector('.sessions-section');
+            if (sessionsSection) {
+              sessionsSection.style.transition = 'margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+              sessionsSection.style.marginRight = '0';
+            }
+            // Actually close the panel after animation completes
+            setTimeout(() => {
+              setIsPanelOpen(false);
+              setIsClosing(false);
+              // Remove selected session highlight
+              const rows = document.querySelectorAll('.session-table tbody tr');
+              rows.forEach(row => row.classList.remove('selected-session'));
+            }, 300);
+          }}
+          initialWidth={panelWidth}
+          minWidth={300}
+          maxWidth={800}
+          onWidthChange={updateMainContentMargin}
+        >
           <div className="sessions-panel-header">
             <h2>Session Details</h2>
             <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
@@ -177,11 +235,12 @@ const SessionList = ({
             <p><strong>Date:</strong> {new Date(selectedSession.date).toLocaleDateString()}</p>
             <p><strong>Type:</strong> {selectedSession.type}</p>
             <p><strong>Length:</strong> {selectedSession.length} minutes</p>
+            <p><strong>Client:</strong> {selectedSession.clientName || 'Not specified'}</p>
           </div>
 
           {/* Notes Section */}
           <div className="panel-section">
-            <h3>Notes</h3>
+            <h3>Session Notes</h3>
             <div className="sessions-panel-body">
               {isEditing ? (
                 <ReactQuill
@@ -189,35 +248,40 @@ const SessionList = ({
                   onChange={(value) =>
                     setSelectedSession((prev) => ({ ...prev, notes: value }))
                   }
+                  style={{ height: '200px', marginBottom: '10px' }}
                 />
               ) : (
-                <div className="content-box" dangerouslySetInnerHTML={{ __html: selectedSession.notes || 'No notes available' }} />
+                <div className="content-box" dangerouslySetInnerHTML={{ __html: selectedSession.notes || 'No notes available for this session.' }} />
               )}
             </div>
           </div>
 
           {/* Transcript Section */}
           <div className="panel-section">
-            <h3>Transcript</h3>
+            <h3>Session Transcript</h3>
             <div className="content-box transcript-box">
-              {selectedSession.transcript || 'No transcript available'}
+              {selectedSession.transcript || 'No transcript available for this session.'}
             </div>
           </div>
 
           <div className="sessions-panel-footer">
-            {isEditing ? (
-              <button className="btn primary-btn" onClick={handleSaveNotes}>Save Changes</button>
-            ) : (
-              <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
-            )}
-            <button 
-              className="btn primary-btn"
-              onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
-            >
-              Full View
-            </button>
+            <div>
+              {isEditing ? (
+                <button className="btn primary-btn" onClick={handleSaveNotes}>Save Changes</button>
+              ) : (
+                <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
+              )}
+            </div>
+            <div>
+              <button 
+                className="btn primary-btn"
+                onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
+              >
+                View Full Session
+              </button>
+            </div>
           </div>
-        </div>
+        </DraggablePanel>
       )}
     </div>
   );
