@@ -17,7 +17,7 @@ const IntakeFormPage = () => {
         <SideNavBar />
         <div className="content-area">
         <div className="client-detail-header-container">
-            <h1>Client Detail</h1>
+            <h1 className="page-heading">Client Detail</h1>
             <ClientNavBar/>
             </div>
           <IntakeForm />

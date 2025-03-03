@@ -73,10 +73,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     width: 100%;
     border-bottom: 2px solid var(--surface-dark, #0F172A);
     padding-bottom: 10px;
+    background-color: #f4f5f7; /* Match page background */
     /*
     position: -webkit-sticky; 
     position: sticky;

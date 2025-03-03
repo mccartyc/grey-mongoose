@@ -1,0 +1,107 @@
+/* API Call Counter Styles */
+.api-counter {
+  background-color: rgba(15, 23, 42, 0.8);
+  color: #fff;
+  border-radius: 6px;
+  margin: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.api-counter.collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin: 10px auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.api-counter.collapsed .api-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.api-counter-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  background-color: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-counter-header:hover {
+  background-color: rgba(15, 23, 42, 1);
+}
+
+.api-counter-title {
+  margin-left: 10px;
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.api-counter-total {
+  margin-right: 10px;
+  font-weight: bold;
+  background-color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.api-counter-details {
+  padding: 10px 15px;
+  font-size: 0.85rem;
+}
+
+.api-counter-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.api-counter-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.api-counter-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.api-counter-value {
+  font-weight: 500;
+}
+
+.api-counter-value.success {
+  color: #52c41a;
+}
+
+.api-counter-value.failed {
+  color: #ff4d4f;
+}
+
+.api-counter-value.rate-limited {
+  color: #faad14;
+}
+
+.api-counter-value.pending {
+  color: #1890ff;
+}

@@ -12,6 +12,7 @@
 @import './sessionStyles.css';
 @import './settingsStyles.css';
 @import './headingStyles.css';
+@import './apiCounterStyles.css';
 
 /* CSS Variables */
 :root {
@@ -68,9 +69,8 @@ a {
   padding: 10px; 
   border: 1px solid #ddd; 
   border-radius: 4px; 
-  height: 40%;
   width: 300px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 

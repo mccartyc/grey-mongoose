@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
+import { ApiCallProvider } from './context/ApiCallContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -23,6 +24,7 @@ const App = () => (
 
   <Router>
     <AuthContextProvider>
+      <ApiCallProvider>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
@@ -136,6 +138,7 @@ const App = () => (
           }
         />
       </Routes>
+      </ApiCallProvider>
     </AuthContextProvider>
   </Router>
 );

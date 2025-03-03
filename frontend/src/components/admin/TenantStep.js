@@ -201,7 +201,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
             <button onClick={() => { 
               resetForm(); 
               setShowForm(true); 
-            }} className="btn create-btn">Create New</button>
+            }} className="btn primary-btn">Create New</button>
           </div>
         </div>
         <table className="tenant-table">
@@ -253,7 +253,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
           </tbody>
         </table>
         <div className="right-button-container">
-          <button className="btn next-btn" onClick={handleNextStep} disabled={!selectedTenantId}>
+          <button className="btn primary-btn" onClick={handleNextStep} disabled={!selectedTenantId}>
             Next
           </button>
         </div>

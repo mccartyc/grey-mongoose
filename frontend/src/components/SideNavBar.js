@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard, FaCog } from 'react-icons/fa';
 import '../styles/styles.css';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
+import { useApiCall } from '../context/ApiCallContext'; // Import API Call Context
+import ApiCallCounter from './ApiCallCounter'; // Import API Call Counter component
 import mindcloudLogo from '../assets/mindcloud_white.png';
 
 
@@ -93,6 +95,9 @@ const SideNavBar = () => {
       </ul>
       <div className="bottom-links">
         <ul className="nav-links">
+          <li>
+            <ApiCallCounter collapsed={collapsed} />
+          </li>
           <li>
             <NavLink to="/settings" className={({ isActive }) => isActive ? "active-link" : ""}>
               <FaCog className="nav-icon" />
