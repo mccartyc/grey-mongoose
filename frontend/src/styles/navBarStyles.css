@@ -72,9 +72,17 @@
   .brand-icon {
     font-size: 2rem;
     color: var(--text, #E2E8F0);
-    height: 15mm;
-    margin-left: -3.5mm;
+    height: 40px;
+    width: 40px;
+    margin-left: 0;
     transition: all 0.3s ease;
+    filter: brightness(1.2); /* Make the white color pop a bit more */
+  }
+  
+  .side-navbar.collapsed .brand-icon {
+    height: 40px;
+    width: 40px;
+    margin: 0 auto;
   }
   
   .brand-name {
