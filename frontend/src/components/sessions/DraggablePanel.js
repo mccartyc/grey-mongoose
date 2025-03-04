@@ -14,6 +14,13 @@ const DraggablePanel = ({
   const [width, setWidth] = useState(initialWidth);
   const [isDragging, setIsDragging] = useState(false);
   
+  // Call onWidthChange when the panel first opens
+  useEffect(() => {
+    if (isOpen && onWidthChange) {
+      onWidthChange(initialWidth);
+    }
+  }, [isOpen, initialWidth, onWidthChange]);
+  
   // Handle drag start
   const handleDragStart = (e) => {
     // Store the initial mouse position and panel width
@@ -69,7 +76,7 @@ const DraggablePanel = ({
       // Wait for animation to complete before actually closing
       setTimeout(() => {
         onClose();
-      }, 300); // Match the animation duration
+      }, 200); // Match the animation duration
     } else {
       onClose();
     }
