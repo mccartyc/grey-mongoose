@@ -38,7 +38,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "update-api-urls": "node scripts/update-api-urls.js",
+    "predeploy": "npm run update-api-urls && npm run build",
+    "deploy": "netlify deploy --prod"
   },
   "eslintConfig": {
     "extends": [
@@ -46,7 +49,6 @@
       "react-app/jest"
     ]
   },
-  "proxy": "http://localhost:5000",
   "browserslist": {
     "production": [
       ">0.2%",

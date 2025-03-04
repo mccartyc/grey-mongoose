@@ -68,3 +68,35 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Deploying to Netlify
+
+This application is configured for easy deployment to Netlify. Follow these steps to deploy:
+
+### Option 1: Deploy via Netlify UI
+
+1. Create a Netlify account at [netlify.com](https://www.netlify.com/)
+2. Click "New site from Git"
+3. Connect to your Git provider (GitHub, GitLab, etc.)
+4. Select your repository
+5. Configure build settings:
+   - Build command: `npm run build`
+   - Publish directory: `build`
+6. Configure environment variables in the Netlify dashboard:
+   - REACT_APP_API_URL: URL to your backend API
+   - REACT_APP_ENCRYPTION_KEY: Your encryption key (keep this secure)
+7. Click "Deploy site"
+
+### Option 2: Deploy via Netlify CLI
+
+1. Install Netlify CLI: `npm install -g netlify-cli`
+2. Run the deploy script: `./deploy.sh`
+3. Authenticate with Netlify: `netlify login`
+4. Initialize your site: `netlify init`
+5. Deploy your site: `netlify deploy --prod`
+
+### Important Notes
+
+- The backend API must be deployed separately (e.g., to Heroku, AWS, etc.)
+- Update the REACT_APP_API_URL in the Netlify environment variables to point to your deployed backend
+- The netlify.toml file handles SPA routing for React Router
