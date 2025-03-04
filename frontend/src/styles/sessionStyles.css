@@ -1,13 +1,29 @@
-/* Main content transition when panel is open */
+/* Sessions section specific styles */
 .sessions-section {
-  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow-x: hidden;
   min-height: 100vh;
 }
 
-.sessions-section.panel-open {
-  margin-right: 500px; /* Initial panel width */
+/* Make all session table rows clickable */
+.session-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Action cell and view icon styles */
+.action-cell {
+  text-align: center;
+  width: 50px;
+}
+
+.view-icon {
+  color: var(--primary, #4F46E5);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.session-table tbody tr:hover .view-icon {
+  opacity: 1;
 }
 
 /* Selected session row highlight */
@@ -26,6 +42,8 @@
   background-color: var(--primary, #4F46E5);
 }
 
+
+
 /* Draggable Panel Styles */
 .draggable-panel {
   position: fixed;
@@ -33,15 +51,16 @@
   top: 0;
   width: 500px;
   height: 100vh;
-  background: #f8fafc;
+  background: rgb(248, 247, 247); /* Exact match with content-area background */
   box-shadow: -1px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   display: flex;
   flex-direction: row;
   overflow: hidden;
   transform: translateX(100%);
-  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  border-left: 1px solid #e9ecef;
+  animation: slideIn 0.2s ease-out forwards;
+  border-left: 1px solid #ddd;
+  will-change: transform; /* Optimize for animation performance */
 }
 
 @keyframes slideIn {
@@ -51,7 +70,8 @@
 
 /* Closing animation */
 .draggable-panel.closing {
-  animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slideOut 0.2s ease-out forwards;
+  /* Using ease-out for closing too, to match content-area */
 }
 
 @keyframes slideOut {
@@ -91,21 +111,30 @@
   background: #9ca3af;
 }
 
-/* Panel header */
+/* Panel header - matches page-heading style */
 .sessions-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background-color: #f4f5f7;
+  padding: 20px;
+  background-color: rgb(248, 247, 247); /* Exact match with content-area background */
   color: var(--surface-dark, #0F172A);
-  border-bottom: 2px solid var(--surface-dark, #0F172A);
+  border-bottom: 2px solid #000; /* Black bottom border like Client Detail */
 }
 
 .sessions-panel-header h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 600;
+}
+
+/* When sessions-panel-header also has page-heading class */
+.sessions-panel-header.page-heading {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  margin-bottom: 0;
+  /* Border is already defined in the sessions-panel-header */
 }
 
 .close-btn {
@@ -126,11 +155,11 @@
 /* Session info */
 .session-info {
   padding: 15px 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #f4f5f7; /* Match header background */
   margin: 15px 20px;
   font-size: 0.95rem;
+  border-radius: 0;
+  /* No box shadow for session info */
 }
 
 .session-info p {
@@ -142,23 +171,24 @@
 .panel-section {
   padding: 15px 20px;
   margin: 0 20px 15px;
-  background-color: white;
+  background-color: white; /* White background for content panels */
+  color: var(--surface-dark, #0F172A);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .panel-section h3 {
   margin: 0 0 12px 0;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--surface-dark, #0F172A);
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 2px solid var(--surface-dark, #0F172A); /* Match main heading style */
 }
 
 /* Content boxes */
 .content-box {
-  background-color: #f8fafc;
+  background-color: white;
   border: 1px solid #e9ecef;
   border-radius: 4px;
   padding: 12px;
@@ -177,12 +207,12 @@
 .sessions-panel-footer {
   margin: 0 20px 20px;
   padding: 15px 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: rgb(248, 247, 247); /* Exact match with content-area background */
+  border-radius: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* No border or box shadow for buttons area */
 }
 
 /* Drag handle styles */

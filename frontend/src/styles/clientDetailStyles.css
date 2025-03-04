@@ -1,7 +1,12 @@
 /* General styles */
+
+/* Client detail page specific styles */
+.client-detail-page {
+  width: 100%;
+  position: relative;
+}
   
-  
-  /* Top section layout */
+/* Top section layout */
   .top-section {
     display: grid;
     grid-template-columns: 1fr 1fr;

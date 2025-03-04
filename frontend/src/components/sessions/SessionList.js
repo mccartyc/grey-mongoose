@@ -26,24 +26,89 @@ const SessionList = ({
 
   const decryptText = (encryptedText) => {
     if (!encryptedText) return '';
+    
+    // Check if it's already plain text
+    if (typeof encryptedText === 'string' && 
+        (encryptedText.includes(' ') || 
+         encryptedText.includes('.') || 
+         encryptedText.includes('\n'))) {
+      return encryptedText;
+    }
+    
+    // The format appears to be: [ciphertext]:[iv]
     try {
-      return CryptoJS.AES.decrypt(
-        encryptedText,
-        process.env.REACT_APP_ENCRYPTION_KEY
-      ).toString(CryptoJS.enc.Utf8);
+      // Check if the text contains a colon which would indicate the special format
+      if (encryptedText.includes(':')) {
+        console.log('Found special encryption format with IV');
+        const [ciphertext, iv] = encryptedText.split(':');
+        
+        // Get the key from the .env file
+        const key = 'c5cd94bd263cca1652097fbc5263c373b7921f0d9134eefc899ffbfcd87e314c';
+        
+        // Create key and IV word arrays
+        const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32)); // Use first 32 chars (16 bytes)
+        const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+        
+        // Decrypt with the parsed key and IV
+        const decrypted = CryptoJS.AES.decrypt(
+          { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
+          keyWordArray,
+          { iv: ivWordArray }
+        ).toString(CryptoJS.enc.Utf8);
+        
+        if (decrypted && decrypted.length > 0) {
+          console.log('Successfully decrypted content with IV');
+          return decrypted;
+        }
+      }
+      
+      // Try standard decryption as fallback
+      const key = 'c5cd94bd263cca1652097fbc5263c373b7921f0d9134eefc899ffbfcd87e314c';
+      const decrypted = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+      
+      if (decrypted && decrypted.length > 0) {
+        console.log('Successfully decrypted content with standard method');
+        return decrypted;
+      }
+      
+      console.log('All decryption attempts failed');
+      return 'Unable to decrypt content';
     } catch (error) {
-      console.error('Error decrypting text:', error);
+      console.error('Error during decryption:', error.message);
       return 'Error decrypting content';
     }
   };
 
   const handleViewNotes = (session) => {
-    const decryptedSession = {
+    // Try to decrypt the notes and transcript
+    let notesContent = session.notes;
+    let transcriptContent = session.transcript;
+    
+    if (notesContent) {
+      try {
+        const decrypted = decryptText(notesContent);
+        notesContent = decrypted;
+      } catch (error) {
+        console.error('Failed to decrypt notes:', error);
+      }
+    }
+    
+    if (transcriptContent) {
+      try {
+        const decrypted = decryptText(transcriptContent);
+        transcriptContent = decrypted;
+      } catch (error) {
+        console.error('Failed to decrypt transcript:', error);
+      }
+    }
+    
+    const sessionToDisplay = {
       ...session,
-      notes: decryptText(session.notes),
-      transcript: decryptText(session.transcript)
+      notes: notesContent || 'No notes available for this session.',
+      transcript: transcriptContent || 'No transcript available for this session.'
     };
-    setSelectedSession(decryptedSession);
+    
+    setSelectedSession(sessionToDisplay);
     setIsPanelOpen(true);
     setIsClosing(false);
     setIsEditing(false);
@@ -53,6 +118,17 @@ const SessionList = ({
       top: 0,
       behavior: 'smooth'
     });
+    
+    // Add panel-open class to the content-area container and set margin immediately
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea) {
+      // Set the margin first, then add the class to ensure smooth transition
+      contentArea.style.marginRight = `${panelWidth}px`;
+      // Use requestAnimationFrame to ensure the style is applied before adding the class
+      requestAnimationFrame(() => {
+        contentArea.classList.add('panel-open');
+      });
+    }
     
     // Highlight the row of the selected session
     setTimeout(() => {
@@ -78,12 +154,21 @@ const SessionList = ({
     }
 
     try {
-      // Encrypt notes before sending
-      const encryptedNotes = CryptoJS.AES.encrypt(
-        selectedSession.notes,
-        process.env.REACT_APP_ENCRYPTION_KEY
-      ).toString();
-
+      // Encrypt notes using the same format as the backend
+      const key = 'c5cd94bd263cca1652097fbc5263c373b7921f0d9134eefc899ffbfcd87e314c';
+      const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
+      
+      // Generate a random IV
+      const iv = CryptoJS.lib.WordArray.random(16);
+      
+      // Encrypt the notes
+      const encrypted = CryptoJS.AES.encrypt(selectedSession.notes, keyWordArray, {
+        iv: iv
+      });
+      
+      // Format as ciphertext:iv
+      const encryptedNotes = encrypted.ciphertext.toString(CryptoJS.enc.Hex) + ':' + iv.toString(CryptoJS.enc.Hex);
+      
       const updatedNotes = {
         notes: encryptedNotes,
         sessionId: selectedSession.sessionId,
@@ -126,15 +211,18 @@ const SessionList = ({
     // Update the CSS variable for the panel width
     document.documentElement.style.setProperty('--panel-width', `${newWidth}px`);
     
-    // Also update the margin of the sessions section
-    const sessionsSection = document.querySelector('.sessions-section');
-    if (sessionsSection) {
-      sessionsSection.style.marginRight = `${newWidth}px`;
+    // Update the margin of the content-area
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea && contentArea.classList.contains('panel-open')) {
+      // Use requestAnimationFrame to ensure smooth updates
+      requestAnimationFrame(() => {
+        contentArea.style.marginRight = `${newWidth}px`;
+      });
     }
   };
 
   return (
-    <div className={`sessions-section ${isPanelOpen ? 'panel-open' : ''}`} style={isPanelOpen ? { marginRight: `${panelWidth}px` } : {}}>
+    <div className="sessions-section">
       <div className="content-container">
         <div className="header-container">
           <button 
@@ -160,18 +248,32 @@ const SessionList = ({
               {!clientId && <th>Client Name</th>}
               <th>Type</th>
               <th>Length</th>
-              <th>Detail</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {currentSessions.map((session) => (
-              <tr key={session.sessionId} data-session-id={session.sessionId} className={selectedSession?.sessionId === session.sessionId ? 'selected-session' : ''}>
+              <tr 
+                key={session.sessionId} 
+                data-session-id={session.sessionId} 
+                className={selectedSession?.sessionId === session.sessionId ? 'selected-session' : ''}
+                onClick={() => handleViewNotes(session)}
+                role="button"
+                aria-label={`View details for session on ${new Date(session.date).toLocaleDateString()} with ${session.clientName}`}
+                tabIndex="0"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleViewNotes(session);
+                  }
+                }}
+              >
                 <td>{new Date(session.date).toLocaleDateString()}</td>
                 {!clientId && <td>{session.clientName}</td>}
                 <td>{session.type}</td>
                 <td>{session.length}</td>
-                <td>
-                  <button className="btn secondary-btn" onClick={() => handleViewNotes(session)}>View Notes</button>
+                <td className="action-cell">
+                  <i className="fa fa-chevron-right view-icon"></i>
                 </td>
               </tr>
             ))}
@@ -205,12 +307,14 @@ const SessionList = ({
           isOpen={isPanelOpen} 
           onClose={() => {
             setIsClosing(true);
-            // Animate the main content back
-            const sessionsSection = document.querySelector('.sessions-section');
-            if (sessionsSection) {
-              sessionsSection.style.transition = 'margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-              sessionsSection.style.marginRight = '0';
+            
+            // Remove panel-open class from the content-area
+            const contentArea = document.querySelector('.content-area');
+            if (contentArea) {
+              contentArea.classList.remove('panel-open');
+              contentArea.style.marginRight = '0';
             }
+            
             // Actually close the panel after animation completes
             setTimeout(() => {
               setIsPanelOpen(false);
@@ -218,7 +322,7 @@ const SessionList = ({
               // Remove selected session highlight
               const rows = document.querySelectorAll('.session-table tbody tr');
               rows.forEach(row => row.classList.remove('selected-session'));
-            }, 300);
+            }, 200); // Match the animation duration
           }}
           initialWidth={panelWidth}
           minWidth={300}
@@ -231,7 +335,7 @@ const SessionList = ({
           </div>
 
           {/* Session Info */}
-          <div className="session-info">
+          <div className="panel-section">
             <p><strong>Date:</strong> {new Date(selectedSession.date).toLocaleDateString()}</p>
             <p><strong>Type:</strong> {selectedSession.type}</p>
             <p><strong>Length:</strong> {selectedSession.length} minutes</p>
@@ -251,7 +355,15 @@ const SessionList = ({
                   style={{ height: '200px', marginBottom: '10px' }}
                 />
               ) : (
-                <div className="content-box" dangerouslySetInnerHTML={{ __html: selectedSession.notes || 'No notes available for this session.' }} />
+                <div className="content-box">
+                  {/* Check if notes appear to be HTML content */}
+                  {selectedSession.notes && selectedSession.notes.includes('<') && selectedSession.notes.includes('>') ? (
+                    <div dangerouslySetInnerHTML={{ __html: selectedSession.notes }} />
+                  ) : (
+                    /* Display as plain text if not HTML */
+                    <p>{selectedSession.notes || 'No notes available for this session.'}</p>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -260,26 +372,22 @@ const SessionList = ({
           <div className="panel-section">
             <h3>Session Transcript</h3>
             <div className="content-box transcript-box">
-              {selectedSession.transcript || 'No transcript available for this session.'}
+              <p>{selectedSession.transcript || 'No transcript available for this session.'}</p>
             </div>
           </div>
 
           <div className="sessions-panel-footer">
-            <div>
-              {isEditing ? (
-                <button className="btn primary-btn" onClick={handleSaveNotes}>Save Changes</button>
-              ) : (
-                <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
-              )}
-            </div>
-            <div>
-              <button 
-                className="btn primary-btn"
-                onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
-              >
-                View Full Session
-              </button>
-            </div>
+            {isEditing ? (
+              <button className="btn primary-btn" onClick={handleSaveNotes}>Save Changes</button>
+            ) : (
+              <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
+            )}
+            <button 
+              className="btn primary-btn"
+              onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
+            >
+              View Full Session
+            </button>
           </div>
         </DraggablePanel>
       )}

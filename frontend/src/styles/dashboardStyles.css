@@ -21,7 +21,7 @@
   margin-bottom: 12px;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
 }
 
 .dashboard-card-content {
@@ -42,7 +42,7 @@
 .spinner-small {
   width: 24px;
   height: 24px;
-  border: 2px solid #f3f3f3;
+  border: 2px solid rgba(79, 70, 229, 0.1);
   border-top: 2px solid var(--primary, #4F46E5);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -64,7 +64,7 @@
 }
 
 .dashboard-header p {
-  color: #7f8c8d;
+  color: var(--text-dark, #94A3B8);
   font-size: 1.1rem;
 }
 
@@ -85,23 +85,23 @@
   padding: 8px 12px;
   border-radius: 6px;
   margin-bottom: 8px;
-  background: rgba(73, 39, 74, 0.02);
+  background: rgba(79, 70, 229, 0.02);
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.2s ease;
-  border-left: 3px solid rgba(73, 39, 74, 0.2);
+  border-left: 3px solid var(--primary, #4F46E5);
 }
 
 .upcoming-session-item:hover {
-  background-color: rgba(73, 39, 74, 0.05);
-  border-left-color: #4F46E5;
+  background-color: rgba(79, 70, 229, 0.05);
+  border-left-color: var(--primary, #4F46E5);
 }
 
 .session-client {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #49274A;
+  color: var(--surface-dark, #0F172A);
   max-width: 60%;
   white-space: nowrap;
   overflow: hidden;
@@ -115,8 +115,8 @@
 }
 
 .session-type-badge {
-  background: rgba(73, 39, 74, 0.1);
-  color: #49274A;
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--primary, #4F46E5);
   padding: 2px 6px;
   border-radius: 12px;
   font-size: 0.6875rem;
@@ -125,7 +125,7 @@
 }
 
 .session-datetime {
-  color: #666;
+  color: var(--text-dark, #94A3B8);
   font-size: 0.6875rem;
 }
 
@@ -134,7 +134,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: #64748b;
+  color: var(--text-dark, #94A3B8);
   font-size: 0.9rem;
   font-style: italic;
   padding: 20px 0;

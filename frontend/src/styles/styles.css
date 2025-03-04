@@ -77,13 +77,21 @@ a {
 /* Adjust Content When Sidebar is Collapsed */
 .content-area {
   margin-left: 300px;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, margin-right 0.2s ease-out;
   flex: 1;
   padding: 20px;
   background-color: rgb(248, 247, 247);
   border-left: 1px solid #ddd;
   height: 100%;
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  will-change: margin-right; /* Optimize for animation performance */
+}
+
+.content-area.panel-open {
+  margin-right: 500px; /* Initial panel width */
+  /* Class applied when panel is open */
 }
 
 .side-navbar.collapsed + .content-area {
