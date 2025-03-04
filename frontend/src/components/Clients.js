@@ -10,6 +10,8 @@ const ClientPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false); // State for showing/hiding the form
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
+  const [clientToDelete, setClientToDelete] = useState(null); // Track tenant to delete
 
   // Form state variables
   const [firstName, setFirstName] = useState('');
@@ -97,6 +99,20 @@ const ClientPage = () => {
       return 'Please enter a valid email address';
     }
     return '';
+  };
+
+  const calculateAge = (birthday) => {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // Check if the birthday has occurred this year
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
   };
 
   const formatPhoneNumber = (value) => {
@@ -325,6 +341,76 @@ const ClientPage = () => {
     return phone; // Return original if not 10 digits
   };
 
+
+  const handleEditClient = (client) => {
+    setSelectedClientId(client._id);
+    setFirstName(client.firstName); // Populate the form with the selected tenant's name
+    setLastName(client.lastName); // Populate the form with the selected tenant's name
+    setGender(client.gender);
+    setEmail(client.email);
+    setPhone(client.phone);
+    setStreetAddress(client.streetAddress);
+    setCity(client.city);
+    setState(client.state);
+    setZipcode(client.zipcode);
+    setBirthday(client.birthday);
+    setMessage(false);
+    setShowForm(true); // Show the form for editing
+  };
+
+  const handleDeleteClick = (client, event) => {
+    event.stopPropagation(); // Prevent row selection
+    setClientToDelete(client); // Store the entire client object instead of just the ID
+    setShowDeleteModal(true); // Show confirmation modal
+  };
+
+  const handleDeleteClient = async () => {
+
+    const { tenantId, userId, token } = user;
+
+    if (!clientToDelete || !clientToDelete._id) {
+      console.error('No client selected for deletion');
+      return;
+    }
+
+    try {
+      console.log('Attempting to delete client:', {
+        clientId: clientToDelete._id,
+        tenantId: tenantId,
+        client: clientToDelete
+      });
+      
+      const response = await axios.put(
+        `http://localhost:5001/api/clients/${clientToDelete._id}/deactivate`,
+        {
+          tenantId: tenantId,
+          reason: 'User requested deletion'
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        }
+      );
+
+      console.log('Deactivation response:', response.data);
+      
+      setClients((prev) => prev.filter((client) => client._id !== clientToDelete._id));
+      setShowDeleteModal(false);
+      setClientToDelete(null);
+      setMessage('Client successfully deactivated');
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to delete client';
+      setMessage(errorMessage);
+      
+      if (error.response?.data?.details) {
+        console.error('Error details:', error.response.data.details);
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="spinner-container">
@@ -332,9 +418,42 @@ const ClientPage = () => {
       </div>
     );
   }
+
+
   
   return (
+    
     <div className="client-page">
+      {showDeleteModal && (
+        <div className="overlay">
+          <div className="cofirm-modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>
+              Are you sure you want to delete this client?
+            </p>
+            <p>
+            This action is{' '}
+              <strong>irreversible</strong>.
+            </p>
+            <div className="button-container">
+              <button
+                type= "button"
+                onClick={() => setShowDeleteModal(false)}
+                className="btn close-btn"
+              >
+                Cancel
+              </button>
+              <button type="submit" onClick={handleDeleteClient} className="btn primary-btn">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
     <div className="sessions-section">
       <div className="content-container">
         <div className="header-container">
@@ -494,10 +613,12 @@ const ClientPage = () => {
             <tr>
               <th>First Name</th>
               <th>Last Name</th>
+              <th>Age</th>
+              <th>Gender</th>
               <th>Email</th>
               <th>Phone</th>
-              <th>City</th>
-              <th>State</th>
+              <th>Street Address</th>
+              <th>Client Id</th>
               <th className="action-column">Action</th>
             </tr>
           </thead>
@@ -511,11 +632,13 @@ const ClientPage = () => {
               >
                 <td>{client.firstName}</td>
                 <td>{client.lastName}</td>
+                <td>{calculateAge(client.birthday)}</td>
+                <td>{client.gender}</td>
                 <td>{client.email}</td>
                 <td>{formatPhoneForDisplay(client.phone)}</td>
-                <td>{client.city}</td>
-                <td>{client.state}</td>
-                {/* <td className="action-column">
+                <td>{client.streetAddress} {client.city}, {client.state} {client.zipcode}</td>
+                <td>{client._id}</td>
+                <td className="action-column">
                 <span
                     role="img"
                     aria-label="edit"
@@ -536,7 +659,7 @@ const ClientPage = () => {
                   >
                     🗑️
                   </span>
-                </td> */}
+                </td>
               </tr>
             ))}
           </tbody>
