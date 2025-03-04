@@ -13,11 +13,17 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
   const [tenantToDelete, setTenantToDelete] = useState(null); // Track tenant to delete
 
-  const { user } = useAuth(); // Access the current user from AuthContext
+  const { user, userInfo } = useAuth(); // Access the current user from AuthContext
+
+  // Check if user can create/edit/delete tenants (only Internal users)
+  const canManageTenants = userInfo?.role === 'Internal';
+  
+  // Check if user can see all tenants (only Internal users)
+  const canSeeAllTenants = userInfo?.role === 'Internal';
 
   useEffect(() => {
     const fetchTenants = async () => {
-      const { token } = user; // Get tenantId and userId from user context
+      const { token } = user; // Get token from user context
       try {
         const response = await axios.get('http://localhost:5001/api/tenants',
           {
@@ -25,18 +31,32 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
               Authorization: `Bearer ${token}`,
             },
           });
-        setTenants(response.data.filter(tenant => tenant.isActive));
+        
+        let filteredTenants = response.data.filter(tenant => tenant.isActive);
+        
+        // If not an Internal user, only show the user's own tenant
+        if (!canSeeAllTenants && userInfo?.tenantId) {
+          filteredTenants = filteredTenants.filter(tenant => tenant._id === userInfo.tenantId);
+        }
+        
+        setTenants(filteredTenants);
+        
+        // If Admin/User and only has one tenant, auto-select it
+        if (!canSeeAllTenants && filteredTenants.length === 1) {
+          setSelectedTenantId(filteredTenants[0]._id);
+          onSelectTenant(filteredTenants[0]);
+        }
       } catch (error) {
         console.error('Error fetching tenants:', error);
       }
     };
 
     fetchTenants();
-  }, [user]);
+  }, [user, canSeeAllTenants, userInfo?.tenantId, onSelectTenant]);
 
   const handleCreateTenant = async (e) => {
     e.preventDefault();
-    const { token } = user; // Get tenantId and userId from user context
+    const { token } = user; // Get token from user context
     try {
       const response = await axios.post('http://localhost:5001/api/tenants', { name },
         {
@@ -54,7 +74,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
 
   const handleUpdateTenant = async (e) => {
     e.preventDefault();
-    const { token } = user; // Get tenantId and userId from user context
+    const { token } = user; // Get token from user context
     try {
       if (!selectedTenantId) return; // Safety check
       
@@ -100,7 +120,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   };
 
   const handleDeleteTenant = async () => {
-    const { token } = user; // Get tenantId and userId from user context
+    const { token } = user; // Get token from user context
     try {
       await axios.put(`http://localhost:5001/api/tenants/${tenantToDelete}/deactivate`,{},
         {
@@ -123,7 +143,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
 
   const filteredTenants = tenants.filter((tenant) =>
     tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tenant.tenantId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tenant.tenantId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     formatTimestamp(tenant.createdAt).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -198,10 +218,12 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={() => { 
-              resetForm(); 
-              setShowForm(true); 
-            }} className="btn primary-btn">Create New</button>
+            {canManageTenants && (
+              <button onClick={() => { 
+                resetForm(); 
+                setShowForm(true); 
+              }} className="btn primary-btn">Create New</button>
+            )}
           </div>
         </div>
         <table className="tenant-table">
@@ -210,7 +232,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
               <th>Tenant Name</th>
               <th>Tenant ID</th>
               <th>Created Timestamp</th>
-              <th className="action-column">Action</th>
+              {canManageTenants && <th className="action-column">Action</th>}
             </tr>
           </thead>
           <tbody>
@@ -226,28 +248,30 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
                 <td>{tenant.name}</td>
                 <td>{tenant._id}</td>
                 <td>{formatTimestamp(tenant.createdAt)}</td>
-                <td className="action-column">
-                  <span
-                    role="img"
-                    aria-label="edit"
-                    className="edit-icon"
-                    onClick={(event) => {
-                      event.stopPropagation(); // Prevent row selection when clicking edit icon
-                      handleEditTenant(tenant); // Open form to edit tenant
-                    }}
-                    style={{ cursor: 'pointer', marginRight: '10px' }}
-                  >
-                    ✏️
-                  </span>
-                  <span
-                    role="img"
-                    aria-label="delete"
-                    className="trash-icon"
-                    onClick={(event) => handleDeleteClick(tenant._id, event)}
-                  >
-                    🗑️
-                  </span>
-                </td>
+                {canManageTenants && (
+                  <td className="action-column">
+                    <span
+                      role="img"
+                      aria-label="edit"
+                      className="edit-icon"
+                      onClick={(event) => {
+                        event.stopPropagation(); // Prevent row selection when clicking edit icon
+                        handleEditTenant(tenant); // Open form to edit tenant
+                      }}
+                      style={{ cursor: 'pointer', marginRight: '10px' }}
+                    >
+                      ✏️
+                    </span>
+                    <span
+                      role="img"
+                      aria-label="delete"
+                      className="trash-icon"
+                      onClick={(event) => handleDeleteClick(tenant._id, event)}
+                    >
+                      🗑️
+                    </span>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

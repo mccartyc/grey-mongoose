@@ -18,7 +18,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
   const [userToDelete, setUserToDelete] = useState(null); // Track tenant to delete
 
 
-  const { user } = useAuth(); // Access the current user from AuthContext
+  const { user, userInfo } = useAuth(); // Access the current user from AuthContext
 
   const fetchInProgress = useRef(false);
 
@@ -141,6 +141,19 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     onNext(selectedUserId); 
   };
 
+  // Determine available roles based on current user's role
+  const getAvailableRoles = () => {
+    if (userInfo?.role === 'Internal') {
+      return ['Internal', 'Admin', 'User'];
+    } else if (userInfo?.role === 'Admin') {
+      return ['Admin', 'User'];
+    } else {
+      return ['User'];
+    }
+  };
+
+  const availableRoles = getAvailableRoles();
+
   return (
     <div className="user-step">
 
@@ -167,9 +180,14 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
               </label>
               <label>
                 Role:
-                <select value={role} onChange={(e) => setRole(e.target.value)} required>
-                  <option value="Admin">Admin</option>
-                  <option value="User">User</option>
+                <select 
+                  value={role} 
+                  onChange={(e) => setRole(e.target.value)} 
+                  required
+                >
+                  {availableRoles.map(roleOption => (
+                    <option key={roleOption} value={roleOption}>{roleOption}</option>
+                  ))}
                 </select>
               </label>
               <div className="button-container">

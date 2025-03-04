@@ -41,6 +41,11 @@ const SideNavBar = () => {
   const userFirstName = userInfo?.firstname || (loading ? 'Fetching...' : 'User');
   const userLastName = userInfo?.lastname || '';
 
+  // Check if user has access to the Admin panel
+  const canAccessAdmin = userInfo?.role === 'Internal' || userInfo?.role === 'Admin';
+  
+  // Check if user can see API calls (only Internal users)
+  const canSeeApiCalls = userInfo?.role === 'Internal';
 
   return (
     <div className={`side-navbar ${collapsed ? 'collapsed' : ''}`}>
@@ -95,21 +100,25 @@ const SideNavBar = () => {
       </ul>
       <div className="bottom-links">
         <ul className="nav-links">
-          <li>
-            <ApiCallCounter collapsed={collapsed} />
-          </li>
+          {canSeeApiCalls && (
+            <li>
+              <ApiCallCounter collapsed={collapsed} />
+            </li>
+          )}
           <li>
             <NavLink to="/settings" className={({ isActive }) => isActive ? "active-link" : ""}>
               <FaCog className="nav-icon" />
               {!collapsed && <span className="nav-text">Settings</span>}
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/admin" className={({ isActive }) => isActive ? "active-link" : ""}>
-              <FaUserCog className="nav-icon" />
-              {!collapsed && <span className="nav-text">Admin</span>}
-            </NavLink>
-          </li>
+          {canAccessAdmin && (
+            <li>
+              <NavLink to="/admin" className={({ isActive }) => isActive ? "active-link" : ""}>
+                <FaUserCog className="nav-icon" />
+                {!collapsed && <span className="nav-text">Admin</span>}
+              </NavLink>
+            </li>
+          )}
           <li className="logout">
             <button onClick={handleLogout} className="logout-btn">
               <FaSignOutAlt className="nav-icon" />

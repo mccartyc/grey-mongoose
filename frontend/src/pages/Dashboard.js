@@ -288,6 +288,12 @@ const Dashboard = () => {
             
             {/* Right Column - Sessions */}
             <div style={{ display: 'grid', gridTemplateRows: 'auto auto', gap: '16px' }}>
+
+               {/* Upcoming Sessions */}
+               <div style={{ height: '280px' }}>
+                <UpcomingSessions />
+              </div>
+              
               {/* Recent Sessions - Now next to Upcoming Sessions */}
               <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
                 <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Recent Sessions</h3>
@@ -317,10 +323,7 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              {/* Upcoming Sessions */}
-              <div style={{ height: '280px' }}>
-                <UpcomingSessions />
-              </div>
+             
             </div>
           </div>
         </div>

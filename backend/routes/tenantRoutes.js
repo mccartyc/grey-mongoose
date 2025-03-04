@@ -1,10 +1,11 @@
 // server/routes/tenantRoutes.js
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/authMiddleware');
+const { authenticateToken, authorizeTenantManagement } = require('../middleware/authMiddleware');
 const { validateObjectId, sanitizeData } = require('../middleware/validation');
 const rateLimit = require('express-rate-limit');
 const Tenant = require('../models/Tenant');
+const User = require('../models/Users');
 
 // Rate limiting for tenant operations
 const tenantLimiter = rateLimit({
@@ -16,12 +17,23 @@ const tenantLimiter = rateLimit({
 router.use(authenticateToken);
 router.use(sanitizeData);
 
+// Helper validation functions
+const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(String(email).toLowerCase());
+};
+
+const validatePhone = (phone) => {
+  const re = /^\+?[0-9]{10,15}$/;
+  return re.test(String(phone));
+};
+
 // Validate tenant data
 const validateTenantData = (req, res, next) => {
   const { name, address, phone, email, adminEmail } = req.body;
 
-  if (!name || !adminEmail) {
-    return res.status(400).json({ error: 'Name and admin email are required' });
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required' });
   }
 
   if (email && !validateEmail(email)) {
@@ -60,29 +72,10 @@ const auditTenantAction = (action) => (req, res, next) => {
   next();
 };
 
-// Check tenant admin permissions
-const checkTenantAdmin = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user.userId);
-    if (!user || user.role !== 'TENANT_ADMIN') {
-      return res.status(403).json({ 
-        error: 'Access denied. Tenant admin privileges required.' 
-      });
-    }
-    next();
-  } catch (error) {
-    console.error('Permission check error:', error);
-    res.status(500).json({ 
-      error: 'Failed to verify permissions',
-      requestId: req.requestId
-    });
-  }
-};
-
 // Create new Tenant
 router.post('/',
   tenantLimiter,
-  checkTenantAdmin,
+  authorizeTenantManagement, // Only Internal users can create tenants
   validateTenantData,
   auditTenantAction('CREATE_TENANT'),
   async (req, res) => {
@@ -108,22 +101,22 @@ router.post('/',
 // Deactivate Tenant
 router.put('/:tenantId/deactivate',
   validateObjectId,
-  checkTenantAdmin,
+  authorizeTenantManagement, // Only Internal users can deactivate tenants
   auditTenantAction('DEACTIVATE_TENANT'),
   async (req, res) => {
-    const { _id } = req.params;
+    const { tenantId } = req.params;
     try {
       const updateData = { isActive: false, deactivatedAt: new Date() };
       console.log('Update Data:', updateData); // Log the update data
   
       const tenant = await Tenant.findOneAndUpdate(
-        { _id },
+        { _id: tenantId },
         updateData,
         { new: true }
       );
   
       if (!tenant) {
-        console.log(`Tenant with ID ${_id} not found`); // Log if tenant not found
+        console.log(`Tenant with ID ${tenantId} not found`); // Log if tenant not found
         return res.status(404).json({ error: 'Tenant not found' });
       }
   
@@ -139,17 +132,17 @@ router.put('/:tenantId/deactivate',
 // Update Tenant
 router.put('/:tenantId',
   validateObjectId,
-  checkTenantAdmin,
+  authorizeTenantManagement, // Only Internal users can update tenants
   validateTenantData,
   auditTenantAction('UPDATE_TENANT'),
   async (req, res) => {
-    const { _id } = req.params;
+    const { tenantId } = req.params;
     const { name } = req.body;
 
     try {
       // Update the tenant in the database
       const updatedTenant = await Tenant.findOneAndUpdate(
-        { _id }, // Assuming tenantId is a field in your schema
+        { _id: tenantId },
         { name },
         { new: true, runValidators: true } // new: return the updated doc, runValidators: ensure validators run
       );
@@ -171,6 +164,22 @@ router.get('/',
   auditTenantAction('VIEW_TENANTS'),
   async (req, res) => {
     try {
+      // For non-Internal users, only return their own tenant
+      if (req.user.role !== 'Internal') {
+        const tenantId = req.user.tenantId;
+        if (!tenantId) {
+          return res.status(400).json({ error: 'User does not have an associated tenant' });
+        }
+        
+        const tenant = await Tenant.findOne({ _id: tenantId, isActive: true });
+        if (!tenant) {
+          return res.status(404).json({ error: 'Tenant not found' });
+        }
+        
+        return res.status(200).json([tenant]);
+      }
+      
+      // For Internal users, return all active tenants
       const tenants = await Tenant.find({ isActive: true });
       res.status(200).json(tenants);
     } catch (error) {
