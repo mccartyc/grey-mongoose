@@ -35,8 +35,10 @@ api.interceptors.response.use(
       try {
         originalRequest.__isRetry = true; // Mark the request as retrying
 
-        // Request new tokens
-        await axios.post('/api/auth/refresh-token');
+        // Request new tokens using the same baseURL from the api instance
+        await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/refresh-token`, {}, {
+          withCredentials: true
+        });
 
         // Retry the original request
         return api(originalRequest);
