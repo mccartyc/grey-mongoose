@@ -1,5 +1,4 @@
-[build]
-  command = "npm run build"
+  command = "CI=false npm run build"
   publish = "build"
   
 # Handle SPA routing (React Router)
@@ -7,3 +6,7 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[build.environment]
+  CI = "false"
+  REACT_APP_API_URL = "https://api.mindcloud.app"
