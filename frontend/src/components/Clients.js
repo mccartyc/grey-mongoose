@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus } from 'react-icons/fa';
+// import { FaPlus } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -100,6 +100,7 @@ const ClientPage = () => {
     }
     return '';
   };
+  
 
   const calculateAge = (birthday) => {
     const today = new Date();
@@ -221,7 +222,7 @@ const ClientPage = () => {
     };
 
     fetchClients();
-  }, [user?.tenantId, user?.userId]); // Only re-run when tenant or user ID changes
+  }, [user, user?.tenantId, user?.userId]); // Only re-run when tenant or user ID changes
 
   const handleRowDoubleClick = (clientId, firstName, lastName) => {
     console.log('Double Click Client:', clientId, firstName, lastName);
@@ -366,7 +367,7 @@ const ClientPage = () => {
 
   const handleDeleteClient = async () => {
 
-    const { tenantId, userId, token } = user;
+    const { tenantId, token } = user;
 
     if (!clientToDelete || !clientToDelete._id) {
       console.error('No client selected for deletion');

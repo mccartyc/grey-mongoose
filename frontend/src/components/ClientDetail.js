@@ -13,7 +13,7 @@ const ClientDetail = () => {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState('');
+  // const [message, setMessage] = useState('');
   const { user } = useAuth();
 
 useEffect(() => {
@@ -209,7 +209,7 @@ return (
         user={user}
         clientId={id}
       />
-      {message && <p className="message error">{message}</p>}
+      {/* {message && <p className="message error">{message}</p>} */}
   </div>
 );
 };
