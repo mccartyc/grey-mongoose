@@ -63,16 +63,16 @@ const UpcomingSessions = () => {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       
-      // Get date 7 days from now (end of that day)
-      const nextWeek = new Date(now);
-      nextWeek.setDate(now.getDate() + 7);
-      nextWeek.setHours(23, 59, 59, 999);
+      // Get date 30 days from now (end of that day)
+      const nextMonth = new Date(now);
+      nextMonth.setDate(now.getDate() + 30);
+      nextMonth.setHours(23, 59, 59, 999);
       
-      console.log('Date range for filtering:', now, 'to', nextWeek);
+      console.log('Date range for filtering:', now, 'to', nextMonth);
       
       // Format dates for API
       const startDate = now.toISOString();
-      const endDate = nextWeek.toISOString();
+      const endDate = nextMonth.toISOString();
 
       console.log('Fetching upcoming sessions from', startDate, 'to', endDate);
 
@@ -88,14 +88,14 @@ const UpcomingSessions = () => {
         }
       });
 
-      // Filter sessions to only include those in the next 7 days
+      // Filter sessions to only include those in the next 30 days
       // Make sure to use the session date, not the current time for comparison
       const upcomingSessions = response.data.filter(session => {
         const sessionDate = new Date(session.date);
         // Reset hours to ensure we're comparing just the dates
         const sessionDateOnly = new Date(sessionDate);
         sessionDateOnly.setHours(0, 0, 0, 0);
-        return sessionDateOnly >= now && sessionDateOnly <= nextWeek;
+        return sessionDateOnly >= now && sessionDateOnly <= nextMonth;
       });
 
       console.log('Filtered upcoming sessions:', upcomingSessions.length);
@@ -163,16 +163,16 @@ const UpcomingSessions = () => {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       
-      // Get date 7 days from now (end of that day)
-      const nextWeek = new Date(now);
-      nextWeek.setDate(now.getDate() + 7);
-      nextWeek.setHours(23, 59, 59, 999);
+      // Get date 30 days from now (end of that day)
+      const nextMonth = new Date(now);
+      nextMonth.setDate(now.getDate() + 30);
+      nextMonth.setHours(23, 59, 59, 999);
       
-      console.log('Date range for filtering:', now, 'to', nextWeek);
+      console.log('Date range for filtering:', now, 'to', nextMonth);
       
       // Format dates for API
       const startDate = now.toISOString();
-      const endDate = nextWeek.toISOString();
+      const endDate = nextMonth.toISOString();
       
       console.log('Fetching upcoming calendar events from', startDate, 'to', endDate);
       
@@ -196,7 +196,7 @@ const UpcomingSessions = () => {
         const eventDateOnly = new Date(eventDate);
         eventDateOnly.setHours(0, 0, 0, 0);
         
-        return eventDateOnly >= now && eventDateOnly <= nextWeek;
+        return eventDateOnly >= now && eventDateOnly <= nextMonth;
       });
       
       console.log('Filtered client session events:', clientSessionEvents.length);
@@ -306,7 +306,7 @@ const UpcomingSessions = () => {
   if (loading) {
     return (
       <div className="dashboard-card">
-        <h3 className="dashboard-card-title">Upcoming Client Sessions (Next 7 Days)</h3>
+        <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Upcoming Client Sessions (Next 30 Days)</h3>
         <div className="dashboard-card-content loading">
           <div className="spinner-small"></div>
         </div>
@@ -317,7 +317,7 @@ const UpcomingSessions = () => {
   if (error) {
     return (
       <div className="dashboard-card">
-        <h3 className="dashboard-card-title">Upcoming Client Sessions (Next 7 Days)</h3>
+        <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Upcoming Client Sessions (Next 30 Days)</h3>
         <div className="dashboard-card-content error">
           <p>{error}</p>
           <button onClick={fetchAllUpcomingEvents} className="retry-button-small">
@@ -330,7 +330,7 @@ const UpcomingSessions = () => {
 
   return (
     <div className="dashboard-card">
-      <h3 className="dashboard-card-title">Upcoming Client Sessions (Next 7 Days)</h3>
+      <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Upcoming Client Sessions (Next 30 Days)</h3>
       <div className="dashboard-card-content">
         {sessions.length > 0 ? (
           <div className="upcoming-sessions-list">
@@ -353,7 +353,7 @@ const UpcomingSessions = () => {
           </div>
         ) : (
           <div className="empty-state">
-            <p>No upcoming client sessions in the next 7 days</p>
+            <p>No upcoming client sessions in the next 30 days</p>
           </div>
         )}
       </div>

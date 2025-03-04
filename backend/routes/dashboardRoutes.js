@@ -108,15 +108,54 @@ router.get('/metrics', async (req, res) => {
     ]);
 
     // Get upcoming sessions (next 30 days)
-    const upcomingSessions = await Session.countDocuments({
+    // Create a date for today at midnight
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Create a date for 30 days from now at 23:59:59
+    const thirtyDaysLater = new Date(todayStart);
+    thirtyDaysLater.setDate(todayStart.getDate() + 30);
+    thirtyDaysLater.setHours(23, 59, 59, 999);
+    
+    console.log('Upcoming sessions date range:', todayStart.toISOString(), 'to', thirtyDaysLater.toISOString());
+    
+    // First, find all sessions to debug
+    const allSessions = await Session.find({
+      tenantId: tenantObjectId,
+      userId: userObjectId,
+      isActive: true
+    }).lean();
+    
+    console.log('Total active sessions found:', allSessions.length);
+    
+    // Manually filter upcoming sessions for debugging
+    const manuallyFilteredSessions = allSessions.filter(session => {
+      const sessionDate = new Date(session.date);
+      const isUpcoming = sessionDate >= todayStart && sessionDate <= thirtyDaysLater;
+      console.log('Session date:', sessionDate.toISOString(), 'Is upcoming:', isUpcoming);
+      return isUpcoming;
+    });
+    
+    console.log('Manually filtered upcoming sessions:', manuallyFilteredSessions.length);
+    
+    // Use the count from manual filtering for accuracy
+    const upcomingSessions = manuallyFilteredSessions.length;
+    
+    // Also do the query for verification
+    const queryCount = await Session.countDocuments({
       tenantId: tenantObjectId,
       userId: userObjectId,
       date: { 
-        $gte: now,
-        $lte: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+        $gte: todayStart,
+        $lte: thirtyDaysLater
       },
       isActive: true
     });
+    
+    console.log('Query count of upcoming sessions:', queryCount);
+    
+    // If there's a discrepancy, log it
+    if (upcomingSessions !== queryCount) {
+      console.log('WARNING: Discrepancy between manual count and query count');
+    }
 
     res.json({
       totalClients,
