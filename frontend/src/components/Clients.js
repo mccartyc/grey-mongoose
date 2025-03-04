@@ -312,6 +312,7 @@ const ClientPage = () => {
     client.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
   // Format phone numbers for display in the table
   const formatPhoneForDisplay = (phone) => {
     if (!phone) return '';
@@ -497,7 +498,7 @@ const ClientPage = () => {
               <th>Phone</th>
               <th>City</th>
               <th>State</th>
-              {/* <th className="action-column">Action</th> */}
+              <th className="action-column">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -515,15 +516,27 @@ const ClientPage = () => {
                 <td>{client.city}</td>
                 <td>{client.state}</td>
                 {/* <td className="action-column">
+                <span
+                    role="img"
+                    aria-label="edit"
+                    className="edit-icon"
+                    onClick={(event) => {
+                      event.stopPropagation(); // Prevent row selection when clicking edit icon
+                      handleEditClient(client); // Open form to edit tenant
+                    }}
+                    style={{ cursor: 'pointer', marginRight: '10px' }}
+                  >
+                    ✏️
+                  </span>
                   <span
                     role="img"
-                    aria-label="New Session"
-                    className="new-session"
-                    // onClick={(event) => handleNewSessionClient(client._id, event)}
+                    aria-label="delete"
+                    className="trash-icon"
+                    onClick={(event) => handleDeleteClick(client, event)}
                   >
-                    <FaPlus/>
-                  </span> */}
-                {/* </td> */}
+                    🗑️
+                  </span>
+                </td> */}
               </tr>
             ))}
           </tbody>

@@ -57,4 +57,45 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { authenticateToken, authorize };
+// Middleware to check if user can create users with specific roles
+const authorizeUserCreation = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+
+  const userRole = req.user.role;
+  const requestedRole = req.body.role;
+
+  // Internal users can create any role
+  if (userRole === 'Internal') {
+    return next();
+  }
+
+  // Admin users can only create Admin and User roles
+  if (userRole === 'Admin' && (requestedRole === 'Admin' || requestedRole === 'User')) {
+    return next();
+  }
+
+  // User role can't create other users
+  return res.status(403).json({ message: 'Not authorized to create users with this role' });
+};
+
+// Middleware to check if user can manage tenants (only Internal users)
+const authorizeTenantManagement = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+
+  if (req.user.role !== 'Internal') {
+    return res.status(403).json({ message: 'Not authorized to manage tenants' });
+  }
+
+  next();
+};
+
+module.exports = { 
+  authenticateToken, 
+  authorize,
+  authorizeUserCreation,
+  authorizeTenantManagement
+};

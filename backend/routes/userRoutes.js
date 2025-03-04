@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const { authenticateToken } = require("../middleware/authMiddleware");
+const { authenticateToken, authorizeUserCreation } = require("../middleware/authMiddleware");
 const User = require("../models/Users");
 const bcrypt = require("bcryptjs");
 const rateLimit = require('express-rate-limit');
@@ -49,41 +49,45 @@ const auditUserAction = (action) => (req, res, next) => {
 };
 
 // POST: Create a new user
-router.post("/", userLimiter, async (req, res) => {
-  const { firstname, lastname, email, password, role, tenantId } = req.body;
+router.post("/", 
+  userLimiter, 
+  authorizeUserCreation, // Check if user has permission to create users with the specified role
+  auditUserAction('CREATE_USER'),
+  async (req, res) => {
+    const { firstname, lastname, email, password, role, tenantId } = req.body;
 
-  try {
-    // Check if all required fields are provided
-    if (!firstname || !lastname || !email || !password || !tenantId) {
-      return res.status(400).json({ error: "All fields are required" });
+    try {
+      // Check if all required fields are provided
+      if (!firstname || !lastname || !email || !password || !tenantId) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+
+      // Check if email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create the new user
+      const newUser = new User({
+        firstname,
+        lastname,
+        email,
+        password: hashedPassword,
+        role,
+        tenantId,
+        isActive: true
+      });
+
+      await newUser.save();
+      res.status(201).json(newUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ error: "Server error" });
     }
-
-    // Check if email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email already exists" });
-    }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the new user
-    const newUser = new User({
-      firstname,
-      lastname,
-      email,
-      password: hashedPassword,
-      role,
-      tenantId,
-      isActive: true
-    });
-
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ error: "Server error" });
-  }
 });
 
 // Get all users for a specific tenant

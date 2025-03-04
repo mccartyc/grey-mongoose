@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import SideNavBar from '../components/SideNavBar';
 import TenantStep from '../components/admin/TenantStep';
 import UserStep from '../components/admin/UserStep';
 import ClientStep from '../components/admin/ClientStep';
+import { useAuth } from '../context/AuthContext';
 import '../styles/styles.css';
 
 
@@ -10,10 +12,18 @@ const Admin = () => {
   const [step, setStep] = useState(1);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const { userInfo } = useAuth();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []); 
+
+  // Check if user has access to the Admin panel
+  const canAccessAdmin = userInfo?.role === 'Internal' || userInfo?.role === 'Admin';
+
+  if (!canAccessAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);

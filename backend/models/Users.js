@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   userId: { type: String, default: uuidv4, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ["Admin", "User"], default: "User" }, // User roles
+  role: { type: String, enum: ["Internal", "Admin", "User"], default: "User" }, // Updated roles
   tenantId: { type: mongoose.Schema.Types.ObjectId, ref: "Tenant", required: true }, // Reference to Tenant
   refreshToken: { type: String }, // Store the latest refresh token
   createdAt: { type: Date, default: Date.now },

@@ -19,6 +19,7 @@ import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
 import NewSession from './pages/NewSession';
 import Settings from './pages/Settings';
+import Unauthorized from './pages/Unauthorized';
 
 const App = () => (
 
@@ -31,6 +32,7 @@ const App = () => (
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* Protected Routes */}
         <Route
@@ -44,7 +46,7 @@ const App = () => (
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['Internal', 'Admin']}>
               <Admin />
             </ProtectedRoute>
           }
