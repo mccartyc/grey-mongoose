@@ -31,7 +31,7 @@
   font-weight: 600;
   margin: 20px 0 15px 0;
   padding-bottom: 8px;
-  border-bottom: 2px solid var(--surface-dark, #0F172A);
+  /* border-bottom: 2px solid var(--surface-dark, #0F172A); */
 }
 
 /* Dashboard header specific styles */
