@@ -87,3 +87,11 @@
   border-radius: 8px;
   overflow: hidden;
 }
+
+/* No sessions message */
+.no-sessions-message {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}

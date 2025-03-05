@@ -4,6 +4,16 @@ const mongoose = require('mongoose');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const Session = require('../models/Sessions');
 const Client = require('../models/Clients');
+const rateLimit = require('express-rate-limit');
+
+// Rate limiting for dashboard operations
+const dashboardLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500 // 500 requests per 15-minute window
+});
+
+// Apply rate limiting to all dashboard routes
+router.use(dashboardLimiter);
 
 // Middleware to ensure all routes require authentication
 router.use(authenticateToken);

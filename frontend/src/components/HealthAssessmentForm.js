@@ -265,7 +265,7 @@ const MentalHealthIntakeAssessment = () => {
       {medications.length > 1 && (
         <button
           type="button"
-          className="btn remove-btn"
+          className="btn secondary-btn"
           onClick={() => handleRemoveMedication(index)}
         >
           Remove
@@ -275,7 +275,7 @@ const MentalHealthIntakeAssessment = () => {
   ))}
   <button
     type="button"
-    className="btn add-btn"
+    className="btn secondary-btn"
     onClick={handleAddMedication}
   >
     Add Medication

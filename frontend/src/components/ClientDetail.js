@@ -45,16 +45,21 @@ useEffect(() => {
       setClient(clientResponse.data);
       
       // Then fetch sessions
-      const sessionsResponse = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
-        ...config,
-        params: {
-          ...config.params,
-          sortBy: 'date',
-          order: 'desc'
-        }
-      });
-      console.log('Sessions data:', sessionsResponse.data);
-      setSessions(sessionsResponse.data);
+      try {
+        const sessionsResponse = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
+          ...config,
+          params: {
+            ...config.params,
+            sortBy: 'date',
+            order: 'desc'
+          }
+        });
+        console.log('Sessions data:', sessionsResponse.data);
+        setSessions(sessionsResponse.data);
+      } catch (sessionError) {
+        console.error('Error fetching sessions:', sessionError);
+        setSessions([]); // Set empty array if sessions fetch fails
+      }
       
       // Finally fetch upcoming events
       try {
@@ -74,14 +79,14 @@ useEffect(() => {
         
       } catch (eventError) {
         console.error('Error fetching events:', eventError);
-        // Continue with the rest of the function even if events fail
+        setUpcomingAppointments([]); // Set empty array if events fetch fails
       }
 
       // Data is already set in the individual fetch calls
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching client details:', error);
       setError(error.response?.data?.error || 'Failed to fetch client details');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -185,7 +190,9 @@ return (
             })}
           </ul>
         ) : (
-          <p>No upcoming appointments.</p>
+          <div className="empty-state">
+            <p>No upcoming appointments.</p>
+          </div>
         )}
       </div>
     </div>
