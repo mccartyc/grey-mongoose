@@ -108,6 +108,11 @@ export const canAccessRoute = (user, route) => {
     return ['Internal', 'Admin', 'User'].includes(user.role);
   }
   
+  // Check for session detail routes (e.g., /sessions/:id)
+  if (route.startsWith('/sessions/') && !route.includes('/newsession')) {
+    return ['Internal', 'Admin', 'User'].includes(user.role);
+  }
+  
   return false;
 };
 

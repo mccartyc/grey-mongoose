@@ -1,0 +1,192 @@
+/* Session Detail Page Styles */
+.session-detail-container {
+  width: 100%;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+}
+
+.session-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.session-detail-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-weight: 500;
+  animation: fadeOut 3s forwards;
+  animation-delay: 2s;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.session-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Session Info Section */
+.session-info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .session-info-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.session-info-card,
+.client-info-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.session-info-card h3,
+.client-info-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #0F172A;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Notes Section */
+.session-notes-section,
+.session-transcript-section {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.notes-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.notes-content {
+  min-height: 200px;
+  color: var(--surface-dark, #0F172A)
+}
+
+.content-box {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 15px;
+  min-height: 200px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.transcript-box {
+  font-family: inherit;
+  max-height: 400px;
+  overflow-y: auto;
+  color: var(--surface-dark, #0F172A)
+}
+
+/* Editor Styles */
+.notes-editor {
+  height: 250px;
+  padding-bottom: 20px;
+}
+
+.ql-container {
+  font-size: 16px;
+  height: 100%;
+}
+
+.ql-editor {
+  height: 100%;
+}
+
+/* Button Styles */
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.primary-btn {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: #3a7bc8;
+}
+
+.secondary-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.secondary-btn:hover {
+  background-color: #e0e0e0;
+}

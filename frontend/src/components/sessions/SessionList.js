@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import CryptoJS from 'crypto-js';
+import { decryptText, encryptText } from '../../utils/encryption';
 import DraggablePanel from './DraggablePanel';
 
 const ITEMS_PER_PAGE = 10;
@@ -23,61 +23,6 @@ const SessionList = ({
   const [panelWidth, setPanelWidth] = useState(500); // Track panel width for persistence
   
   const navigate = useNavigate();
-
-  const decryptText = (encryptedText) => {
-    if (!encryptedText) return '';
-    
-    // Check if it's already plain text
-    if (typeof encryptedText === 'string' && 
-        (encryptedText.includes(' ') || 
-         encryptedText.includes('.') || 
-         encryptedText.includes('\n'))) {
-      return encryptedText;
-    }
-    
-    // The format appears to be: [ciphertext]:[iv]
-    try {
-      // Check if the text contains a colon which would indicate the special format
-      if (encryptedText.includes(':')) {
-        console.log('Found special encryption format with IV');
-        const [ciphertext, iv] = encryptedText.split(':');
-        
-        // Get the key from the .env file
-        const key = 'c5cd94bd263cca1652097fbc5263c373b7921f0d9134eefc899ffbfcd87e314c';
-        
-        // Create key and IV word arrays
-        const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32)); // Use first 32 chars (16 bytes)
-        const ivWordArray = CryptoJS.enc.Hex.parse(iv);
-        
-        // Decrypt with the parsed key and IV
-        const decrypted = CryptoJS.AES.decrypt(
-          { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
-          keyWordArray,
-          { iv: ivWordArray }
-        ).toString(CryptoJS.enc.Utf8);
-        
-        if (decrypted && decrypted.length > 0) {
-          console.log('Successfully decrypted content with IV');
-          return decrypted;
-        }
-      }
-      
-      // Try standard decryption as fallback
-      const key = 'c5cd94bd263cca1652097fbc5263c373b7921f0d9134eefc899ffbfcd87e314c';
-      const decrypted = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
-      
-      if (decrypted && decrypted.length > 0) {
-        console.log('Successfully decrypted content with standard method');
-        return decrypted;
-      }
-      
-      console.log('All decryption attempts failed');
-      return 'Unable to decrypt content';
-    } catch (error) {
-      console.error('Error during decryption:', error.message);
-      return 'Error decrypting content';
-    }
-  };
 
   const handleViewNotes = (session) => {
     // Try to decrypt the notes and transcript
@@ -154,20 +99,8 @@ const SessionList = ({
     }
 
     try {
-      // Encrypt notes using the same format as the backend
-      const key = 'c5cd94bd263cca1652097fbc5263c373b7921f0d9134eefc899ffbfcd87e314c';
-      const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
-      
-      // Generate a random IV
-      const iv = CryptoJS.lib.WordArray.random(16);
-      
-      // Encrypt the notes
-      const encrypted = CryptoJS.AES.encrypt(selectedSession.notes, keyWordArray, {
-        iv: iv
-      });
-      
-      // Format as ciphertext:iv
-      const encryptedNotes = encrypted.ciphertext.toString(CryptoJS.enc.Hex) + ':' + iv.toString(CryptoJS.enc.Hex);
+      // Encrypt notes using our utility function
+      const encryptedNotes = encryptText(selectedSession.notes);
       
       const updatedNotes = {
         notes: encryptedNotes,
@@ -248,6 +181,7 @@ const SessionList = ({
               {!clientId && <th>Client Name</th>}
               <th>Type</th>
               <th>Length</th>
+              <th>Session Id</th>
               <th></th>
             </tr>
           </thead>
@@ -272,6 +206,7 @@ const SessionList = ({
                 {!clientId && <td>{session.clientName}</td>}
                 <td>{session.type}</td>
                 <td>{session.length}</td>
+                <td>{session.sessionId}</td>
                 <td className="action-cell">
                   <i className="fa fa-chevron-right view-icon"></i>
                 </td>
