@@ -1,7 +1,7 @@
 /* Sessions section specific styles */
 .sessions-section {
   position: relative;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 /* Make all session table rows clickable */
