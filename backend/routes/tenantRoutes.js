@@ -10,7 +10,7 @@ const User = require('../models/Users');
 // Rate limiting for tenant operations
 const tenantLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 50 // limit each IP to 50 tenant operations per hour
+  max: 200 // increased from 50 to 200 requests per hour
 });
 
 // Ensure all routes require authentication

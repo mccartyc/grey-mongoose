@@ -10,7 +10,7 @@ const { validateObjectId, sanitizeData } = require('../middleware/validation');
 // Rate limiting for user operations
 const userLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 user operations per window
+  max: 500 // limit each IP to 500 user operations per window
 });
 
 // Ensure all routes require authentication

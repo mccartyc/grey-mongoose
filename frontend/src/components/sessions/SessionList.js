@@ -9,7 +9,7 @@ import { useNotification } from '../../context/NotificationContext';
 const ITEMS_PER_PAGE = 10;
 
 const SessionList = ({ 
-  sessions, 
+  sessions = [], 
   onSessionUpdate,
   clientId,
   user
@@ -190,32 +190,40 @@ const SessionList = ({
             </tr>
           </thead>
           <tbody>
-            {currentSessions.map((session) => (
-              <tr 
-                key={session.sessionId} 
-                data-session-id={session.sessionId} 
-                className={selectedSession?.sessionId === session.sessionId ? 'selected-session' : ''}
-                onClick={() => handleViewNotes(session)}
-                role="button"
-                aria-label={`View details for session on ${new Date(session.date).toLocaleDateString()} with ${session.clientName}`}
-                tabIndex="0"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleViewNotes(session);
-                  }
-                }}
-              >
-                <td>{new Date(session.date).toLocaleDateString()}</td>
-                {!clientId && <td>{session.clientName}</td>}
-                <td>{session.type}</td>
-                <td>{session.length}</td>
-                <td>{session.sessionId}</td>
-                <td className="action-cell">
-                  <i className="fa fa-chevron-right view-icon"></i>
+            {currentSessions.length > 0 ? (
+              currentSessions.map((session) => (
+                <tr 
+                  key={session.sessionId} 
+                  data-session-id={session.sessionId} 
+                  className={selectedSession?.sessionId === session.sessionId ? 'selected-session' : ''}
+                  onClick={() => handleViewNotes(session)}
+                  role="button"
+                  aria-label={`View details for session on ${new Date(session.date).toLocaleDateString()} with ${session.clientName}`}
+                  tabIndex="0"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleViewNotes(session);
+                    }
+                  }}
+                >
+                  <td>{new Date(session.date).toLocaleDateString()}</td>
+                  {!clientId && <td>{session.clientName}</td>}
+                  <td>{session.type}</td>
+                  <td>{session.length}</td>
+                  <td>{session.sessionId}</td>
+                  <td className="action-cell">
+                    <i className="fa fa-chevron-right view-icon"></i>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={clientId ? 5 : 6} className="no-sessions-message">
+                  No sessions found for this client.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
 
@@ -228,12 +236,12 @@ const SessionList = ({
             Previous
           </button>
           <span>
-            Page {currentPage} of {totalPages}
+            Page {currentPage} of {totalPages || 1}
           </span>
           <button 
             className="btn secondary-btn"
             onClick={handleNextPage} 
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
           >
             Next
           </button>

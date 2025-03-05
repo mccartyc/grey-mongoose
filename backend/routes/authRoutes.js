@@ -5,9 +5,17 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 const { authenticateToken } = require('../middleware/authMiddleware');
+const rateLimit = require('express-rate-limit');
+
+// Rate limiting for authentication operations
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // 200 login attempts per 15 minutes
+  message: { error: 'Too many login attempts, please try again later' }
+});
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     console.log('Login request body:', req.body);
     const { email, password } = req.body;

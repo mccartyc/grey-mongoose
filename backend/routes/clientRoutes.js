@@ -11,7 +11,7 @@ const Transcript = require("../models/Transcripts");
 // Rate limiting for sensitive operations
 const createClientLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50 // limit each IP to 50 client creations per window
+  max: 200 // increased from 50 to 200 requests per window
 });
 
 // Ensure all routes require authentication

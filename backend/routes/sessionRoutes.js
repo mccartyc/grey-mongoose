@@ -88,7 +88,7 @@ const encryptText = (text) => {
 // Rate limiting for session operations
 const sessionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 session operations per window
+  max: 500 // increased from 100 to 500 requests per window
 });
 
 // Ensure all routes require authentication
