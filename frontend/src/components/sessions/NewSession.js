@@ -342,7 +342,7 @@ const NewSession = () => {
             >
               Cancel
             </button>
-            <button type="submit" className="btn create-btn" disabled={isLoading}>
+            <button type="submit" className="btn primary-btn" disabled={isLoading}>
               Create Session
             </button>
           </div>

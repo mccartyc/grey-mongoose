@@ -69,22 +69,9 @@ useEffect(() => {
         });
         
         console.log('Upcoming events data:', upcomingResponse.data);
+                
+        setUpcomingAppointments(upcomingResponse.data);
         
-        // If there are no events from the API, add a test event for this specific client
-        if (upcomingResponse.data.length === 0 && id === '679e5b3a0974107dcd8a1e62') {
-          console.log('Adding test event for Colby McCarty');
-          const testEvent = {
-            _id: 'test-event-1',
-            title: 'Colby Meeting',
-            category: 'Client Session',
-            start: new Date('2025-03-04T20:00:00.000Z'),
-            date: new Date('2025-03-04T20:00:00.000Z'),
-            clientName: 'Colby McCarty'
-          };
-          setUpcomingAppointments([testEvent]);
-        } else {
-          setUpcomingAppointments(upcomingResponse.data);
-        }
       } catch (eventError) {
         console.error('Error fetching events:', eventError);
         // Continue with the rest of the function even if events fail

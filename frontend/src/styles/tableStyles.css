@@ -51,14 +51,14 @@
 .tenant-table tr:hover,
 .client-table tr:hover,
 .session-table tr:hover {
-  background-color: #e1f0ff;
+  background-color: rgba(79, 70, 229, 0.08) !important;
   transition: background-color 0.3s;
 }
 
 .tenant-table tr.selected,
 .client-table tr.selected,
 .session-table tr.selected {
-  background-color: #cce3ff;
+  background-color: rgba(79, 70, 229, 0.08) !important;
 }
 
 .trash-icon {

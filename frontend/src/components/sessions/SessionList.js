@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { decryptText, encryptText } from '../../utils/encryption';
 import DraggablePanel from './DraggablePanel';
+import { useNotification } from '../../context/NotificationContext';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -15,7 +16,6 @@ const SessionList = ({
 }) => {
   const [selectedSession, setSelectedSession] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [message, setMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -23,6 +23,7 @@ const SessionList = ({
   const [panelWidth, setPanelWidth] = useState(500); // Track panel width for persistence
   
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   const handleViewNotes = (session) => {
     // Try to decrypt the notes and transcript
@@ -98,7 +99,7 @@ const SessionList = ({
 
   const handleSaveNotes = async () => {
     if (!selectedSession?.sessionId || !user?.token) {
-      setMessage('Missing required data for saving notes');
+      showNotification('Missing required data for saving notes', 'error');
       return;
     }
 
@@ -115,10 +116,10 @@ const SessionList = ({
 
       await onSessionUpdate(selectedSession.sessionId, updatedNotes);
       setIsEditing(false);
-      setMessage('Notes saved successfully');
+      showNotification('Notes saved successfully', 'success');
     } catch (error) {
       console.error('Error saving notes:', error);
-      setMessage(error.response?.data?.error || 'Failed to save notes');
+      showNotification(error.response?.data?.error || 'Failed to save notes', 'error');
     }
   };
 
@@ -164,7 +165,7 @@ const SessionList = ({
         <div className="header-container">
           <button 
             onClick={() => navigate(clientId ? `/clients/${clientId}/new-session` : '/sessions/newsession')} 
-            className="btn create-btn"
+            className="btn primary-btn"
           >
             New Session
           </button>
@@ -176,7 +177,6 @@ const SessionList = ({
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        {message && <p className={`message ${message.includes('success') ? 'success' : 'error'}`}>{message}</p>}
 
         <table className="session-table">
           <thead>

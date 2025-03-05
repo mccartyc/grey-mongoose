@@ -256,16 +256,7 @@ router.get('/client/:clientId',
     sortObject[sortBy] = order === 'desc' ? -1 : 1;
 
     console.log(`Looking for events with clientId: ${clientId}, tenantId: ${tenantId}`);
-    
-    // Try to find the specific event we know exists
-    const specificEvent = await Event.findById('67c61b645dff7ff6775f07b2');
-    console.log('Looking for specific event 67c61b645dff7ff6775f07b2:', specificEvent);
-    
-    if (specificEvent) {
-      console.log('Found specific event with client ID:', specificEvent.clientId.toString());
-      console.log('Comparing with requested client ID:', clientId);
-      console.log('Do they match?', specificEvent.clientId.toString() === clientId);
-    }
+
     
     // Check all events in the system to find matches by string comparison
     const allEvents = await Event.find({});
@@ -332,21 +323,7 @@ router.get('/client/:clientId',
           eventObj.date = event.start; // Add date field for consistency with sessions
           return eventObj;
         });
-        
-        // For this specific client ID, add a hardcoded event if we didn't find any
-        if (formattedEvents.length === 0 && clientId === '679e5b3a0974107dcd8a1e62') {
-          console.log('Adding hardcoded event for Colby McCarty');
-          const hardcodedEvent = {
-            _id: '67c61b645dff7ff6775f07b2',
-            title: 'Colby Meeting',
-            category: 'Client Session',
-            start: new Date('2025-03-04T20:00:00.000Z'),
-            date: new Date('2025-03-04T20:00:00.000Z'),
-            clientName: clientName
-          };
-          formattedEvents.push(hardcodedEvent);
-        }
-        
+                
         console.log(`Returning ${formattedEvents.length} events for client ${clientName}`);
         res.status(200).json(formattedEvents);
       } else {

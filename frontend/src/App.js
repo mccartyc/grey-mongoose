@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
 import { ApiCallProvider } from './context/ApiCallContext';
+import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -27,128 +28,130 @@ const App = () => (
   <Router>
     <AuthContextProvider>
       <ApiCallProvider>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+        <NotificationProvider>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requiredRoles={['Internal', 'Admin']}>
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/clients"
-          element={
-            <ProtectedRoute>
-              <Clients />
-            </ProtectedRoute>
-          }
-        />
-        <Route 
-          path="/clients/:id/overview"
-          element={
-            <ProtectedRoute>
-              <ClientDetail />
-             </ProtectedRoute>
-            } 
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
           />
-        <Route 
-          path="/clients/:id/intake"
-          element={
-            <ProtectedRoute>
-              <Intake />
-             </ProtectedRoute>
-            } 
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRoles={['Internal', 'Admin']}>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clients"
+            element={
+              <ProtectedRoute>
+                <Clients />
+              </ProtectedRoute>
+            }
           />
           <Route 
-          path="/clients/:id/health-assessment"
-          element={
-            <ProtectedRoute>
-               <HealthAssessment/>
-             </ProtectedRoute>
-            } 
-          />
+            path="/clients/:id/overview"
+            element={
+              <ProtectedRoute>
+                <ClientDetail />
+               </ProtectedRoute>
+              } 
+            />
           <Route 
-          path="/clients/:id/health-plan"
-          element={
-            <ProtectedRoute>
-              <HealthPlan/>
-             </ProtectedRoute>
-            } 
+            path="/clients/:id/intake"
+            element={
+              <ProtectedRoute>
+                <Intake />
+               </ProtectedRoute>
+              } 
+            />
+            <Route 
+            path="/clients/:id/health-assessment"
+            element={
+              <ProtectedRoute>
+                 <HealthAssessment/>
+               </ProtectedRoute>
+              } 
+            />
+            <Route 
+            path="/clients/:id/health-plan"
+            element={
+              <ProtectedRoute>
+                <HealthPlan/>
+               </ProtectedRoute>
+              } 
+            />
+            <Route 
+            path="/clients/:id/new-session"
+            element={
+              <ProtectedRoute>
+                <NewClientSession/>
+               </ProtectedRoute>
+              } 
+            />
+          <Route
+            path="/sessions"
+            element={
+              <ProtectedRoute>
+                <Sessions />
+              </ProtectedRoute>
+            }
           />
-          <Route 
-          path="/clients/:id/new-session"
-          element={
-            <ProtectedRoute>
-              <NewClientSession/>
-             </ProtectedRoute>
-            } 
+          <Route
+            path="/sessions/:id"
+            element={
+              <ProtectedRoute>
+                <SessionDetailPage />
+              </ProtectedRoute>
+            }
           />
-        <Route
-          path="/sessions"
-          element={
-            <ProtectedRoute>
-              <Sessions />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/sessions/:id"
-          element={
-            <ProtectedRoute>
-              <SessionDetailPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <ProtectedRoute>
-              <Calendar />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/invoicing"
-          element={
-            <ProtectedRoute>
-              <Invoicing />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/sessions/newsession"
-          element={
-            <ProtectedRoute>
-              <NewSession />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/invoicing"
+            element={
+              <ProtectedRoute>
+                <Invoicing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sessions/newsession"
+            element={
+              <ProtectedRoute>
+                <NewSession />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+        </NotificationProvider>
       </ApiCallProvider>
     </AuthContextProvider>
   </Router>

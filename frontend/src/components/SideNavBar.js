@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaCalendarAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaAngleDoubleLeft, FaUserCog, FaRegClipboard, FaCog } from 'react-icons/fa';
 import '../styles/styles.css';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
-import { useApiCall } from '../context/ApiCallContext'; // Import API Call Context
+// import { useApiCall } from '../context/ApiCallContext'; // Import API Call Context
 import ApiCallCounter from './ApiCallCounter'; // Import API Call Counter component
 import mindcloudLogo from '../assets/mindcloud_white.png';
 
