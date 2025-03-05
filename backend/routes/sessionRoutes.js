@@ -6,6 +6,85 @@ const Session = require("../models/Sessions"); // Adjust the path as necessary
 const rateLimit = require('express-rate-limit');
 const CryptoJS = require('crypto-js');
 
+// Utility functions for encryption/decryption
+const decryptText = (encryptedText) => {
+  if (!encryptedText) return '';
+  
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key) {
+    console.error('Encryption key not found in environment variables');
+    return 'Error: Encryption key not configured';
+  }
+  
+  try {
+    // Check if the text contains a colon which would indicate the special format
+    if (encryptedText.includes(':')) {
+      const [ciphertext, iv] = encryptedText.split(':');
+      
+      // Create key and IV word arrays
+      const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
+      const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+      
+      // Decrypt with the parsed key and IV
+      const decrypted = CryptoJS.AES.decrypt(
+        { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
+        keyWordArray,
+        { iv: ivWordArray }
+      ).toString(CryptoJS.enc.Utf8);
+      
+      if (decrypted && decrypted.length > 0) {
+        return decrypted;
+      }
+    }
+    
+    // Try standard decryption as fallback
+    const decrypted = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+    
+    if (decrypted && decrypted.length > 0) {
+      return decrypted;
+    }
+    
+    return 'Unable to decrypt content';
+  } catch (error) {
+    console.error('Error during decryption:', error.message);
+    return 'Error decrypting content';
+  }
+};
+
+const encryptText = (text) => {
+  if (!text) return '';
+  
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key) {
+    console.error('Encryption key not found in environment variables');
+    throw new Error('Encryption key not configured');
+  }
+  
+  try {
+    // Create key word array
+    const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
+    
+    // Use fixed IV if available, otherwise generate random
+    let iv;
+    if (process.env.ENCRYPTION_IV) {
+      iv = CryptoJS.enc.Hex.parse(process.env.ENCRYPTION_IV);
+    } else {
+      iv = CryptoJS.lib.WordArray.random(16);
+    }
+    
+    // Encrypt the text
+    const encrypted = CryptoJS.AES.encrypt(text, keyWordArray, {
+      iv: iv
+    });
+    
+    // Format as ciphertext:iv
+    return encrypted.ciphertext.toString(CryptoJS.enc.Hex) + ':' + iv.toString(CryptoJS.enc.Hex);
+  } catch (error) {
+    console.error('Error during encryption:', error.message);
+    throw new Error('Failed to encrypt content');
+  }
+};
+
 // Rate limiting for session operations
 const sessionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -47,19 +126,8 @@ const validateSessionData = (req, res, next) => {
   // Convert length to number for storage
   req.body.length = sessionLength;
 
-  // Decrypt transcript if present
-  if (req.body.transcript) {
-    try {
-      const decryptedTranscript = CryptoJS.AES.decrypt(
-        req.body.transcript,
-        process.env.ENCRYPTION_KEY
-      ).toString(CryptoJS.enc.Utf8);
-      req.body.transcript = decryptedTranscript;
-    } catch (error) {
-      console.error('Error decrypting transcript:', error);
-      return res.status(400).json({ error: 'Invalid transcript format' });
-    }
-  }
+  // We don't need to decrypt notes or transcript here as they're already encrypted
+  // from the frontend and we'll store them encrypted in the database
 
   next();
 };
@@ -195,15 +263,10 @@ router.get("/client/:clientId", auditSessionAction('VIEW_CLIENT_SESSIONS'), asyn
 
     const sessions = await Session.find(query).sort(sortOptions);
     
-    // Convert sessions to plain objects and encrypt transcripts
+    // Convert sessions to plain objects but don't encrypt/decrypt
+    // The frontend will handle decryption
     const processedSessions = sessions.map(session => {
       const data = session.toObject();
-      if (data.transcript) {
-        data.transcript = CryptoJS.AES.encrypt(
-          data.transcript,
-          process.env.ENCRYPTION_KEY
-        ).toString();
-      }
       return data;
     });
 
@@ -231,9 +294,15 @@ router.put("/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res)
   console.log("Request to update session:", { sessionId, date, length, type, notes });
 
   try {
+    // Create update data object with only the fields that are provided
+    const updateData = {};
+    if (date) updateData.date = date;
+    if (timeMet) updateData.timeMet = timeMet;
+    if (notes) updateData.notes = notes; // Keep notes encrypted from frontend
+
     const updatedSession = await Session.findByIdAndUpdate(
       sessionId,
-      { date, timeMet, notes },
+      updateData,
       { new: true } // Return the updated session
     );
 

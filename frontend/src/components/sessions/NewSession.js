@@ -8,6 +8,7 @@ import SessionDetails from './SessionDetails';
 import TranscriptSection from './TranscriptSection';
 import NotesEditor from './NotesEditor';
 import CryptoJS from 'crypto-js';
+import { encryptText, decryptText } from '../../utils/encryption';
 import '../../styles/Transcript.css';
 import '../../styles/formLayout.css';
 import '../../styles/sectionStyles.css';
@@ -178,11 +179,8 @@ const NewSession = () => {
       reader.onloadend = async () => {
         const base64Audio = reader.result.split(',')[1];
         
-        // Encrypt audio data before transmission
-        const encryptedAudio = CryptoJS.AES.encrypt(
-          base64Audio,
-          process.env.REACT_APP_ENCRYPTION_KEY
-        ).toString();
+        // Encrypt audio data before transmission using the utility function
+        const encryptedAudio = encryptText(base64Audio);
         
         // Send to backend for Anthropic processing
         const response = await axios.post(
@@ -201,10 +199,8 @@ const NewSession = () => {
         );
         
         if (response.data.transcript) {
-          const decryptedTranscript = CryptoJS.AES.decrypt(
-            response.data.transcript,
-            process.env.REACT_APP_ENCRYPTION_KEY
-          ).toString(CryptoJS.enc.Utf8);
+          // Use the decryptText utility function
+          const decryptedTranscript = decryptText(response.data.transcript);
           
           setTranscriptBoxContent(prev => prev + decryptedTranscript);
           setTranscriptText(decryptedTranscript);
@@ -238,17 +234,17 @@ const NewSession = () => {
       
       // Ensure transcript text is a string and encrypt it
       const formattedTranscript = transcriptText || '';
-      const encryptedTranscript = CryptoJS.AES.encrypt(
-        formattedTranscript,
-        process.env.REACT_APP_ENCRYPTION_KEY
-      ).toString();
+      const encryptedTranscript = encryptText(formattedTranscript);
+      
+      // Encrypt notes if they exist
+      const encryptedNotes = notes ? encryptText(notes) : '';
       
       await createSession({
         clientId: selectedClientId,
         date: formattedDate,
         length: sessionLength.toString(),
         type,
-        notes: notes || '',
+        notes: encryptedNotes,
         transcript: encryptedTranscript,
         transcriptStartTime: startTime?.toISOString() || null,
         transcriptEndTime: endTime?.toISOString() || null,

@@ -112,6 +112,11 @@ export const canAccessRoute = (user, route) => {
   if (route.startsWith('/sessions/') && !route.includes('/newsession')) {
     return ['Internal', 'Admin', 'User'].includes(user.role);
   }
+
+  // Check for new session route
+  if (route === '/sessions/newsession' || route.startsWith('/clients/') && route.includes('/new-session')) {
+    return ['Internal', 'Admin', 'User'].includes(user.role);
+  }
   
   return false;
 };

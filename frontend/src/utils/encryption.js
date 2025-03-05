@@ -81,8 +81,15 @@ export const encryptText = (text) => {
     // Create key word array
     const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
     
-    // Generate a random IV
-    const iv = CryptoJS.lib.WordArray.random(16);
+    // Use fixed IV if available, otherwise generate random
+    let iv;
+    if (process.env.REACT_APP_ENCRYPTION_IV) {
+      console.log('Using fixed IV from environment variables');
+      iv = CryptoJS.enc.Hex.parse(process.env.REACT_APP_ENCRYPTION_IV);
+    } else {
+      console.log('Using random IV');
+      iv = CryptoJS.lib.WordArray.random(16);
+    }
     
     // Encrypt the text
     const encrypted = CryptoJS.AES.encrypt(text, keyWordArray, {
