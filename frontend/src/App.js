@@ -18,6 +18,7 @@ import Calendar from "./pages/Calendar";
 import Invoicing from "./pages/Invoicing";
 import Sessions from "./pages/Sessions";
 import NewSession from './pages/NewSession';
+import SessionDetailPage from './pages/SessionDetailPage';
 import Settings from './pages/Settings';
 import Unauthorized from './pages/Unauthorized';
 
@@ -112,6 +113,14 @@ const App = () => (
           element={
             <ProtectedRoute>
               <Sessions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sessions/:id"
+          element={
+            <ProtectedRoute>
+              <SessionDetailPage />
             </ProtectedRoute>
           }
         />

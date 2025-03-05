@@ -7,19 +7,21 @@
 
 .sub-title {
   font-size: 1.2rem;
+  font-weight: 600;
   color: #2c3e50;
   margin-bottom: 8px;
 }
 
 .description-text {
-  color: #7f8c8d;
+  color: #64748b;
+  margin-bottom: 16px;
   font-size: 0.95rem;
 }
 
 .help-text {
-  color: #7f8c8d;
+  color: #64748b;
   font-size: 0.85rem;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* Toggle Switch */
@@ -86,18 +88,23 @@ input:checked + .slider:before {
 /* Form Elements */
 .form-select {
   width: 100%;
-  padding: 8px 12px;
+  padding: 12px 16px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 1rem;
   background-color: white;
-  color: #2c3e50;
-  font-size: 0.95rem;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
 }
 
 .form-select:focus {
   border-color: #49274A;
   outline: none;
+  box-shadow: 0 0 0 2px rgba(73, 39, 74, 0.1);
 }
 
 .form-select:disabled {
@@ -108,15 +115,187 @@ input:checked + .slider:before {
 .error-message {
   background-color: #fee2e2;
   color: #991b1b;
-  padding: 12px 16px;
-  border-radius: 4px;
-  margin-bottom: 16px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
 }
 
 .success-message {
   background-color: #dcfce7;
   color: #166534;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* Profile Settings Styles */
+.profile-settings-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.settings-tabs {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 32px;
+  gap: 8px;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  border-radius: 8px 8px 0 0;
+}
+
+.tab-button:hover {
+  color: #49274A;
+  background-color: rgba(73, 39, 74, 0.05);
+}
+
+.tab-button.active {
+  color: #49274A;
+  font-weight: 600;
+  background-color: rgba(73, 39, 74, 0.08);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #49274A;
+}
+
+.tab-content {
+  padding: 16px 0;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #0F172A;
+}
+
+.form-input {
+  width: 100%;
   padding: 12px 16px;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #49274A;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(73, 39, 74, 0.1);
+}
+
+.form-input:disabled {
+  background-color: #f5f6f7;
+  cursor: not-allowed;
+}
+
+.primary-button {
+  padding: 12px 20px;
+  background-color: #49274A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+.primary-button:hover {
+  background-color: #3d1d3d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(73, 39, 74, 0.2);
+}
+
+.primary-button:disabled {
+  background-color: #9c7a9d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Settings Page Layout */
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
+.settings-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  width: 100%;
+}
+
+/* MFA Settings Styles */
+.mfa-settings {
+  padding: 8px 0;
+}
+
+.security-settings {
+  max-width: 600px;
+}
+
+.mfa-toggle-switch {
   margin-bottom: 16px;
+}
+
+.mfa-toggle-switch .toggle-switch {
+  margin-right: 12px;
+}
+
+.mfa-toggle-switch .sub-title {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.mfa-toggle-switch .description-text {
+  margin-bottom: 12px;
+}
+
+.mfa-toggle-switch .help-text {
+  margin-top: 4px;
 }

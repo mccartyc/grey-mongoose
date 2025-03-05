@@ -1,0 +1,284 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { decryptText, encryptText } from '../utils/encryption';
+import '../styles/sessionDetailStyles.css';
+
+const SessionDetail = () => {
+  const { id } = useParams();
+  const [session, setSession] = useState(null);
+  const [client, setClient] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [message, setMessage] = useState('');
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchSessionDetails = async () => {
+      if (!id || !user?.tenantId || !user?.userId || !user?.token) {
+        console.error('Missing required data for fetching session details');
+        return;
+      }
+
+      const config = {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        },
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        console.log(`Fetching data for session ID: ${id}`);
+        
+        // First, fetch all sessions to find the one with matching sessionId
+        const allSessionsResponse = await axios.get(
+          `http://localhost:5001/api/sessions`,
+          config
+        );
+        
+        // Find the session with the matching sessionId
+        const sessionData = allSessionsResponse.data.find(
+          session => session.sessionId === id
+        );
+        
+        if (!sessionData) {
+          throw new Error('Session not found');
+        }
+        
+        console.log('Session data:', sessionData);
+        
+        // Decrypt notes and transcript if they exist
+        if (sessionData.notes) {
+          sessionData.notes = decryptText(sessionData.notes);
+        }
+        if (sessionData.transcript) {
+          sessionData.transcript = decryptText(sessionData.transcript);
+        }
+        
+        setSession(sessionData);
+        
+        // If the session has a client ID, fetch client details
+        if (sessionData.clientId && typeof sessionData.clientId === 'object') {
+          console.log('Client data from session object:', sessionData.clientId);
+          
+          // Check if we have a complete client object with phone and email
+          if (sessionData.clientId._id && 
+              (sessionData.clientId.phone || sessionData.clientId.email)) {
+            setClient(sessionData.clientId);
+          } else {
+            // If client object is incomplete, fetch full client details
+            try {
+              const clientId = sessionData.clientId._id || sessionData.clientId;
+              const clientResponse = await axios.get(
+                `http://localhost:5001/api/clients/${clientId}`, 
+                config
+              );
+              console.log('Client data from API (incomplete object case):', clientResponse.data);
+              setClient(clientResponse.data);
+            } catch (clientError) {
+              console.error('Error fetching complete client details:', clientError);
+              // Use what we have if fetch fails
+              setClient(sessionData.clientId);
+            }
+          }
+        } else if (sessionData.clientId) {
+          // Fetch client details if clientId is just an ID
+          try {
+            const clientResponse = await axios.get(
+              `http://localhost:5001/api/clients/${sessionData.clientId}`, 
+              config
+            );
+            console.log('Client data from API:', clientResponse.data);
+            console.log('Client phone:', clientResponse.data.phone);
+            console.log('Client email:', clientResponse.data.email);
+            setClient(clientResponse.data);
+          } catch (clientError) {
+            console.error('Error fetching client details:', clientError);
+            // Continue even if client fetch fails
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching session details:', error);
+        setError(error.response?.data?.error || 'Failed to fetch session details');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSessionDetails();
+  }, [id, user?.tenantId, user?.userId, user?.token]);
+
+  const handleEditNotes = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveNotes = async () => {
+    if (!session?.sessionId || !user?.token) {
+      setMessage('Missing required data for saving notes');
+      return;
+    }
+
+    try {
+      // Encrypt the notes using our utility function
+      const encryptedNotes = encryptText(session.notes);
+      
+      const updatedNotes = {
+        notes: encryptedNotes,
+        sessionId: session.sessionId,
+        tenantId: user.tenantId,
+        userId: user.userId
+      };
+
+      await axios.put(
+        `http://localhost:5001/api/sessions/${session._id}`,
+        updatedNotes,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+      );
+      
+      setIsEditing(false);
+      setMessage('Notes saved successfully');
+      
+      // Clear the message after 3 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 3000);
+    } catch (error) {
+      console.error('Error saving notes:', error);
+      setMessage(error.response?.data?.error || 'Failed to save notes');
+    }
+  };
+
+  if (error) {
+    return <div className="error-message">Error: {error}</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="spinner-container">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <div className="error-message">Session not found</div>;
+  }
+
+  return (
+    <div className="session-detail-container">
+      {message && <p className={`message ${message.includes('success') ? 'success' : 'error'}`}>{message}</p>}
+      
+      <div className="session-detail-content">
+        <div className="session-info-section">
+
+          {client && (
+            <div className="client-info-card">
+              <h3>Client Information</h3>
+              <div className="info-grid">
+                <div className="info-item">
+                  <span className="info-label">Name:</span>
+                  <span className="info-value">{client.firstName} {client.lastName}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Phone:</span>
+                  <span className="info-value">
+                    {client.phone || (client.contact && client.contact.phone) || 'Not available'}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Email:</span>
+                  <span className="info-value">
+                    {client.email || (client.contact && client.contact.email) || 'Not available'}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Client ID:</span>
+                  <span className="info-value">{client._id}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+<div className="session-info-card">
+            <h3>Session Information</h3>
+            <div className="info-grid">
+              <div className="info-item">
+                <span className="info-label">Date:</span>
+                <span className="info-value">{new Date(session.date).toLocaleDateString()}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Type:</span>
+                <span className="info-value">{session.type}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Length:</span>
+                <span className="info-value">{session.length} minutes</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Session ID:</span>
+                <span className="info-value">{session.sessionId}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="session-notes-section">
+          <div className="notes-header">
+            <h3>Session Notes</h3>
+            {isEditing ? (
+              <button className="btn primary-btn" onClick={handleSaveNotes}>Save Notes</button>
+            ) : (
+              <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
+            )}
+          </div>
+          <div className="notes-content">
+            {isEditing ? (
+              <ReactQuill
+                value={session.notes}
+                onChange={(value) =>
+                  setSession((prev) => ({ ...prev, notes: value }))
+                }
+                className="notes-editor"
+              />
+            ) : (
+              <div className="content-box">
+                {/* Check if notes appear to be HTML content */}
+                {session.notes && session.notes.includes('<') && session.notes.includes('>') ? (
+                  <div dangerouslySetInnerHTML={{ __html: session.notes }} />
+                ) : (
+                  /* Display as plain text if not HTML */
+                  <p>{session.notes || 'No notes available for this session.'}</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="session-transcript-section">
+        <div className="notes-header">
+          <h3>Session Transcript</h3>
+          </div>
+          <div className="content-box transcript-box">
+            <p>{session.transcript || 'No transcript available for this session.'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SessionDetail;

@@ -181,4 +181,117 @@ router.put('/:userId/deactivate', auditUserAction('DEACTIVATE_USER'), async (req
   }
 });
 
+// Update user profile information
+router.put('/:userId/profile', 
+  validateUserUpdate, 
+  auditUserAction('UPDATE_PROFILE'),
+  async (req, res) => {
+    const { userId } = req.params;
+    const { firstName, lastName, email, phoneNumber, tenantId } = req.body;
+    
+    try {
+      // Validate required parameters
+      if (!userId || !tenantId) {
+        return res.status(400).json({ error: "User ID and Tenant ID are required" });
+      }
+      
+      // Validate ObjectId format
+      if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(tenantId)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+      }
+      
+      // Check if user exists and belongs to the tenant
+      const existingUser = await User.findOne({
+        _id: userId,
+        tenantId: tenantId,
+        isActive: true
+      });
+      
+      if (!existingUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Check if email is being changed and if it's already in use
+      if (email && email !== existingUser.email) {
+        const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+        if (emailExists) {
+          return res.status(400).json({ error: "Email is already in use" });
+        }
+      }
+      
+      // Update user information
+      const updateData = {};
+      if (firstName) updateData.firstname = firstName;
+      if (lastName) updateData.lastname = lastName;
+      if (email) updateData.email = email;
+      if (phoneNumber) updateData.phoneNumber = phoneNumber;
+      
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true }
+      ).select('-password');
+      
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Failed to update profile", details: error.message });
+    }
+});
+
+// Change user password
+router.put('/:userId/password',
+  auditUserAction('CHANGE_PASSWORD'),
+  async (req, res) => {
+    const { userId } = req.params;
+    const { currentPassword, newPassword, tenantId } = req.body;
+    
+    try {
+      // Validate required parameters
+      if (!userId || !tenantId || !currentPassword || !newPassword) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      // Validate ObjectId format
+      if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(tenantId)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+      }
+      
+      // Find the user
+      const user = await User.findOne({
+        _id: userId,
+        tenantId: tenantId,
+        isActive: true
+      });
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Verify current password
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: "Current password is incorrect" });
+      }
+      
+      // Validate new password
+      if (newPassword.length < 8) {
+        return res.status(400).json({ error: "Password must be at least 8 characters long" });
+      }
+      
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Update password
+      user.password = hashedPassword;
+      user.passwordChangedAt = new Date();
+      await user.save();
+      
+      res.status(200).json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ error: "Failed to change password", details: error.message });
+    }
+});
+
 module.exports = router;

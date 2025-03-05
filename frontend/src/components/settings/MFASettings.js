@@ -110,9 +110,7 @@ const MFASettings = () => {
   }
 
   return (
-    <div>
-      <h2 className="section-title">Multi-Factor Authentication</h2>
-      
+    <div className="mfa-settings">
       {error && (
         <div className="error-message">
           {error}

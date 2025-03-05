@@ -1,7 +1,8 @@
 import React from 'react';
-import MFASettings from '../components/settings/MFASettings';
+import ProfileSettings from '../components/settings/ProfileSettings';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
+import '../styles/settingsStyles.css';
 
 const Settings = () => {
   return (
@@ -13,11 +14,10 @@ const Settings = () => {
           <p>Manage your account preferences and security settings</p>
         </div>
         
-        <div className="metrics-grid">
-          <div className="metric-card">
-            <MFASettings />
+        <div className="settings-container">
+          <div className="settings-card">
+            <ProfileSettings />
           </div>
-          {/* Add other settings sections here */}
         </div>
       </div>
     </div>
