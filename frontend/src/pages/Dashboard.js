@@ -208,50 +208,45 @@ const Dashboard = () => {
           </div>
 
           {/* Top Row - Key Metrics */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '24px',
-            marginBottom: '32px'
-          }}>
-            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-              <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '8px', fontWeight: 600 }}>Total Clients</h3>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#4F46E5' }}>{formatNumber(metrics.totalClients || 0)}</div>
+          <div className="metrics-grid">
+            <div className="metric-card">
+              <h3 className="metric-title">Total Clients</h3>
+              <div className="metric-value">{formatNumber(metrics.totalClients || 0)}</div>
             </div>
 
-            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-              <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '8px', fontWeight: 600 }}>Total Sessions</h3>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#4F46E5' }}>{formatNumber(metrics.totalSessions || 0)}</div>
-              <div style={{ fontSize: '0.75rem', color: '#10B981', marginTop: '4px' }}>
+            <div className="metric-card">
+              <h3 className="metric-title">Total Sessions</h3>
+              <div className="metric-value">{formatNumber(metrics.totalSessions || 0)}</div>
+              <div className="metric-subtext highlight">
                 {metrics.sessionsLastWeek || 0} sessions this week
               </div>
             </div>
 
-            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-              <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '8px', fontWeight: 600 }}>This Month's Sessions</h3>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#4F46E5' }}>{metrics.thisMonthSessions || 0}</div>
-              <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>
+            <div className="metric-card">
+              <h3 className="metric-title">This Month's Sessions</h3>
+              <div className="metric-value">{metrics.thisMonthSessions || 0}</div>
+              <div className="metric-subtext">
                 Since {new Date().toLocaleString('default', { month: 'long' })} 1st
               </div>
             </div>
 
-            <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-              <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '8px', fontWeight: 600 }}>Upcoming Sessions</h3>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#4F46E5' }}>{upcomingSessionsCount}</div>
-              <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>
+            <div className="metric-card">
+              <h3 className="metric-title">Upcoming Sessions</h3>
+              <div className="metric-value">{upcomingSessionsCount}</div>
+              <div className="metric-subtext">
                 Next 30 days
               </div>
             </div>
           </div>
 
           {/* Charts and Sessions Section */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+          <div className="charts-sessions-grid">
             {/* Left Column - Charts */}
-            <div style={{ display: 'grid', gridTemplateRows: 'auto auto', gap: '16px' }}>
+            <div className="charts-column">
               {/* Client Growth Chart */}
-              <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Client Growth</h3>
-                <div style={{ flex: 1, position: 'relative' }}>
+              <div className="chart-container">
+                <h3 className="chart-title">Client Growth</h3>
+                <div className="chart-content">
                   <Line data={clientGrowthData} options={{
                     responsive: true,
                     maintainAspectRatio: false,
@@ -269,9 +264,9 @@ const Dashboard = () => {
               </div>
               
               {/* Session Types Chart - Now under Client Growth */}
-              <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Session Types</h3>
-                <div style={{ flex: 1, position: 'relative' }}>
+              <div className="chart-container">
+                <h3 className="chart-title">Session Types</h3>
+                <div className="chart-content">
                   <Pie data={sessionTypesData} options={{
                     responsive: true,
                     maintainAspectRatio: false,
@@ -287,24 +282,21 @@ const Dashboard = () => {
             </div>
             
             {/* Right Column - Sessions */}
-            <div style={{ display: 'grid', gridTemplateRows: 'auto auto', gap: '16px' }}>
-
-               {/* Upcoming Sessions */}
-               <div style={{ height: '280px' }}>
+            <div className="charts-column">
+              {/* Upcoming Sessions */}
                 <UpcomingSessions />
-              </div>
               
-              {/* Recent Sessions - Now next to Upcoming Sessions */}
-              <div style={{ background: 'white', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', height: '280px', display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '0.875rem', color: '#0F172A', marginBottom: '12px', fontWeight: 600, paddingBottom: '8px', borderBottom: '1px solid rgba(15, 23, 42, 0.1)' }}>Recent Sessions</h3>
-                <div style={{ flex: 1, overflowY: 'auto' }}>
+              {/* Recent Sessions */}
+              <div className="recent-sessions-container">
+                <h3 className="recent-sessions-title">Recent Sessions</h3>
+                <div className="recent-sessions-content">
                   {metrics.recentSessions?.length > 0 ? (
                     metrics.recentSessions.map((session, index) => (
-                      <div key={index} style={{ padding: '8px', borderRadius: '6px', marginBottom: '8px', background: 'rgba(79, 70, 229, 0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#0F172A' }}>{session.clientName}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ background: 'rgba(79, 70, 229, 0.1)', color: '#4F46E5', padding: '2px 6px', borderRadius: '12px', fontSize: '0.6875rem', fontWeight: 500 }}>{session.type}</span>
-                          <span style={{ color: '#666', fontSize: '0.6875rem' }}>
+                      <div key={index} className="session-item">
+                        <div className="session-client-name">{session.clientName}</div>
+                        <div className="session-details">
+                          <span className="session-type-badge">{session.type}</span>
+                          <span className="session-date">
                             {new Date(session.date).toLocaleDateString(undefined, {
                               month: 'short',
                               day: 'numeric',
@@ -316,14 +308,12 @@ const Dashboard = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={{ textAlign: 'center', padding: '16px', color: '#666', fontSize: '0.8125rem' }}>
-                      No recent sessions found
+                    <div className="empty-state">
+                      <p>No recent sessions found</p>
                     </div>
                   )}
                 </div>
               </div>
-              
-             
             </div>
           </div>
         </div>

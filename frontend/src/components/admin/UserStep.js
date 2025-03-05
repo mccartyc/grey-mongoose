@@ -238,7 +238,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={() => setShowForm(true)} className="btn create-btn">Create New</button>
+            <button onClick={() => setShowForm(true)} className="btn primary-btn">Create New</button>
           </div>
         </div>
         <table className="tenant-table">
@@ -297,10 +297,10 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
           </tbody>
         </table>
         <div className="right-button-container">
-          <button className="btn create-btn" onClick={onPrevious}>
+          <button className="btn primary-btn" onClick={onPrevious}>
             Previous
           </button>
-          <button className="btn create-btn" onClick={handleNextStep} disabled={!selectedUserId}>
+          <button className="btn primary-btn" onClick={handleNextStep} disabled={!selectedUserId}>
             Next
           </button>
         </div>

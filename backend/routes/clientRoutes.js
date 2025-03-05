@@ -426,4 +426,75 @@ router.get("/:clientId",
   }
 });
 
+// NEW: PUT: Update a specific client
+router.put("/:clientId", 
+  validateObjectId,
+  validateClientData,
+  auditClientAction('UPDATE_CLIENT'),
+  async (req, res) => {
+  const { clientId } = req.params;
+  const {
+    tenantId,
+    userId,
+    firstName,
+    lastName,
+    streetAddress,
+    birthday,
+    gender,
+    city,
+    state,
+    zipcode,
+    email,
+    phone,
+  } = req.body;
+
+  if (!tenantId || !userId || !clientId) {
+    console.error("Validation error: Tenant ID, User ID, and Client ID are required");
+    return res.status(400).json({ error: "Tenant ID, User ID, and Client ID are required" });
+  }
+
+  try {
+    console.log("Updating client with ID:", clientId);
+    console.log("Tenant ID:", tenantId);
+    console.log("User ID:", userId);
+
+    const updatedClient = await Client.findOneAndUpdate(
+      {
+        _id: clientId,
+        tenantId: tenantId,
+        isActive: true,
+      },
+      {
+        firstName,
+        lastName,
+        streetAddress,
+        birthday,
+        gender,
+        city,
+        state,
+        zipcode,
+        email,
+        phone,
+        updatedAt: new Date(),
+        updatedBy: req.user.userId
+      },
+      { new: true }
+    );
+
+    if (!updatedClient) {
+      console.log(`Client with ID ${clientId} not found or not active`);
+      return res.status(404).json({ error: "Client not found or not active" });
+    }
+
+    console.log("Client updated successfully:", updatedClient);
+    res.json(updatedClient);
+  } catch (error) {
+    console.error("Error updating client:", error);
+    res.status(500).json({ 
+      error: 'Failed to update client',
+      requestId: req.requestId
+    });
+  }
+});
+
 module.exports = router;

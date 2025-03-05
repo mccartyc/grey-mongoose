@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext'; // Import AuthContext
+import { useNotification } from '../../context/NotificationContext'; // Import NotificationContext
 
 
 const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
@@ -24,6 +25,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
 
 
   const { user } = useAuth(); // Access the current user from AuthContext
+  const { showNotification } = useNotification(); // Use notification context
   // const { tenantId, userId, token } = user; // Get tenantId and userId from user context
 
   const calculateAge = (birthday) => {
@@ -71,7 +73,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     console.log('selectedUser:', selectedUser); // Debug log
 
     if (!selectedTenant || !selectedUser) {
-      setMessage('Error: Tenant or User not selected.');
+      showNotification('Error: Tenant or User not selected.', 'error');
       return;
     }
 
@@ -97,13 +99,13 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
+      showNotification(`Client created: ${response.data.firstName} ${response.data.lastName}`, 'success');
       setClients((prev) => [...prev, response.data]);
       setShowForm(false);
       resetFormFields();
     } catch (error) {
       console.error('Error creating client:', error);
-      setMessage(error.response?.data?.error || 'Failed to create client');
+      showNotification(error.response?.data?.error || 'Failed to create client', 'error');
     }
   };
 
@@ -140,7 +142,16 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
     setCity(client.city);
     setState(client.state);
     setZipcode(client.zipcode);
-    setBirthday(client.birthday);
+    
+    // Format the birthday to YYYY-MM-DD for the date input
+    if (client.birthday) {
+      const date = new Date(client.birthday);
+      const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      setBirthday(formattedDate);
+    } else {
+      setBirthday('');
+    }
+    
     setMessage(false);
     setShowForm(true); // Show the form for editing
   };
@@ -159,7 +170,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
 
     if (!selectedTenant || !selectedTenant._id) {
       console.error('No tenant selected');
-      setMessage('Error: No tenant selected');
+      showNotification('Error: No tenant selected', 'error');
       return;
     }
 
@@ -191,12 +202,12 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       setClients((prev) => prev.filter((client) => client._id !== clientToDelete._id));
       setShowDeleteModal(false);
       setClientToDelete(null);
-      setMessage('Client successfully deactivated');
+      showNotification('Client successfully deactivated', 'success');
       await fetchClients(); // Refresh the client list
     } catch (error) {
       console.error('Error deleting client:', error);
       const errorMessage = error.response?.data?.error || 'Failed to delete client';
-      setMessage(errorMessage);
+      showNotification(errorMessage, 'error');
       
       if (error.response?.data?.details) {
         console.error('Error details:', error.response.data.details);
@@ -297,7 +308,6 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                 <button type="submit" className="btn primary-btn">Create Client</button>
               </div>
             </form>
-            {message && <p>{message}</p>}
           </div>
         </div>
       )}
@@ -340,7 +350,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={() => setShowForm(true)} className="btn create-btn">Create New</button>
+            <button onClick={() => setShowForm(true)} className="btn primary-btn">Create New</button>
           </div>
         </div>
         <table className="client-table">
@@ -399,7 +409,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
           </tbody>
         </table>
         <div className="right-button-container">
-          <button className="btn create-btn" onClick={onPrevious}>
+          <button className="btn primary-btn" onClick={onPrevious}>
             Previous
           </button>
         </div>

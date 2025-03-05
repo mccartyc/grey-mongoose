@@ -3,12 +3,12 @@ import axios from 'axios';
 // import { FaPlus } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNotification } from '../context/NotificationContext'; // Import NotificationContext
 
 const ClientPage = () => {
   const [clients, setClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false); // State for showing/hiding the form
   const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
   const [clientToDelete, setClientToDelete] = useState(null); // Track tenant to delete
@@ -91,6 +91,7 @@ const ClientPage = () => {
 
   const { user } = useAuth(); // Access the current user from AuthContext
   const navigate = useNavigate(); // Use navigate hook
+  const { showNotification } = useNotification(); // Use notification context
 
   // Validation functions
   const validateEmail = (email) => {
@@ -193,6 +194,138 @@ const ClientPage = () => {
     setErrors({...errors, zipcode: validateZipcode(e.target.value)});
   };
 
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const resetFormFields = () => {
+    setFirstName('');
+    setLastName('');
+    setBirthday('');
+    setGender('');
+    setEmail('');
+    setPhone('');
+    setStreetAddress('');
+    setCity('');
+    setState('');
+    setZipcode('');
+    setErrors({
+      email: '',
+      phone: '',
+      city: '',
+      state: '',
+      zipcode: ''
+    });
+    setIsEditMode(false);
+    setSelectedClientId(null);
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate all fields before submission
+    const emailError = validateEmail(email);
+    const phoneError = validatePhone(phone);
+    const cityError = validateCity(city);
+    const stateError = validateState(state);
+    const zipcodeError = validateZipcode(zipcode);
+    
+    const formErrors = {
+      email: emailError,
+      phone: phoneError,
+      city: cityError,
+      state: stateError,
+      zipcode: zipcodeError
+    };
+    
+    setErrors(formErrors);
+    
+    // Check if there are any validation errors
+    if (Object.values(formErrors).some(error => error !== '')) {
+      showNotification('Please correct the errors in the form.', 'error');
+      return;
+    }
+    
+    if (!firstName || !lastName || !email || !phone || !streetAddress || !city || !state || !zipcode) {
+      showNotification('All fields are required.', 'error');
+      return;
+    }
+    const { tenantId, userId, token } = user; // Get tenantId and userId from user context
+
+    try {
+      let response;
+      
+      if (isEditMode && selectedClientId) {
+        // Update existing client
+        response = await axios.put(`http://localhost:5001/api/clients/${selectedClientId}`, {
+          firstName,
+          lastName,
+          birthday,
+          gender,
+          email,
+          phone,
+          streetAddress,
+          city,
+          state,
+          zipcode,
+          tenantId,
+          userId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        showNotification(`Client updated: ${response.data.firstName} ${response.data.lastName}`, 'success');
+        
+        // Update the client in the clients array
+        setClients((prev) => 
+          prev.map((client) => 
+            client._id === selectedClientId 
+              ? { ...response.data, phone: formatPhoneForDisplay(response.data.phone) } 
+              : client
+          )
+        );
+      } else {
+        // Create new client
+        response = await axios.post('http://localhost:5001/api/clients', {
+          firstName,
+          lastName,
+          birthday,
+          gender,
+          email,
+          phone,
+          streetAddress,
+          city,
+          state,
+          zipcode,
+          tenantId,
+          userId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        showNotification(`Client created: ${response.data.firstName} ${response.data.lastName}`, 'success');
+        
+        // Format the phone number in the response data before adding to clients array
+        const formattedClient = {
+          ...response.data,
+          phone: formatPhoneForDisplay(response.data.phone)
+        };
+        
+        setClients((prev) => [...prev, formattedClient]);
+      }
+      
+      resetFormFields();
+      setShowForm(false); // Hide the form after creation/update
+    } catch (error) {
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} client:`, error);
+      showNotification(error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'create'} client`, 'error');
+    }
+  };
+
   useEffect(() => {
     const fetchClients = async () => {
       if (!user?.tenantId || !user?.userId || !user?.token) {
@@ -215,14 +348,14 @@ const ClientPage = () => {
         setClients(response.data);
       } catch (error) {
         console.error('Error fetching clients:', error);
-        setMessage('Failed to load clients.');
+        showNotification('Failed to load clients.', 'error');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchClients();
-  }, [user, user?.tenantId, user?.userId]); // Only re-run when tenant or user ID changes
+  }, [user, user?.tenantId, user?.userId, showNotification]); // Only re-run when tenant or user ID changes
 
   const handleRowDoubleClick = (clientId, firstName, lastName) => {
     console.log('Double Click Client:', clientId, firstName, lastName);
@@ -232,116 +365,6 @@ const ClientPage = () => {
   const handleSelectClient = (client) => {
     setSelectedClientId(client._id);
   };
-
-  const handleCreateClient = async (e) => {
-    e.preventDefault();
-    
-    // Validate all fields before submission
-    const emailError = validateEmail(email);
-    const phoneError = validatePhone(phone);
-    const cityError = validateCity(city);
-    const stateError = validateState(state);
-    const zipcodeError = validateZipcode(zipcode);
-    
-    const formErrors = {
-      email: emailError,
-      phone: phoneError,
-      city: cityError,
-      state: stateError,
-      zipcode: zipcodeError
-    };
-    
-    setErrors(formErrors);
-    
-    // Check if there are any validation errors
-    if (Object.values(formErrors).some(error => error !== '')) {
-      setMessage('Please correct the errors in the form.');
-      return;
-    }
-    
-    if (!firstName || !lastName || !email || !phone || !streetAddress || !city || !state || !zipcode) {
-      setMessage('All fields are required.');
-      return;
-    }
-    const { tenantId, userId, token } = user; // Get tenantId and userId from user context
-
-    try {
-      const response = await axios.post('http://localhost:5001/api/clients', {
-        firstName,
-        lastName,
-        birthday,
-        gender,
-        email,
-        phone,
-        streetAddress,
-        city,
-        state,
-        zipcode,
-        tenantId,
-        userId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-      setMessage(`Client created: ${response.data.firstName} ${response.data.lastName}`);
-      
-      // Format the phone number in the response data before adding to clients array
-      const formattedClient = {
-        ...response.data,
-        phone: formatPhoneForDisplay(response.data.phone)
-      };
-      
-      setClients((prev) => [...prev, formattedClient]);
-      resetFormFields();
-      setShowForm(false); // Hide the form after creation
-    } catch (error) {
-      console.error('Error creating client:', error);
-      setMessage(error.response?.data?.error || 'Failed to create client');
-    }
-  };
-
-  const resetFormFields = () => {
-    setFirstName('');
-    setLastName('');
-    setBirthday('');
-    setGender('');
-    setEmail('');
-    setPhone('');
-    setStreetAddress('');
-    setCity('');
-    setState('');
-    setZipcode('');
-    setErrors({
-      email: '',
-      phone: '',
-      city: '',
-      state: '',
-      zipcode: ''
-    });
-  };
-
-  const filteredClients = clients.filter((client) =>
-    client.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-
-  // Format phone numbers for display in the table
-  const formatPhoneForDisplay = (phone) => {
-    if (!phone) return '';
-    // Remove any existing formatting
-    const digits = phone.replace(/\D/g, '');
-    // Apply ###-###-#### format
-    if (digits.length === 10) {
-      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
-    }
-    return phone; // Return original if not 10 digits
-  };
-
 
   const handleEditClient = (client) => {
     setSelectedClientId(client._id);
@@ -354,8 +377,17 @@ const ClientPage = () => {
     setCity(client.city);
     setState(client.state);
     setZipcode(client.zipcode);
-    setBirthday(client.birthday);
-    setMessage(false);
+    
+    // Format the birthday to YYYY-MM-DD for the date input
+    if (client.birthday) {
+      const date = new Date(client.birthday);
+      const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      setBirthday(formattedDate);
+    } else {
+      setBirthday('');
+    }
+    
+    setIsEditMode(true);
     setShowForm(true); // Show the form for editing
   };
 
@@ -400,11 +432,11 @@ const ClientPage = () => {
       setClients((prev) => prev.filter((client) => client._id !== clientToDelete._id));
       setShowDeleteModal(false);
       setClientToDelete(null);
-      setMessage('Client successfully deactivated');
+      showNotification('Client successfully deactivated', 'success');
     } catch (error) {
       console.error('Error deleting client:', error);
       const errorMessage = error.response?.data?.error || 'Failed to delete client';
-      setMessage(errorMessage);
+      showNotification(errorMessage, 'error');
       
       if (error.response?.data?.details) {
         console.error('Error details:', error.response.data.details);
@@ -420,10 +452,24 @@ const ClientPage = () => {
     );
   }
 
+  const formatPhoneForDisplay = (phone) => {
+    if (!phone) return '';
+    // Remove any existing formatting
+    const digits = phone.replace(/\D/g, '');
+    // Apply ###-###-#### format
+    if (digits.length === 10) {
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    }
+    return phone; // Return original if not 10 digits
+  };
 
-  
+  const filteredClients = clients.filter((client) =>
+    client.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    
     <div className="client-page">
       {showDeleteModal && (
         <div className="overlay">
@@ -452,220 +498,219 @@ const ClientPage = () => {
         </div>
       )}
 
-
-
-
-    <div className="sessions-section">
-      <div className="content-container">
-        <div className="header-container">
-          <div>
-            <button onClick={() => setShowForm(true)} className="btn create-btn">New Client</button>
-          </div>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        {message && <p className="error-message">{message}</p>}
-
-        {showForm && (
-          <div className="overlay">
-            <div className="popup-form">
-              <form className="form-group" onSubmit={handleCreateClient} 
-                autoComplete="off" 
-                autoCorrect="off" 
-                spellCheck="false">
-                <h3>Create New Client</h3>
-                <div className="form-row">
-                  <label>
-                    First Name:
-                    <input 
-                      type="text" 
-                      value={firstName} 
-                      onChange={(e) => setFirstName(e.target.value)} 
-                      autoComplete="new-password" 
-                      required 
-                    />
-                  </label>
-                  <label>
-                    Last Name:
-                    <input 
-                      type="text" 
-                      value={lastName} 
-                      onChange={(e) => setLastName(e.target.value)} 
-                      autoComplete="new-password" 
-                      required 
-                    />
-                  </label>
-                </div>
-                <label>
-                  Street Address:
-                  <input 
-                    type="text" 
-                    value={streetAddress} 
-                    onChange={(e) => setStreetAddress(e.target.value)} 
-                    autoComplete="new-password" 
-                    required 
-                  />
-                </label>
-                <div className="form-row-three-item">
-                  <label>
-                    City:
-                    <input 
-                      type="text" 
-                      value={city} 
-                      onChange={handleCityChange} 
-                      autoComplete="new-password" 
-                      required 
-                      className={errors.city ? "error-input" : ""}
-                      title={errors.city || ""}
-                    />
-                  </label>
-                  <label>
-                    State:
-                    <select 
-                      value={state} 
-                      onChange={handleStateChange} 
-                      required 
-                      className={errors.state ? "error-input" : ""}
-                      title={errors.state || ""}
-                    >
-                      <option value="">Select State</option>
-                      {usStates.map((state) => (
-                        <option key={state.abbreviation} value={state.abbreviation}>{state.name}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    Zip Code:
-                    <input 
-                      type="text" 
-                      value={zipcode} 
-                      onChange={handleZipcodeChange} 
-                      autoComplete="new-password" 
-                      required 
-                      className={errors.zipcode ? "error-input" : ""}
-                      title={errors.zipcode || ""}
-                    />
-                  </label>
-                </div>
-                <label>
-                  Email:
-                  <input 
-                    type="email" 
-                    value={email} 
-                    onChange={handleEmailChange} 
-                    autoComplete="new-password" 
-                    required 
-                    className={errors.email ? "error-input" : ""}
-                    title={errors.email || ""}
-                  />
-                </label>
-                <div className="form-row-three-item">
-                  <label>
-                    Phone:
-                    <input 
-                      type="tel" 
-                      value={phone} 
-                      onChange={handlePhoneChange} 
-                      autoComplete="new-password" 
-                      placeholder="###-###-####"
-                      required 
-                      className={errors.phone ? "error-input" : ""}
-                      title={errors.phone || ""}
-                    />
-                  </label>
-                  <label>
-                    Gender:
-                    <select className="option" value={gender} onChange={(e) => setGender(e.target.value)} required>
-                      <option value="">Select Gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </label>
-                  <label>
-                    Birthday:
-                    <input 
-                      type="date" 
-                      value={birthday} 
-                      onChange={(e) => setBirthday(e.target.value)} 
-                      autoComplete="new-password" 
-                      required 
-                    />
-                  </label>
-                </div>
-                <div className="button-container">
-                  <button onClick={() => setShowForm(false)} className="btn secondary-btn">Close</button>
-                  <button type="submit" className="btn primary-btn">Create Client</button>
-                </div>
-              </form>
-              {message && <p>{message}</p>}
+      <div className="sessions-section">
+        <div className="content-container">
+          <div className="header-container">
+            <div>
+              <button onClick={() => setShowForm(true)} className="btn primary-btn">New Client</button>
             </div>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-        )}
 
-        <table className="client-table">
-          <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Age</th>
-              <th>Gender</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Street Address</th>
-              <th>Client Id</th>
-              <th className="action-column">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredClients.map((client) => (
-              <tr
-                key={client._id}
-                className={selectedClientId === client._id ? 'selected' : ''}
-                onClick={() => handleSelectClient(client)}
-                onDoubleClick={() => handleRowDoubleClick(client._id, client.firstName, client.lastName)} // Handle double-click
-              >
-                <td>{client.firstName}</td>
-                <td>{client.lastName}</td>
-                <td>{calculateAge(client.birthday)}</td>
-                <td>{client.gender}</td>
-                <td>{client.email}</td>
-                <td>{formatPhoneForDisplay(client.phone)}</td>
-                <td>{client.streetAddress} {client.city}, {client.state} {client.zipcode}</td>
-                <td>{client._id}</td>
-                <td className="action-column">
-                <span
-                    role="img"
-                    aria-label="edit"
-                    className="edit-icon"
-                    onClick={(event) => {
-                      event.stopPropagation(); // Prevent row selection when clicking edit icon
-                      handleEditClient(client); // Open form to edit tenant
-                    }}
-                    style={{ cursor: 'pointer', marginRight: '10px' }}
-                  >
-                    ✏️
-                  </span>
-                  <span
-                    role="img"
-                    aria-label="delete"
-                    className="trash-icon"
-                    onClick={(event) => handleDeleteClick(client, event)}
-                  >
-                    🗑️
-                  </span>
-                </td>
+          {showForm && (
+            <div className="overlay">
+              <div className="popup-form">
+                <form className="form-group" onSubmit={handleFormSubmit} 
+                  autoComplete="off" 
+                  autoCorrect="off" 
+                  spellCheck="false">
+                  <h3>{isEditMode ? 'Edit Client' : 'Create New Client'}</h3>
+                  <div className="form-row">
+                    <label>
+                      First Name:
+                      <input 
+                        type="text" 
+                        value={firstName} 
+                        onChange={(e) => setFirstName(e.target.value)} 
+                        autoComplete="new-password" 
+                        required 
+                      />
+                    </label>
+                    <label>
+                      Last Name:
+                      <input 
+                        type="text" 
+                        value={lastName} 
+                        onChange={(e) => setLastName(e.target.value)} 
+                        autoComplete="new-password" 
+                        required 
+                      />
+                    </label>
+                  </div>
+                  <label>
+                    Street Address:
+                    <input 
+                      type="text" 
+                      value={streetAddress} 
+                      onChange={(e) => setStreetAddress(e.target.value)} 
+                      autoComplete="new-password" 
+                      required 
+                    />
+                  </label>
+                  <div className="form-row-three-item">
+                    <label>
+                      City:
+                      <input 
+                        type="text" 
+                        value={city} 
+                        onChange={handleCityChange} 
+                        autoComplete="new-password" 
+                        required 
+                        className={errors.city ? "error-input" : ""}
+                        title={errors.city || ""}
+                      />
+                    </label>
+                    <label>
+                      State:
+                      <select 
+                        value={state} 
+                        onChange={handleStateChange} 
+                        required 
+                        className={errors.state ? "error-input" : ""}
+                        title={errors.state || ""}
+                      >
+                        <option value="">Select State</option>
+                        {usStates.map((state) => (
+                          <option key={state.abbreviation} value={state.abbreviation}>{state.name}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      Zip Code:
+                      <input 
+                        type="text" 
+                        value={zipcode} 
+                        onChange={handleZipcodeChange} 
+                        autoComplete="new-password" 
+                        required 
+                        className={errors.zipcode ? "error-input" : ""}
+                        title={errors.zipcode || ""}
+                      />
+                    </label>
+                  </div>
+                  <label>
+                    Email:
+                    <input 
+                      type="email" 
+                      value={email} 
+                      onChange={handleEmailChange} 
+                      autoComplete="new-password" 
+                      required 
+                      className={errors.email ? "error-input" : ""}
+                      title={errors.email || ""}
+                    />
+                  </label>
+                  <div className="form-row-three-item">
+                    <label>
+                      Phone:
+                      <input 
+                        type="tel" 
+                        value={phone} 
+                        onChange={handlePhoneChange} 
+                        autoComplete="new-password" 
+                        placeholder="###-###-####"
+                        required 
+                        className={errors.phone ? "error-input" : ""}
+                        title={errors.phone || ""}
+                      />
+                    </label>
+                    <label>
+                      Gender:
+                      <select className="option" value={gender} onChange={(e) => setGender(e.target.value)} required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </label>
+                    <label>
+                      Birthday:
+                      <input 
+                        type="date" 
+                        value={birthday} 
+                        onChange={(e) => setBirthday(e.target.value)} 
+                        autoComplete="new-password" 
+                        required 
+                      />
+                    </label>
+                  </div>
+                  <div className="button-container">
+                    <button onClick={() => {
+                      setShowForm(false);
+                      resetFormFields();
+                    }} className="btn secondary-btn">Close</button>
+                    <button type="submit" className="btn primary-btn">
+                      {isEditMode ? 'Update Client' : 'Create Client'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <table className="client-table">
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Street Address</th>
+                <th>Client Id</th>
+                <th className="action-column">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filteredClients.map((client) => (
+                <tr
+                  key={client._id}
+                  className={selectedClientId === client._id ? 'selected' : ''}
+                  onClick={() => handleSelectClient(client)}
+                  onDoubleClick={() => handleRowDoubleClick(client._id, client.firstName, client.lastName)} // Handle double-click
+                >
+                  <td>{client.firstName}</td>
+                  <td>{client.lastName}</td>
+                  <td>{calculateAge(client.birthday)}</td>
+                  <td>{client.gender}</td>
+                  <td>{client.email}</td>
+                  <td>{formatPhoneForDisplay(client.phone)}</td>
+                  <td>{client.streetAddress} {client.city}, {client.state} {client.zipcode}</td>
+                  <td>{client._id}</td>
+                  <td className="action-column">
+                  <span
+                      role="img"
+                      aria-label="edit"
+                      className="edit-icon"
+                      onClick={(event) => {
+                        event.stopPropagation(); // Prevent row selection when clicking edit icon
+                        handleEditClient(client); // Open form to edit tenant
+                      }}
+                      style={{ cursor: 'pointer', marginRight: '10px' }}
+                    >
+                      ✏️
+                    </span>
+                    <span
+                      role="img"
+                      aria-label="delete"
+                      className="trash-icon"
+                      onClick={(event) => handleDeleteClick(client, event)}
+                    >
+                      🗑️
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

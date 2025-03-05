@@ -121,7 +121,7 @@ router.get('/metrics', async (req, res) => {
     const allSessions = await Session.find({
       tenantId: tenantObjectId,
       userId: userObjectId,
-      isActive: true
+      isActive: true 
     }).lean();
     
     console.log('Total active sessions found:', allSessions.length);
