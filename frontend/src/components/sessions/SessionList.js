@@ -33,8 +33,10 @@ const SessionList = ({
       try {
         const decrypted = decryptText(notesContent);
         notesContent = decrypted;
+        console.log('Successfully decrypted notes');
       } catch (error) {
         console.error('Failed to decrypt notes:', error);
+        notesContent = 'Unable to decrypt notes. Please contact support.';
       }
     }
     
@@ -42,8 +44,10 @@ const SessionList = ({
       try {
         const decrypted = decryptText(transcriptContent);
         transcriptContent = decrypted;
+        console.log('Successfully decrypted transcript');
       } catch (error) {
         console.error('Failed to decrypt transcript:', error);
+        transcriptContent = 'Unable to decrypt transcript. Please contact support.';
       }
     }
     
