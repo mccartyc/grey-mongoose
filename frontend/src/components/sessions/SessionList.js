@@ -276,17 +276,18 @@ const SessionList = ({
           maxWidth={800}
           onWidthChange={updateMainContentMargin}
         >
-          <div className="sessions-panel-header">
-            <h2>Session Details</h2>
+          {/* <div className="sessions-panel-header">
+            <p>{selectedSession.sessionId}</p>
             <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
-          </div>
+          </div> */}
 
           {/* Session Info */}
           <div className="panel-section">
+            <p><strong>Id:</strong> {selectedSession.sessionId}</p>
+            <p><strong>Client:</strong> {selectedSession.clientName || 'Not specified'}</p>
             <p><strong>Date:</strong> {new Date(selectedSession.date).toLocaleDateString()}</p>
             <p><strong>Type:</strong> {selectedSession.type}</p>
             <p><strong>Length:</strong> {selectedSession.length} minutes</p>
-            <p><strong>Client:</strong> {selectedSession.clientName || 'Not specified'}</p>
           </div>
 
           {/* Notes Section */}

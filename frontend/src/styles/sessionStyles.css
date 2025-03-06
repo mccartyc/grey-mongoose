@@ -194,7 +194,6 @@
   margin: 0 20px 20px;
   padding: 15px 20px;
   background-color: rgb(248, 247, 247); /* Exact match with content-area background */
-  border-radius: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -340,10 +339,4 @@
   background-color: white;
 }
 
-.sessions-panel-footer {
-  padding: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  background: var(--bg-color-light, #f8f9fa);
-  border-top: 1px solid var(--border-color, #e0e0e0);
-}
+

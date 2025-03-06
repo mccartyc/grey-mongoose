@@ -227,6 +227,10 @@ const SessionDetail = () => {
             <div className="client-info-card">
               <h3>Client Information</h3>
               <div className="info-grid">
+              <div className="info-item">
+                  <span className="info-label">Client ID:</span>
+                  <span className="info-value">{client._id}</span>
+                </div>
                 <div className="info-item">
                   <span className="info-label">Name:</span>
                   <span className="info-value">{client.firstName} {client.lastName}</span>
@@ -243,10 +247,6 @@ const SessionDetail = () => {
                     {client.email || (client.contact && client.contact.email) || 'Not available'}
                   </span>
                 </div>
-                <div className="info-item">
-                  <span className="info-label">Client ID:</span>
-                  <span className="info-value">{client._id}</span>
-                </div>
               </div>
             </div>
           )}
@@ -254,6 +254,10 @@ const SessionDetail = () => {
           <div className="session-info-card">
             <h3>Session Information</h3>
             <div className="info-grid">
+            <div className="info-item">
+                <span className="info-label">Session ID:</span>
+                <span className="info-value">{session.sessionId}</span>
+              </div>
               <div className="info-item">
                 <span className="info-label">Date:</span>
                 <span className="info-value">{new Date(session.date).toLocaleDateString()}</span>
@@ -265,10 +269,6 @@ const SessionDetail = () => {
               <div className="info-item">
                 <span className="info-label">Length:</span>
                 <span className="info-value">{session.length} minutes</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Session ID:</span>
-                <span className="info-value">{session.sessionId}</span>
               </div>
             </div>
           </div>
