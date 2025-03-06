@@ -15,6 +15,7 @@ const SessionDetail = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState('');
+  const [notesContent, setNotesContent] = useState('');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -57,12 +58,39 @@ const SessionDetail = () => {
         
         console.log('Session data:', sessionData);
         
-        // Decrypt notes and transcript if they exist
+        // Safely decrypt notes and transcript if they exist
         if (sessionData.notes) {
-          sessionData.notes = decryptText(sessionData.notes);
+          try {
+            const decryptedNotes = decryptText(sessionData.notes);
+            // Check if decryption was successful or returned an error message
+            if (decryptedNotes.startsWith('Error') || decryptedNotes === 'Unable to decrypt content') {
+              console.warn('Could not decrypt notes, using original content');
+              sessionData.notes = 'Notes could not be decrypted. Please contact support.';
+            } else {
+              sessionData.notes = decryptedNotes;
+            }
+            setNotesContent(sessionData.notes);
+          } catch (decryptError) {
+            console.error('Error decrypting notes:', decryptError);
+            sessionData.notes = 'Notes could not be decrypted. Please contact support.';
+            setNotesContent(sessionData.notes);
+          }
         }
+        
         if (sessionData.transcript) {
-          sessionData.transcript = decryptText(sessionData.transcript);
+          try {
+            const decryptedTranscript = decryptText(sessionData.transcript);
+            // Check if decryption was successful or returned an error message
+            if (decryptedTranscript.startsWith('Error') || decryptedTranscript === 'Unable to decrypt content') {
+              console.warn('Could not decrypt transcript, using original content');
+              sessionData.transcript = 'Transcript could not be decrypted. Please contact support.';
+            } else {
+              sessionData.transcript = decryptedTranscript;
+            }
+          } catch (decryptError) {
+            console.error('Error decrypting transcript:', decryptError);
+            sessionData.transcript = 'Transcript could not be decrypted. Please contact support.';
+          }
         }
         
         setSession(sessionData);
@@ -122,6 +150,10 @@ const SessionDetail = () => {
     setIsEditing(true);
   };
 
+  const handleNotesChange = (content) => {
+    setNotesContent(content);
+  };
+
   const handleSaveNotes = async () => {
     if (!session?.sessionId || !user?.token) {
       setMessage('Missing required data for saving notes');
@@ -130,7 +162,7 @@ const SessionDetail = () => {
 
     try {
       // Encrypt the notes using our utility function
-      const encryptedNotes = encryptText(session.notes);
+      const encryptedNotes = encryptText(notesContent);
       
       const updatedNotes = {
         notes: encryptedNotes,
@@ -148,6 +180,12 @@ const SessionDetail = () => {
           }
         }
       );
+      
+      // Update the session object with the new notes
+      setSession({
+        ...session,
+        notes: notesContent
+      });
       
       setIsEditing(false);
       setMessage('Notes saved successfully');
@@ -213,7 +251,7 @@ const SessionDetail = () => {
             </div>
           )}
 
-<div className="session-info-card">
+          <div className="session-info-card">
             <h3>Session Information</h3>
             <div className="info-grid">
               <div className="info-item">
@@ -248,20 +286,18 @@ const SessionDetail = () => {
           <div className="notes-content">
             {isEditing ? (
               <ReactQuill
-                value={session.notes}
-                onChange={(value) =>
-                  setSession((prev) => ({ ...prev, notes: value }))
-                }
+                value={notesContent}
+                onChange={handleNotesChange}
                 className="notes-editor"
               />
             ) : (
               <div className="content-box">
                 {/* Check if notes appear to be HTML content */}
-                {session.notes && session.notes.includes('<') && session.notes.includes('>') ? (
-                  <div dangerouslySetInnerHTML={{ __html: session.notes }} />
+                {notesContent && notesContent.includes('<') && notesContent.includes('>') ? (
+                  <div dangerouslySetInnerHTML={{ __html: notesContent }} />
                 ) : (
                   /* Display as plain text if not HTML */
-                  <p>{session.notes || 'No notes available for this session.'}</p>
+                  <p>{notesContent || 'No notes available for this session.'}</p>
                 )}
               </div>
             )}
@@ -269,8 +305,8 @@ const SessionDetail = () => {
         </div>
 
         <div className="session-transcript-section">
-        <div className="notes-header">
-          <h3>Session Transcript</h3>
+          <div className="notes-header">
+            <h3>Session Transcript</h3>
           </div>
           <div className="content-box transcript-box">
             <p>{session.transcript || 'No transcript available for this session.'}</p>

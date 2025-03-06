@@ -137,20 +137,6 @@
   /* Border is already defined in the sessions-panel-header */
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  color: var(--surface-dark, #0F172A);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0 5px;
-  line-height: 1;
-  transition: color 0.2s ease;
-}
-
-.close-btn:hover {
-  color: var(--primary, #4F46E5);
-}
 
 /* Session info */
 .session-info {

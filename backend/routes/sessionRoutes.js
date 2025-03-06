@@ -21,33 +21,62 @@ const decryptText = (encryptedText) => {
     if (encryptedText.includes(':')) {
       const [ciphertext, iv] = encryptedText.split(':');
       
-      // Create key and IV word arrays
-      const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
-      const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+      // Validate that both parts exist and look like hex
+      if (!ciphertext || !iv || !/^[0-9a-f]+$/i.test(ciphertext) || !/^[0-9a-f]+$/i.test(iv)) {
+        console.warn('Invalid encrypted format, returning original text');
+        return encryptedText;
+      }
       
-      // Decrypt with the parsed key and IV
-      const decrypted = CryptoJS.AES.decrypt(
-        { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
-        keyWordArray,
-        { iv: ivWordArray }
-      ).toString(CryptoJS.enc.Utf8);
-      
-      if (decrypted && decrypted.length > 0) {
-        return decrypted;
+      try {
+        // Create key and IV word arrays
+        const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32));
+        const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+        
+        // Decrypt with the parsed key and IV
+        const decrypted = CryptoJS.AES.decrypt(
+          { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
+          keyWordArray,
+          { 
+            iv: ivWordArray,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+          }
+        );
+        
+        // Try to convert to UTF-8 string
+        try {
+          const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+          if (decryptedText && decryptedText.length > 0) {
+            return decryptedText;
+          }
+        } catch (utf8Error) {
+          console.error('Error converting decrypted data to UTF-8:', utf8Error.message);
+          // Continue to try other methods
+        }
+      } catch (decryptError) {
+        console.error('Error during decryption with IV:', decryptError.message);
+        // Continue to try other methods
       }
     }
     
     // Try standard decryption as fallback
-    const decrypted = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
-    
-    if (decrypted && decrypted.length > 0) {
-      return decrypted;
+    try {
+      const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      
+      if (decryptedText && decryptedText.length > 0) {
+        return decryptedText;
+      }
+    } catch (standardError) {
+      console.error('Error with standard decryption:', standardError.message);
+      // Return original if all decryption attempts fail
+      return encryptedText;
     }
     
-    return 'Unable to decrypt content';
+    return encryptedText;
   } catch (error) {
     console.error('Error during decryption:', error.message);
-    return 'Error decrypting content';
+    return encryptedText;
   }
 };
 
@@ -74,14 +103,17 @@ const encryptText = (text) => {
     
     // Encrypt the text
     const encrypted = CryptoJS.AES.encrypt(text, keyWordArray, {
-      iv: iv
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
     });
     
     // Format as ciphertext:iv
     return encrypted.ciphertext.toString(CryptoJS.enc.Hex) + ':' + iv.toString(CryptoJS.enc.Hex);
   } catch (error) {
     console.error('Error during encryption:', error.message);
-    throw new Error('Failed to encrypt content');
+    // Return original text if encryption fails
+    return text;
   }
 };
 
@@ -289,27 +321,61 @@ router.get("/client/:clientId", auditSessionAction('VIEW_CLIENT_SESSIONS'), asyn
 // PUT: Edit an existing session
 router.put("/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res) => {
   const { sessionId } = req.params;
-  const { date, timeMet, notes } = req.body;
+  const { notes, tenantId, userId } = req.body;
 
-  console.log("Request to update session:", { sessionId, date, length, type, notes });
+  console.log("Request to update session:", { sessionId, notes: notes ? "Present" : "Not present" });
 
   try {
+    // Validate required data
+    if (!sessionId || !tenantId || !userId) {
+      return res.status(400).json({ 
+        error: 'Required fields missing',
+        details: 'Session ID, tenant ID, and user ID are required'
+      });
+    }
+
     // Create update data object with only the fields that are provided
     const updateData = {};
-    if (date) updateData.date = date;
-    if (timeMet) updateData.timeMet = timeMet;
-    if (notes) updateData.notes = notes; // Keep notes encrypted from frontend
+    
+    // Handle notes specially to ensure they're properly encrypted
+    if (notes) {
+      // Check if notes are already encrypted (contains a colon)
+      if (notes.includes(':')) {
+        // Try to decrypt to validate format
+        try {
+          const decrypted = decryptText(notes);
+          // If decryption succeeds, store as is
+          updateData.notes = notes;
+        } catch (decryptError) {
+          // If decryption fails, try to encrypt
+          console.warn('Received notes appear to be in encrypted format but could not be decrypted. Re-encrypting.');
+          updateData.notes = encryptText(notes);
+        }
+      } else {
+        // Not in encrypted format, encrypt it
+        updateData.notes = encryptText(notes);
+      }
+    }
+
+    // Find the session first to check if it exists and belongs to the user's tenant
+    const existingSession = await Session.findById(sessionId);
+    
+    if (!existingSession) {
+      console.log(`Session with ID ${sessionId} not found`);
+      return res.status(404).json({ error: "Session not found" });
+    }
+    
+    // Check if the session belongs to the user's tenant
+    if (existingSession.tenantId.toString() !== tenantId) {
+      console.log(`Session with ID ${sessionId} does not belong to tenant ${tenantId}`);
+      return res.status(403).json({ error: "Not authorized to update this session" });
+    }
 
     const updatedSession = await Session.findByIdAndUpdate(
       sessionId,
       updateData,
       { new: true } // Return the updated session
     );
-
-    if (!updatedSession) {
-      console.log(`Session with ID ${sessionId} not found`);
-      return res.status(404).json({ error: "Session not found" });
-    }
 
     console.log("Session updated successfully:", updatedSession);
     res.status(200).json({
@@ -322,7 +388,7 @@ router.put("/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res)
     console.error("Error updating session:", error);
     res.status(500).json({ 
       error: 'Failed to update session',
-      requestId: req.requestId
+      details: error.message
     });
   }
 });
