@@ -12,7 +12,6 @@ const Dashboard = () => {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [upcomingSessionsCount, setUpcomingSessionsCount] = useState(0);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -20,82 +19,6 @@ const Dashboard = () => {
     fetchDashboardMetrics();
   }, [user?.token]); // Re-fetch when token changes
   
-  // Fetch upcoming sessions separately to ensure accurate count
-  useEffect(() => {
-    if (user?.token) {
-      fetchUpcomingSessions();
-    }
-  }, [user?.token]);
-  
-  // Function to fetch upcoming sessions for the next 30 days
-  const fetchUpcomingSessions = async () => {
-    if (!user?.token) return;
-    
-    try {
-      const axiosInstance = axios.create({
-        baseURL: 'http://localhost:5001',
-        timeout: 5000,
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      // Get current date (start of today)
-      const now = new Date();
-      now.setHours(0, 0, 0, 0);
-      
-      // Get date 30 days from now
-      const thirtyDaysLater = new Date(now);
-      thirtyDaysLater.setDate(now.getDate() + 30);
-      thirtyDaysLater.setHours(23, 59, 59, 999);
-      
-      // Set date range for upcoming sessions
-      
-      // Fetch all sessions
-      const response = await axiosInstance.get('/api/sessions', {
-        params: {
-          tenantId: user.tenantId,
-          userId: user.userId,
-          sort: 'date',
-          order: 'asc'
-        }
-      });
-      
-      // Process retrieved sessions
-      
-      // Filter sessions to only include those in the next 30 days
-      const upcomingSessions = response.data.filter(session => {
-        // Make sure we're working with a valid date
-        if (!session.date) return false;
-        
-        const sessionDate = new Date(session.date);
-        
-        // Check if the date is valid
-        if (isNaN(sessionDate.getTime())) {
-          console.log('Invalid date found:', session.date);
-          return false;
-        }
-        
-        // Check if session is in the future
-        
-        // Check if it's in the future (upcoming)
-        const isUpcoming = sessionDate >= now && sessionDate <= thirtyDaysLater;
-        
-        // Determine if session is within the next 30 days
-        
-        return isUpcoming;
-      });
-      
-      // Update the upcoming sessions count
-      // If there are no upcoming sessions found but we know there should be one,
-      // set the count to 1 to ensure the dashboard shows the correct value
-      setUpcomingSessionsCount(upcomingSessions.length > 0 ? upcomingSessions.length : 1);
-    } catch (error) {
-      console.error('Error fetching upcoming sessions:', error);
-    }
-  };
-
   const fetchDashboardMetrics = async () => {
     if (!user?.token) {
       setError('Authentication required');
@@ -232,7 +155,7 @@ const Dashboard = () => {
 
             <div className="metric-card">
               <h3 className="metric-title">Upcoming Sessions</h3>
-              <div className="metric-value">{upcomingSessionsCount}</div>
+              <div className="metric-value">{metrics.upcomingSessions || 0}</div>
               <div className="metric-subtext">
                 Next 30 days
               </div>
