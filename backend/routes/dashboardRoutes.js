@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const Session = require('../models/Sessions');
 const Client = require('../models/Clients');
+const Event = require('../models/Events'); // Import the Event model
 const rateLimit = require('express-rate-limit');
 
 // Rate limiting for dashboard operations
@@ -127,45 +128,18 @@ router.get('/metrics', async (req, res) => {
     
     console.log('Upcoming sessions date range:', todayStart.toISOString(), 'to', thirtyDaysLater.toISOString());
     
-    // First, find all sessions to debug
-    const allSessions = await Session.find({
+    // Query for upcoming client sessions from the events table
+    const upcomingSessions = await Event.countDocuments({
       tenantId: tenantObjectId,
       userId: userObjectId,
-      isActive: true 
-    }).lean();
-    
-    console.log('Total active sessions found:', allSessions.length);
-    
-    // Manually filter upcoming sessions for debugging
-    const manuallyFilteredSessions = allSessions.filter(session => {
-      const sessionDate = new Date(session.date);
-      const isUpcoming = sessionDate >= todayStart && sessionDate <= thirtyDaysLater;
-      console.log('Session date:', sessionDate.toISOString(), 'Is upcoming:', isUpcoming);
-      return isUpcoming;
-    });
-    
-    console.log('Manually filtered upcoming sessions:', manuallyFilteredSessions.length);
-    
-    // Use the count from manual filtering for accuracy
-    const upcomingSessions = manuallyFilteredSessions.length;
-    
-    // Also do the query for verification
-    const queryCount = await Session.countDocuments({
-      tenantId: tenantObjectId,
-      userId: userObjectId,
-      date: { 
+      category: 'Client Session',
+      start: { 
         $gte: todayStart,
         $lte: thirtyDaysLater
-      },
-      isActive: true
+      }
     });
     
-    console.log('Query count of upcoming sessions:', queryCount);
-    
-    // If there's a discrepancy, log it
-    if (upcomingSessions !== queryCount) {
-      console.log('WARNING: Discrepancy between manual count and query count');
-    }
+    console.log('Upcoming client sessions count from events table:', upcomingSessions);
 
     res.json({
       totalClients,
