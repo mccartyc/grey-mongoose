@@ -27,31 +27,70 @@ export const decryptText = (encryptedText) => {
     // Check if the text contains a colon which would indicate the special format
     if (encryptedText.includes(':')) {
       console.log('Found special encryption format with IV');
-      const [ciphertext, iv] = encryptedText.split(':');
       
-      // Create key and IV word arrays
-      const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32)); // Use first 32 chars (16 bytes)
-      const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+      // Split the text into ciphertext and IV parts
+      const parts = encryptedText.split(':');
       
-      // Decrypt with the parsed key and IV
-      const decrypted = CryptoJS.AES.decrypt(
-        { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
-        keyWordArray,
-        { iv: ivWordArray }
-      ).toString(CryptoJS.enc.Utf8);
-      
-      if (decrypted && decrypted.length > 0) {
-        console.log('Successfully decrypted content with IV');
-        return decrypted;
+      // Handle both formats: ciphertext:iv and ciphertext:authTag
+      if (parts.length === 2) {
+        const [ciphertext, iv] = parts;
+        
+        // Create key and IV word arrays
+        const keyWordArray = CryptoJS.enc.Hex.parse(key.substring(0, 32)); // Use first 32 chars (16 bytes)
+        
+        try {
+          const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+          
+          // Decrypt with the parsed key and IV
+          const decrypted = CryptoJS.AES.decrypt(
+            { ciphertext: CryptoJS.enc.Hex.parse(ciphertext) },
+            keyWordArray,
+            { iv: ivWordArray, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+          );
+          
+          // Try to convert to UTF-8 string, if it fails, it's likely not valid UTF-8 data
+          try {
+            const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+            if (decryptedText && decryptedText.length > 0) {
+              console.log('Successfully decrypted content with IV');
+              return decryptedText;
+            }
+          } catch (utf8Error) {
+            console.error('Error converting decrypted data to UTF-8:', utf8Error.message);
+            // Continue to try other methods
+          }
+        } catch (ivError) {
+          console.error('Error parsing IV:', ivError.message);
+          // Continue to try other methods
+        }
       }
     }
     
     // Try standard decryption as fallback
-    const decrypted = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+    try {
+      const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      
+      if (decryptedText && decryptedText.length > 0) {
+        console.log('Successfully decrypted content with standard method');
+        return decryptedText;
+      }
+    } catch (standardError) {
+      console.error('Error with standard decryption:', standardError.message);
+      // Continue to last resort method
+    }
     
-    if (decrypted && decrypted.length > 0) {
-      console.log('Successfully decrypted content with standard method');
-      return decrypted;
+    // Last resort: try direct base64 decoding if the text looks like base64
+    if (/^[A-Za-z0-9+/=]+$/.test(encryptedText)) {
+      try {
+        const decoded = CryptoJS.enc.Base64.parse(encryptedText).toString(CryptoJS.enc.Utf8);
+        if (decoded && decoded.length > 0 && decoded.match(/[a-zA-Z0-9]/)) {
+          console.log('Successfully decoded content with base64');
+          return decoded;
+        }
+      } catch (base64Error) {
+        console.error('Error with base64 decoding:', base64Error.message);
+      }
     }
     
     console.log('All decryption attempts failed');
@@ -93,7 +132,9 @@ export const encryptText = (text) => {
     
     // Encrypt the text
     const encrypted = CryptoJS.AES.encrypt(text, keyWordArray, {
-      iv: iv
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
     });
     
     // Format as ciphertext:iv
