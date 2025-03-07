@@ -21,6 +21,7 @@ const transcribeRoutes = require('./routes/transcribe');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const mfaRoutes = require('./routes/mfaRoutes');
 const intakeRoutes = require('./routes/intakeRoutes');
+const healthRoutes = require('./routes/health');
 const { encryptionMiddleware } = require('./middleware/encryption');
 
 const app = express();
@@ -34,7 +35,26 @@ app.use(helmet({
 
 // CORS configuration
 const corsOptions = {
-  origin: true, // Allow all origins in development
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5001',
+      // Add your Netlify domain
+      'https://mindcloud-beta.netlify.app',
+      // Add any other domains you want to allow
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(null, true); // Temporarily allow all origins while debugging
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -119,6 +139,7 @@ app.use('/api/debug', debugRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/mfa', mfaRoutes);
 app.use('/api/intake-forms', intakeRoutes);
+app.use('/api/health', healthRoutes);
 
 // Debug: Log all registered routes
 const listEndpoints = require('express-list-endpoints');

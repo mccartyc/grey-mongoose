@@ -22,6 +22,8 @@ import NewSession from './pages/NewSession';
 import SessionDetailPage from './pages/SessionDetailPage';
 import Settings from './pages/Settings';
 import Unauthorized from './pages/Unauthorized';
+import TestLogin from './pages/TestLogin';
+import ApiTest from './pages/ApiTest';
 
 const App = () => (
 
@@ -36,6 +38,8 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/test-login" element={<TestLogin />} />
+          <Route path="/api-test" element={<ApiTest />} />
 
           {/* Protected Routes */}
           <Route
