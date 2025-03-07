@@ -24,11 +24,17 @@ const generateTokens = (user) => {
 
 // Login User
 exports.login = async (req, res) => {
-  const { email, password, mfaCode, isBackupCode } = req.body;
-
   try {
-    const user = await User.findOne({ email }).select('+email');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const { email, password, mfaCode, isBackupCode } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await User.findByEmail(email).select('+email');
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });

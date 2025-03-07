@@ -54,18 +54,18 @@ router.post("/",
   authorizeUserCreation, // Check if user has permission to create users with the specified role
   auditUserAction('CREATE_USER'),
   async (req, res) => {
-    const { firstname, lastname, email, password, role, tenantId } = req.body;
-
+    const { email, password, firstname, lastname, role, tenantId } = req.body;
+    
     try {
-      // Check if all required fields are provided
-      if (!firstname || !lastname || !email || !password || !tenantId) {
+      // Validate required fields
+      if (!email || !password || !firstname || !lastname || !role || !tenantId) {
         return res.status(400).json({ error: "All fields are required" });
       }
-
-      // Check if email already exists
-      const existingUser = await User.findOne({ email });
+      
+      // Check if email is already in use
+      const existingUser = await User.findByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ error: "Email already exists" });
+        return res.status(400).json({ error: "Email is already in use" });
       }
 
       // Hash the password
@@ -187,42 +187,32 @@ router.put('/:userId/profile',
   auditUserAction('UPDATE_PROFILE'),
   async (req, res) => {
     const { userId } = req.params;
-    const { firstName, lastName, email, phoneNumber, tenantId } = req.body;
+    const { email, firstname, lastname, phoneNumber } = req.body;
     
     try {
-      // Validate required parameters
-      if (!userId || !tenantId) {
-        return res.status(400).json({ error: "User ID and Tenant ID are required" });
+      // Validate userId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
       }
       
-      // Validate ObjectId format
-      if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(tenantId)) {
-        return res.status(400).json({ error: "Invalid ID format" });
+      // Check if user exists
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
       }
       
-      // Check if user exists and belongs to the tenant
-      const existingUser = await User.findOne({
-        _id: userId,
-        tenantId: tenantId,
-        isActive: true
-      });
-      
-      if (!existingUser) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      
-      // Check if email is being changed and if it's already in use
-      if (email && email !== existingUser.email) {
-        const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+      // Check if email is already in use by another user
+      if (email && email !== user.email) {
+        const emailExists = await User.findByEmail(email);
         if (emailExists) {
-          return res.status(400).json({ error: "Email is already in use" });
+          return res.status(400).json({ error: 'Email is already in use by another user' });
         }
       }
-      
+
       // Update user information
       const updateData = {};
-      if (firstName) updateData.firstname = firstName;
-      if (lastName) updateData.lastname = lastName;
+      if (firstname) updateData.firstname = firstname;
+      if (lastname) updateData.lastname = lastname;
       if (email) updateData.email = email;
       if (phoneNumber) updateData.phoneNumber = phoneNumber;
       

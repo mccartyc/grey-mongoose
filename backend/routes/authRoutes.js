@@ -25,7 +25,8 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Please provide email and password' });
     }
 
-    const user = await User.findOne({ email });
+    // Use the special findByEmail method that handles both encrypted and unencrypted emails
+    const user = await User.findByEmail(email);
     if (!user) {
       console.log('User not found for email:', email);
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -149,7 +150,8 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    const existingUser = await User.findOne({ email });
+    // Check for existing user with either encrypted or unencrypted email
+    const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }

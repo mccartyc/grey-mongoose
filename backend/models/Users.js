@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require('uuid');
+const { fieldEncryption } = require('../middleware/encryption');
 
 const userSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Using ObjectId as the primary key
@@ -23,10 +24,23 @@ const userSchema = new mongoose.Schema({
   mfaBackupCodes: [{ type: String }] // Backup codes for account recovery
 });
 
-
 // Method to compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
+};
+
+// Special method to find by email that handles both encrypted and unencrypted emails
+userSchema.statics.findByEmail = async function(email) {
+  // First try to find by unencrypted email (for existing users)
+  let user = await this.findOne({ email });
+  
+  if (!user) {
+    // If not found, try to find by encrypted email (for new users after encryption implementation)
+    const encryptedEmail = fieldEncryption.encrypt(email);
+    user = await this.findOne({ email: encryptedEmail });
+  }
+  
+  return user;
 };
 
 module.exports = mongoose.model("User", userSchema);
