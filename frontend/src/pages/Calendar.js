@@ -381,6 +381,12 @@ const MyCalendar = () => {
                 click: () => setShowEventForm(true)
               }
             }}
+            buttonText={{
+              today: 'Today',
+              month: 'Month View',
+              week: 'Week View',
+              day: 'Day View'
+            }}
             events={events}
             editable={true}
             selectable={true}
