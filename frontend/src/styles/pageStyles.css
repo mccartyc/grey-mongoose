@@ -1,0 +1,235 @@
+/* Page Layout Styles */
+.page-container {
+  width: 100%;
+  padding: 20px;
+  background-color: var(--surface, #FFFFFF);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text, #E2E8F0);
+  margin: 0;
+}
+
+.page-subtitle {
+  color: var(--text-dark, #94A3B8);
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+/* Card Styles */
+.card {
+  background-color: var(--surface, #FFFFFF);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text, #E2E8F0);
+  margin: 0;
+}
+
+/* Grid Layouts */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1200px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Metric Card Styles */
+.metric-card {
+  background-color: var(--surface, #FFFFFF);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card h3 {
+  color: var(--text-dark, #94A3B8);
+  font-size: 1rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 2rem;
+  color: var(--text, #E2E8F0);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.metric-trend {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-dark, #94A3B8);
+}
+
+.trend-positive {
+  color: var(--accent, #10B981);
+}
+
+.trend-negative {
+  color: #ef4444;
+}
+
+/* Chart Card Styles */
+.chart-card {
+  background-color: var(--surface, #FFFFFF);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  min-height: 300px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+}
+
+.chart-card h3 {
+  color: var(--text, #E2E8F0);
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+/* Content Area */
+.content-area {
+  padding: 24px;
+  background-color: var(--background, #F8FAFC);
+  min-height: 100vh;
+}
+
+/* Search and Filter Section */
+.search-filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.search-input {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+  background-color: var(--surface, #FFFFFF);
+  color: var(--text, #1E293B);
+  width: 250px;
+  font-size: 0.9rem;
+}
+
+.search-input::placeholder {
+  color: var(--text-dark, #94A3B8);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary, #4F46E5);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  background-color: var(--surface, #FFFFFF);
+  border-radius: 12px;
+  border: 1px dashed var(--border, rgba(0, 0, 0, 0.1));
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  color: var(--text-dark, #94A3B8);
+  margin-bottom: 16px;
+}
+
+.empty-state-text {
+  color: var(--text, #E2E8F0);
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.empty-state-subtext {
+  color: var(--text-dark, #94A3B8);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}

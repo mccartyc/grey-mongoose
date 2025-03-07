@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intake Form Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            display: none;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Intake Form Test</h1>
+    
+    <div class="form-section">
+        <h2>Authentication</h2>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" id="email" placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button id="login-btn">Login</button>
+        <div id="login-status"></div>
+    </div>
+
+    <div class="form-section">
+        <h2>Client Information</h2>
+        <div class="form-group">
+            <label for="client-id">Client ID:</label>
+            <input type="text" id="client-id" value="679e5b3a0974107dcd8a1e62" readonly>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Referral Information</h2>
+        <div class="form-group">
+            <label for="referral-source">How did you hear about our services?</label>
+            <select id="referral-source">
+                <option value="">--</option>
+                <option value="Referral">Referral</option>
+                <option value="Internet Search">Internet Search</option>
+                <option value="Social Media">Social Media</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="referral-name">Name (if applicable):</label>
+            <input type="text" id="referral-name" placeholder="Name of referrer or source">
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Presenting Concerns</h2>
+        <div class="form-group">
+            <label for="concerns">What brings you in today?</label>
+            <textarea id="concerns" placeholder="Briefly describe your current concerns or symptoms"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="start-date">When did these concerns begin?</label>
+            <input type="date" id="start-date">
+        </div>
+        <div class="form-group">
+            <label for="daily-impact">How do these concerns impact your daily life?</label>
+            <textarea id="daily-impact" placeholder="Describe the impact on your daily functioning"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Mental Health History</h2>
+        <div class="form-group">
+            <label for="previous-treatment">Previous mental health treatment:</label>
+            <textarea id="previous-treatment" placeholder="Describe any previous therapy, counseling, or psychiatric care"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="previous-diagnoses">Previous mental health diagnoses:</label>
+            <textarea id="previous-diagnoses" placeholder="List any previous mental health diagnoses"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="hospitalization-history">Hospitalization history:</label>
+            <textarea id="hospitalization-history" placeholder="Describe any psychiatric hospitalizations"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Medical History</h2>
+        <div class="form-group">
+            <label for="current-conditions">Current medical conditions:</label>
+            <textarea id="current-conditions" placeholder="List any current medical conditions"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="current-medications">Current medications:</label>
+            <textarea id="current-medications" placeholder="List all current medications and dosages"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="allergies">Allergies:</label>
+            <textarea id="allergies" placeholder="List any allergies to medications or other substances"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Family and Social History</h2>
+        <div class="form-group">
+            <label for="family-mental-health">Family mental health history:</label>
+            <textarea id="family-mental-health" placeholder="Describe any family history of mental health issues"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="living-situation">Current living situation:</label>
+            <textarea id="living-situation" placeholder="Describe your current living arrangement"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="employment-status">Employment status:</label>
+            <textarea id="employment-status" placeholder="Describe your current employment situation"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Substance Use</h2>
+        <div class="form-group">
+            <label for="substances">Do you use any substances?</label>
+            <select id="substances">
+                <option value="">--</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="substances-details">Substance use details:</label>
+            <textarea id="substances-details" placeholder="Specify substance, frequency, and amount"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Mental Health Assessment</h2>
+        <div class="form-group">
+            <label for="mood-rating">How would you rate your mood over the past week?</label>
+            <select id="mood-rating">
+                <option value="">--</option>
+                <option value="Very Poor">Very Poor</option>
+                <option value="Poor">Poor</option>
+                <option value="Fair">Fair</option>
+                <option value="Good">Good</option>
+                <option value="Very Good">Very Good</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="symptoms">Do you experience any of the following symptoms?</label>
+            <textarea id="symptoms" placeholder="List any symptoms you experience"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Treatment Goals</h2>
+        <div class="form-group">
+            <label for="treatment-goals">What are your goals for therapy?</label>
+            <textarea id="treatment-goals" placeholder="What do you hope to achieve through treatment?"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Additional Information</h2>
+        <div class="form-group">
+            <label for="additional-info">Is there anything else you would like us to know?</label>
+            <textarea id="additional-info" placeholder="Any additional information you'd like to share"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Consent</h2>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="consent">
+                I understand the nature of the intake process and consent to the collection of this information.
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="client-signature">Client Signature:</label>
+            <input type="text" id="client-signature" placeholder="Type your name as signature">
+        </div>
+    </div>
+
+    <button id="submit-btn">Submit Intake Form</button>
+
+    <div id="result" class="result">
+        <h3>Submission Result</h3>
+        <pre id="result-content"></pre>
+    </div>
+
+    <script>
+        // Global variable to store the authentication token
+        let authToken = '';
+
+        // Login function
+        document.getElementById('login-btn').addEventListener('click', async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const statusElement = document.getElementById('login-status');
+
+            if (!email || !password) {
+                statusElement.innerHTML = '<div class="error">Please enter email and password</div>';
+                return;
+            }
+
+            try {
+                statusElement.innerHTML = 'Logging in...';
+                const response = await fetch('http://localhost:5001/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                authToken = data.token;
+                statusElement.innerHTML = '<div class="success">Login successful! You can now submit the intake form.</div>';
+            } catch (error) {
+                statusElement.innerHTML = `<div class="error">Login failed: ${error.message}</div>`;
+            }
+        });
+
+        // Submit intake form
+        document.getElementById('submit-btn').addEventListener('click', async function() {
+            if (!authToken) {
+                alert('Please login first');
+                return;
+            }
+
+            const clientId = document.getElementById('client-id').value;
+            
+            // Check required fields
+            if (!document.getElementById('referral-source').value) {
+                alert('Please select a referral source');
+                return;
+            }
+
+            if (!document.getElementById('concerns').value) {
+                alert('Please describe your presenting concerns');
+                return;
+            }
+
+            if (!document.getElementById('consent').checked) {
+                alert('You must consent to the collection of this information');
+                return;
+            }
+
+            // Build the form data object
+            const formData = {
+                id: clientId,
+                referralInfo: {
+                    source: document.getElementById('referral-source').value,
+                    referralName: document.getElementById('referral-name').value
+                },
+                presentingConcerns: {
+                    concerns: document.getElementById('concerns').value,
+                    startDate: document.getElementById('start-date').value,
+                    dailyImpact: document.getElementById('daily-impact').value
+                },
+                mentalHealthHistory: {
+                    previousTreatment: document.getElementById('previous-treatment').value,
+                    previousDiagnoses: document.getElementById('previous-diagnoses').value,
+                    hospitalizationHistory: document.getElementById('hospitalization-history').value
+                },
+                medicalHistory: {
+                    currentConditions: document.getElementById('current-conditions').value,
+                    currentMedications: document.getElementById('current-medications').value,
+                    allergies: document.getElementById('allergies').value
+                },
+                familyAndSocialHistory: {
+                    familyMentalHealthHistory: document.getElementById('family-mental-health').value,
+                    livingSituation: document.getElementById('living-situation').value,
+                    employmentStatus: document.getElementById('employment-status').value
+                },
+                substanceUse: {
+                    substances: document.getElementById('substances').value,
+                    substancesDetails: document.getElementById('substances-details').value
+                },
+                mentalHealthAssessments: {
+                    moodRating: document.getElementById('mood-rating').value,
+                    symptoms: document.getElementById('symptoms').value
+                },
+                treatmentGoals: document.getElementById('treatment-goals').value,
+                additionalInformation: document.getElementById('additional-info').value,
+                consent: document.getElementById('consent').checked,
+                clientSignature: document.getElementById('client-signature').value
+            };
+
+            const resultElement = document.getElementById('result');
+            const resultContentElement = document.getElementById('result-content');
+            
+            try {
+                resultElement.style.display = 'block';
+                resultContentElement.textContent = 'Submitting form...';
+                
+                const response = await fetch('http://localhost:5001/api/intake-forms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Form submission failed');
+                }
+
+                resultContentElement.textContent = JSON.stringify(data, null, 2);
+                resultContentElement.innerHTML = '<div class="success">Intake form submitted successfully!</div>' + 
+                                               '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                resultContentElement.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
