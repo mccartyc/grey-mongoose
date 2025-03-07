@@ -1,5 +1,7 @@
 import React from 'react';
-import ProfileSettings from '../components/settings/ProfileSettings';
+import ContactInfoSettings from '../components/settings/ContactInfoSettings';
+import PasswordSettings from '../components/settings/PasswordSettings';
+import MFASettings from '../components/settings/MFASettings';
 import SideNavBar from '../components/SideNavBar';
 import '../styles/styles.css';
 import '../styles/settingsStyles.css';
@@ -16,7 +18,18 @@ const Settings = () => {
         
         <div className="settings-container">
           <div className="settings-card">
-            <ProfileSettings />
+            <h2 className="section-title">Contact Information</h2>
+            <ContactInfoSettings />
+          </div>
+          
+          <div className="settings-card">
+            <h2 className="section-title">Password</h2>
+            <PasswordSettings />
+          </div>
+          
+          <div className="settings-card">
+            <h2 className="section-title">Security</h2>
+            <MFASettings />
           </div>
         </div>
       </div>

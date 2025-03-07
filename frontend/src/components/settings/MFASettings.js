@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/apiService';
+import ConfirmationModal from '../common/ConfirmationModal';
+import '../../styles/settingsStyles.css';
 
 const MFASettings = () => {
   const { user } = useAuth();
@@ -10,6 +12,8 @@ const MFASettings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -49,7 +53,21 @@ const MFASettings = () => {
     }
   };
 
-  const handleToggleMFA = async () => {
+  const handleToggleMFA = () => {
+    setError('');
+    setSuccessMessage('');
+    
+    // Prepare the pending action
+    const action = !mfaEnabled;
+    setPendingAction(action);
+    
+    // Show confirmation modal
+    setShowConfirmation(true);
+  };
+  
+  const handleConfirmToggle = async () => {
+    setShowConfirmation(false);
+    
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) {
@@ -64,7 +82,7 @@ const MFASettings = () => {
         Authorization: `Bearer ${token}`
       };
       
-      if (mfaEnabled) {
+      if (!pendingAction) {
         // Disable MFA
         await api.post('/api/mfa/disable', {}, { headers });
         setMfaEnabled(false);
@@ -105,12 +123,24 @@ const MFASettings = () => {
     setSuccessMessage('');
   };
 
+  const handleSaveSettings = (e) => {
+    e.preventDefault();
+    
+    if (mfaEnabled && mfaMethod === 'sms' && !phoneNumber) {
+      setError('Please enter a phone number for SMS verification');
+      return;
+    }
+    
+    // Show confirmation modal
+    setShowConfirmation(true);
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center">Loading...</div>;
   }
 
   return (
-    <div className="mfa-settings">
+    <div className="settings-form-container">
       {error && (
         <div className="error-message">
           {error}
@@ -123,60 +153,82 @@ const MFASettings = () => {
         </div>
       )}
 
-      <div className="form-group">
-        <div className="flex-between">
-          <div>
-            <h3 className="sub-title">Two-Factor Authentication</h3>
-            <p className="description-text">
-              Add an extra layer of security to your account
-            </p>
-          </div>
-          <div className="toggle-switch">
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={mfaEnabled}
-                onChange={handleToggleMFA}
-              />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        </div>
-
+      <form onSubmit={handleSaveSettings} className="settings-form compact">
         <div className="form-group">
-          <label className="form-label">
-            Verification Method
-          </label>
-          <select
-            value={mfaMethod}
-            onChange={handleMethodChange}
-            disabled={!mfaEnabled}
-            className="form-select"
-          >
-            <option value="email">Email</option>
-            <option value="sms">SMS</option>
-          </select>
-        </div>
+          <div className="flex-between">
+            <div>
+              <h3 className="sub-title">Two-Factor Authentication</h3>
+              <p className="description-text">
+                Add an extra layer of security to your account
+              </p>
+            </div>
+            <div className="toggle-switch">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={mfaEnabled}
+                  onChange={handleToggleMFA}
+                />
+                <span className="slider round"></span>
+              </label>
+            </div>
+          </div>
 
-        {mfaMethod === 'sms' && (
           <div className="form-group">
             <label className="form-label">
-              Phone Number
+              Verification Method
             </label>
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={handlePhoneChange}
+            <select
+              value={mfaMethod}
+              onChange={handleMethodChange}
               disabled={!mfaEnabled}
-              placeholder="+1234567890"
-              className="form-input"
-            />
-            <p className="help-text">
-              Enter your phone number in international format (e.g., +1234567890)
-            </p>
+              className="form-select"
+            >
+              <option value="email">Email</option>
+              <option value="sms">SMS</option>
+            </select>
           </div>
-        )}
-      </div>
+
+          {mfaMethod === 'sms' && (
+            <div className="form-group">
+              <label className="form-label">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={handlePhoneChange}
+                disabled={!mfaEnabled}
+                placeholder="+1234567890"
+                className="form-input"
+              />
+              <p className="help-text">
+                Enter your phone number in international format (e.g., +1234567890)
+              </p>
+            </div>
+          )}
+          
+          {mfaEnabled && mfaMethod === 'sms' && (
+            <button 
+              type="submit" 
+              className="primary-button"
+              disabled={loading}
+            >
+              Save Settings
+            </button>
+          )}
+        </div>
+      </form>
+      
+      <ConfirmationModal
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirmToggle}
+        title={pendingAction ? "Enable Two-Factor Authentication" : "Disable Two-Factor Authentication"}
+        message={pendingAction 
+          ? "Are you sure you want to enable two-factor authentication?" 
+          : "Are you sure you want to disable two-factor authentication? This will reduce the security of your account."}
+      />
     </div>
   );
 };
