@@ -6,7 +6,7 @@ import '../styles/styles.css';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 // import { useApiCall } from '../context/ApiCallContext'; // Import API Call Context
 import ApiCallCounter from './ApiCallCounter'; // Import API Call Counter component
-import mindcloudLogo from '../assets/mindcloud_white.png';
+import mindcloudLogo from '../assets/svg/mindcloud_light.svg';
 
 
 

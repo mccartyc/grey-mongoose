@@ -19,21 +19,40 @@ router.use(authenticateToken);
 
 // Validation middleware for client data
 const validateClientData = (req, res, next) => {
-  const { firstName, lastName, birthday, email } = req.body;
+  const { firstName, lastName, email, phone } = req.body;
   
-  if (!firstName || !lastName || !birthday) {
-    return res.status(400).json({ error: 'Required fields missing' });
+  // Check required fields
+  if (!firstName || !lastName) {
+    return res.status(400).json({ error: 'First name and last name are required' });
   }
 
-  if (email && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-    return res.status(400).json({ error: 'Invalid email format' });
+  // Validate email format if provided and not already encrypted
+  if (email && !email.includes(':')) {
+    // Only validate if it's not already in encrypted format (encrypted data contains ':')
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).toLowerCase())) {
+      console.log('Invalid email format:', email);
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
   }
 
-  // Validate date of birth format and reasonableness
-  const dob = new Date(birthday);
-  const now = new Date();
-  if (isNaN(dob.getTime()) || dob > now) {
-    return res.status(400).json({ error: 'Invalid date of birth' });
+  // Validate phone format if provided and not already encrypted
+  if (phone && !phone.includes(':')) {
+    // Only validate if it's not already in encrypted format
+    const digitsOnly = String(phone).replace(/\D/g, '');
+    if (digitsOnly.length < 10) {
+      return res.status(400).json({ error: 'Phone number must have at least 10 digits' });
+    }
+  }
+
+  // Validate date of birth format and reasonableness if provided
+  if (req.body.birthday && !String(req.body.birthday).includes(':')) {
+    // Only validate if it's not already in encrypted format
+    const dob = new Date(req.body.birthday);
+    const now = new Date();
+    if (isNaN(dob.getTime()) || dob > now) {
+      return res.status(400).json({ error: 'Invalid date of birth' });
+    }
   }
 
   next();
@@ -77,28 +96,71 @@ router.post("/",
     phone,
   } = req.body;
 
-  console.log("Request to create client:", {
+  console.log(`[${req.requestId}] Request to create client with data:`, {
     tenantId,
     userId,
     firstName,
     lastName,
-    streetAddress,
-    birthday,
-    gender,
-    city,
-    state,
-    zipcode,
-    email,
-    phone,
+    // Don't log sensitive information
+    hasEmail: !!email,
+    hasPhone: !!phone,
+    hasBirthday: !!birthday,
+    birthdayType: birthday ? typeof birthday : 'undefined',
+    birthdayValue: birthday ? birthday : 'undefined',
+    hasAddress: !!streetAddress
   });
 
   // Check if all required fields are provided
   if (!userId || !firstName || !lastName || !email || !phone || !tenantId) {
-    console.error("Validation error: Missing required fields");
+    console.error(`[${req.requestId}] Validation error: Missing required fields`);
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
+    // Format phone number if not already encrypted (remove any non-digit characters)
+    let formattedPhone = phone;
+    if (!String(phone).includes(':')) {
+      formattedPhone = String(phone).replace(/\D/g, '');
+      console.log(`[${req.requestId}] Formatted phone:`, { 
+        before: phone.length, 
+        after: formattedPhone.length 
+      });
+    }
+    
+    // Format email if not already encrypted
+    let formattedEmail = email;
+    if (!String(email).includes(':')) {
+      formattedEmail = String(email).trim();
+      console.log(`[${req.requestId}] Formatted email: Trimmed whitespace`);
+    }
+    
+    // Format birthday if provided and not already encrypted
+    let formattedBirthday = birthday;
+    if (birthday && !String(birthday).includes(':')) {
+      try {
+        // Ensure birthday is a valid date
+        console.log(`[${req.requestId}] Processing birthday:`, birthday, "Type:", typeof birthday);
+        const birthdayDate = new Date(birthday);
+        console.log(`[${req.requestId}] Parsed birthday date:`, birthdayDate, "isValid:", !isNaN(birthdayDate.getTime()));
+        
+        if (!isNaN(birthdayDate.getTime())) {
+          // Store as ISO string without time component
+          formattedBirthday = birthdayDate.toISOString().split('T')[0];
+          console.log(`[${req.requestId}] Formatted birthday:`, formattedBirthday);
+        } else {
+          console.error(`[${req.requestId}] Invalid birthday format:`, birthday);
+          return res.status(400).json({ error: "Invalid birthday format" });
+        }
+      } catch (error) {
+        console.error(`[${req.requestId}] Error parsing birthday:`, error);
+        return res.status(400).json({ error: "Invalid birthday format" });
+      }
+    } else if (birthday && String(birthday).includes(':')) {
+      console.log(`[${req.requestId}] Birthday is already encrypted, using as is`);
+      // Already encrypted, use as is
+      formattedBirthday = birthday;
+    }
+    
     // Create the new client
     const newClient = new Client({
       tenantId,
@@ -106,22 +168,46 @@ router.post("/",
       firstName,
       lastName,
       streetAddress,
-      birthday,
+      birthday: formattedBirthday,
       gender,
       city,
       state,
       zipcode,
-      email,
-      phone,
+      email: formattedEmail,
+      phone: formattedPhone,
     });
 
-    await newClient.save();
-    console.log("Client created successfully:", newClient);
-    res.status(201).json(newClient);
+    console.log(`[${req.requestId}] Attempting to save client with birthday:`, formattedBirthday);
+    
+    try {
+      await newClient.save();
+      console.log(`[${req.requestId}] Client created successfully with ID:`, newClient._id);
+      
+      // Return the client with decrypted contact info
+      try {
+        const clientWithDecryptedInfo = await Client.findById(newClient._id);
+        if (!clientWithDecryptedInfo) {
+          console.error(`[${req.requestId}] Failed to retrieve created client with ID:`, newClient._id);
+          throw new Error('Failed to retrieve created client');
+        }
+        
+        console.log(`[${req.requestId}] Successfully retrieved client with ID:`, clientWithDecryptedInfo._id);
+        res.status(201).json(clientWithDecryptedInfo);
+      } catch (retrieveError) {
+        console.error(`[${req.requestId}] Error retrieving created client:`, retrieveError);
+        throw new Error(`Failed to retrieve created client: ${retrieveError.message}`);
+      }
+    } catch (saveError) {
+      console.error(`[${req.requestId}] Error saving client:`, saveError.message);
+      console.error(`[${req.requestId}] Error stack:`, saveError.stack);
+      throw new Error(`Failed to save client: ${saveError.message}`);
+    }
   } catch (error) {
-    console.error("Error creating client:", error);
+    console.error(`[${req.requestId}] Error creating client:`, error.message);
+    console.error(`[${req.requestId}] Error stack:`, error.stack);
     res.status(500).json({ 
       error: 'Failed to create client',
+      details: error.message,
       requestId: req.requestId
     });
   }
@@ -376,7 +462,11 @@ router.get("/",
     console.log("Get Client Route - User ID:", userId);
     const clients = await Client.find({ tenantId: tenantId, userId: userId, isActive: true });
     console.log("Active clients fetched successfully:", clients);
-    res.json(clients);
+    
+    // Decrypt contact information for each client
+    const decryptedClients = clients.map(client => client.decryptContactInfo());
+    
+    res.json(decryptedClients);
   } catch (error) {
     console.error("Error fetching clients:", error);
     res.status(500).json({ 
@@ -407,20 +497,23 @@ router.get("/:clientId",
       _id: clientId,
       tenantId: tenantId,
       userId: userId,
-      isActive: true,
+      isActive: true
     });
 
     if (!client) {
-      console.log(`Client with ID ${clientId} not found`);
       return res.status(404).json({ error: "Client not found" });
     }
 
     console.log("Client fetched successfully:", client);
-    res.json(client);
+    
+    // Decrypt contact information
+    const decryptedClient = client.decryptContactInfo();
+    
+    res.json(decryptedClient);
   } catch (error) {
     console.error("Error fetching client:", error);
     res.status(500).json({ 
-      error: 'Failed to fetch client',
+      error: "Failed to fetch client",
       requestId: req.requestId
     });
   }
@@ -487,7 +580,11 @@ router.put("/:clientId",
     }
 
     console.log("Client updated successfully:", updatedClient);
-    res.json(updatedClient);
+    
+    // Decrypt contact information
+    const decryptedClient = updatedClient.decryptContactInfo();
+    
+    res.json(decryptedClient);
   } catch (error) {
     console.error("Error updating client:", error);
     res.status(500).json({ 

@@ -221,63 +221,62 @@ const ClientPage = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate all fields before submission
-    const emailError = validateEmail(email);
-    const phoneError = validatePhone(phone);
-    const cityError = validateCity(city);
-    const stateError = validateState(state);
-    const zipcodeError = validateZipcode(zipcode);
-    
-    const formErrors = {
-      email: emailError,
-      phone: phoneError,
-      city: cityError,
-      state: stateError,
-      zipcode: zipcodeError
-    };
-    
-    setErrors(formErrors);
-    
-    // Check if there are any validation errors
-    if (Object.values(formErrors).some(error => error !== '')) {
-      showNotification('Please correct the errors in the form.', 'error');
+    if (!user?.tenantId || !user?.userId || !user?.token) {
+      showNotification('Error: Authentication required', 'error');
       return;
     }
     
-    if (!firstName || !lastName || !email || !phone || !streetAddress || !city || !state || !zipcode) {
-      showNotification('All fields are required.', 'error');
+    const { tenantId, userId, token } = user;
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showNotification('Error: Please enter a valid email address', 'error');
       return;
     }
-    const { tenantId, userId, token } = user; // Get tenantId and userId from user context
-
+    
+    // Format phone number for consistency (remove any formatting)
+    const formattedPhone = phone.replace(/\D/g, '');
+    if (formattedPhone.length < 10) {
+      showNotification('Error: Please enter a valid phone number (at least 10 digits)', 'error');
+      return;
+    }
+    
     try {
       let response;
       
+      // Prepare client data with formatted values
+      const clientData = {
+        firstName,
+        lastName,
+        birthday,
+        gender,
+        email: email.trim(),
+        phone: formattedPhone,
+        streetAddress,
+        city,
+        state,
+        zipcode,
+        tenantId,
+        userId,
+      };
+      
+      console.log('Submitting client data:', clientData);
+      
       if (isEditMode && selectedClientId) {
         // Update existing client
-        response = await axios.put(`http://localhost:5001/api/clients/${selectedClientId}`, {
-          firstName,
-          lastName,
-          birthday,
-          gender,
-          email,
-          phone,
-          streetAddress,
-          city,
-          state,
-          zipcode,
-          tenantId,
-          userId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        response = await axios.put(`http://localhost:5001/api/clients/${selectedClientId}`, 
+          clientData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+          }
+        );
         
         showNotification(`Client updated: ${response.data.firstName} ${response.data.lastName}`, 'success');
         
-        // Update the client in the clients array
         setClients((prev) => 
           prev.map((client) => 
             client._id === selectedClientId 
@@ -287,25 +286,15 @@ const ClientPage = () => {
         );
       } else {
         // Create new client
-        response = await axios.post('http://localhost:5001/api/clients', {
-          firstName,
-          lastName,
-          birthday,
-          gender,
-          email,
-          phone,
-          streetAddress,
-          city,
-          state,
-          zipcode,
-          tenantId,
-          userId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        response = await axios.post('http://localhost:5001/api/clients', 
+          clientData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+          }
+        );
         
         showNotification(`Client created: ${response.data.firstName} ${response.data.lastName}`, 'success');
         
@@ -345,6 +334,7 @@ const ClientPage = () => {
             },
           }
         );
+        // Backend will return decrypted contact information
         setClients(response.data);
       } catch (error) {
         console.error('Error fetching clients:', error);

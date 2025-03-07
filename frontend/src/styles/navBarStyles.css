@@ -65,30 +65,30 @@
     display: flex;
     align-items: center;
     margin-bottom: 40px;
-    margin-left: 7px;
+    margin-left: -10px;
     transition: all 0.3s ease;
   }
   
   .brand-icon {
     font-size: 2rem;
     color: var(--text, #E2E8F0);
-    height: 40px;
-    width: 40px;
+    height: 80px;
+    width: 80px;
     margin-left: 0;
     transition: all 0.3s ease;
     filter: brightness(1.2); /* Make the white color pop a bit more */
   }
   
   .side-navbar.collapsed .brand-icon {
-    height: 40px;
-    width: 40px;
+    height: 80px;
+    width: 80px;
     margin: 0 auto;
   }
   
   .brand-name {
     font-size: 1.5rem;
     font-weight: bold;
-    margin-left: 10px;
+    margin-left: 5px;
     background: linear-gradient(135deg, var(--primary, #4F46E5), var(--accent, #10B981));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -134,13 +134,13 @@
     font-size: 1.5rem;
     color: var(--accent, #10B981);
     margin-bottom: 20px;
-    margin-left: 10px;
+    margin-left: 12px;
     transition: padding 0.7s ease;
   }
   
   .side-navbar.collapsed .toggle-btn {
     justify-content: center;
-    margin-left: 0;
+    margin-left: 8px;
   }
   
   

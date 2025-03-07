@@ -30,6 +30,7 @@ useEffect(() => {
       },
       headers: {
         Authorization: `Bearer ${user.token}`,
+        'Content-Type': 'application/json'
       },
     };
 
@@ -41,8 +42,23 @@ useEffect(() => {
       
       // Fetch client details first
       const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, config);
-      console.log('Client data:', clientResponse.data);
-      setClient(clientResponse.data);
+      console.log('Client data received');
+      
+      // The backend should already return decrypted contact information
+      // If we need to do any client-side formatting, do it here
+      const clientData = clientResponse.data;
+      
+      // Format phone number if needed
+      if (clientData.phone) {
+        const digits = clientData.phone.replace(/\D/g, '');
+        if (digits.length === 10) {
+          clientData.formattedPhone = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+        } else {
+          clientData.formattedPhone = clientData.phone;
+        }
+      }
+      
+      setClient(clientData);
       
       // Then fetch sessions
       try {
@@ -150,7 +166,7 @@ return (
         <p><strong>Id:</strong> {id}</p>
         <p><strong>First Name:</strong> {client.firstName}</p>
         <p><strong>Last Name:</strong> {client.lastName}</p>
-        <p><strong>Phone:</strong> {client.phone}</p>
+        <p><strong>Phone:</strong> {client.formattedPhone}</p>
         <p><strong>Email:</strong> {client.email}</p>
         <p><strong>Address:</strong> {client.streetAddress} {client.city}, {client.state} {client.zipcode}</p>
         <p><strong>Birthday:</strong> {new Date(client.birthday).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })}</p>

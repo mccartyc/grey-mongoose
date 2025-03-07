@@ -95,46 +95,13 @@ const SessionDetail = () => {
         
         setSession(sessionData);
         
-        // If the session has a client ID, fetch client details
-        if (sessionData.clientId && typeof sessionData.clientId === 'object') {
-          console.log('Client data from session object:', sessionData.clientId);
-          
-          // Check if we have a complete client object with phone and email
-          if (sessionData.clientId._id && 
-              (sessionData.clientId.phone || sessionData.clientId.email)) {
-            setClient(sessionData.clientId);
-          } else {
-            // If client object is incomplete, fetch full client details
-            try {
-              const clientId = sessionData.clientId._id || sessionData.clientId;
-              const clientResponse = await axios.get(
-                `http://localhost:5001/api/clients/${clientId}`, 
-                config
-              );
-              console.log('Client data from API (incomplete object case):', clientResponse.data);
-              setClient(clientResponse.data);
-            } catch (clientError) {
-              console.error('Error fetching complete client details:', clientError);
-              // Use what we have if fetch fails
-              setClient(sessionData.clientId);
-            }
-          }
-        } else if (sessionData.clientId) {
-          // Fetch client details if clientId is just an ID
-          try {
-            const clientResponse = await axios.get(
-              `http://localhost:5001/api/clients/${sessionData.clientId}`, 
-              config
-            );
-            console.log('Client data from API:', clientResponse.data);
-            console.log('Client phone:', clientResponse.data.phone);
-            console.log('Client email:', clientResponse.data.email);
-            setClient(clientResponse.data);
-          } catch (clientError) {
-            console.error('Error fetching client details:', clientError);
-            // Continue even if client fetch fails
-          }
-        }
+        // Fetch client details first
+        const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, config);
+        console.log('Client data:', clientResponse.data);
+        console.log('Client phone:', clientResponse.data.phone);
+        console.log('Client email:', clientResponse.data.email);
+        // Backend will return decrypted contact information
+        setClient(clientResponse.data);
       } catch (error) {
         console.error('Error fetching session details:', error);
         setError(error.response?.data?.error || 'Failed to fetch session details');

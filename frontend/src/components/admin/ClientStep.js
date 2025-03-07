@@ -53,10 +53,13 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          });
+          }
+        );
+        // Backend will return decrypted contact information
         setClients(response.data);
       } catch (error) {
-        console.error("Error fetching clients:", error);
+        console.error('Error fetching clients:', error);
+        setMessage('Failed to fetch clients');
       }
     }
   }, [selectedTenant, selectedUser, user]);
@@ -69,43 +72,85 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
   /*Create a new client*/
   const handleCreateClient = async (e) => {
     e.preventDefault();
-
-    console.log('selectedUser:', selectedUser); // Debug log
-
+    
     if (!selectedTenant || !selectedUser) {
-      showNotification('Error: Tenant or User not selected.', 'error');
+      showNotification('Error: Tenant and user must be selected.', 'error');
       return;
     }
 
     const { token } = user; // Get tenantId and userId from user context
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showNotification('Error: Please enter a valid email address.', 'error');
+      return;
+    }
+
+    // Format phone number for consistency (remove any formatting)
+    const formattedPhone = phone.replace(/\D/g, '');
+    if (formattedPhone.length < 10) {
+      showNotification('Error: Please enter a valid phone number.', 'error');
+      return;
+    }
+    
+    // Validate birthday format
+    if (!birthday) {
+      showNotification('Error: Please enter a valid birth date.', 'error');
+      return;
+    }
+    
     try {
-      const response = await axios.post('http://localhost:5001/api/clients', {
+      // Format the birthday as a proper ISO string
+      const birthdayDate = new Date(birthday);
+      if (isNaN(birthdayDate.getTime())) {
+        showNotification('Error: Invalid birth date format.', 'error');
+        return;
+      }
+      
+      // Format as YYYY-MM-DD
+      const formattedBirthday = birthdayDate.toISOString().split('T')[0];
+      console.log("Formatted birthday:", formattedBirthday);
+      
+      const clientData = {
         firstName,
         lastName,
-        birthday,
+        birthday: formattedBirthday,
         gender,
-        email,
-        phone,
+        email: email.trim(), // Trim any whitespace
+        phone: formattedPhone, // Use the cleaned phone number
         streetAddress,
         city,
         state,
         zipcode,
         tenantId: selectedTenant._id,
         userId: selectedUser._id,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      showNotification(`Client created: ${response.data.firstName} ${response.data.lastName}`, 'success');
-      setClients((prev) => [...prev, response.data]);
-      setShowForm(false);
-      resetFormFields();
+      };
+
+      console.log('Sending client data:', clientData);
+
+      try {
+        const response = await axios.post('http://localhost:5001/api/clients', 
+          clientData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+          }
+        );
+        showNotification(`Client created: ${response.data.firstName} ${response.data.lastName}`, 'success');
+        setClients((prev) => [...prev, response.data]);
+        setShowForm(false);
+        resetFormFields();
+      } catch (error) {
+        console.error('Error creating client:', error);
+        const errorMessage = error.response?.data?.error || error.response?.data?.details || 'Failed to create client';
+        showNotification(`Error: ${errorMessage}`, 'error');
+      }
     } catch (error) {
-      console.error('Error creating client:', error);
-      showNotification(error.response?.data?.error || 'Failed to create client', 'error');
+      console.error('Error formatting birthday:', error);
+      showNotification('Error: Invalid birth date format.', 'error');
     }
   };
 

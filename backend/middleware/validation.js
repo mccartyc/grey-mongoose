@@ -78,11 +78,102 @@ const validatePhone = (phone) => {
   return phoneRegex.test(phone);
 };
 
+// Validate client data
+const validateClientData = (req, res, next) => {
+  try {
+    console.log(`[${req.requestId}] Validating client data`);
+    const { email, phone, birthday } = req.body;
+
+    // Skip validation for encrypted fields
+    if (email && typeof email === 'string' && !email.includes(':')) {
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        console.error(`[${req.requestId}] Invalid email format:`, email);
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+      console.log(`[${req.requestId}] Email validation passed`);
+    } else {
+      console.log(`[${req.requestId}] Skipping email validation for encrypted or missing email`);
+    }
+
+    // Phone validation - skip if encrypted
+    if (phone && typeof phone === 'string' && !phone.includes(':')) {
+      // Remove non-digit characters for validation
+      const cleanPhone = phone.replace(/\D/g, '');
+      if (cleanPhone.length < 10) {
+        console.error(`[${req.requestId}] Invalid phone number length:`, cleanPhone.length);
+        return res.status(400).json({ error: "Invalid phone number" });
+      }
+      console.log(`[${req.requestId}] Phone validation passed`);
+    } else {
+      console.log(`[${req.requestId}] Skipping phone validation for encrypted or missing phone`);
+    }
+
+    // Birthday validation - skip if encrypted or not provided
+    if (birthday && typeof birthday === 'string' && !birthday.includes(':')) {
+      try {
+        console.log(`[${req.requestId}] Validating birthday:`, birthday, "Type:", typeof birthday);
+        
+        // Check if it's already in ISO format (YYYY-MM-DD)
+        if (/^\d{4}-\d{2}-\d{2}$/.test(birthday)) {
+          console.log(`[${req.requestId}] Birthday is in ISO format`);
+          const date = new Date(birthday);
+          if (isNaN(date.getTime())) {
+            console.error(`[${req.requestId}] Invalid ISO date:`, birthday);
+            return res.status(400).json({ error: "Invalid birthday format" });
+          }
+          
+          // Check if date is in the future
+          if (date > new Date()) {
+            console.error(`[${req.requestId}] Birthday is in the future:`, birthday);
+            return res.status(400).json({ error: "Birthday cannot be in the future" });
+          }
+        } else {
+          // Try to parse as a date
+          const date = new Date(birthday);
+          if (isNaN(date.getTime())) {
+            console.error(`[${req.requestId}] Invalid date format:`, birthday);
+            return res.status(400).json({ error: "Invalid birthday format" });
+          }
+          
+          // Check if date is in the future
+          if (date > new Date()) {
+            console.error(`[${req.requestId}] Birthday is in the future:`, birthday);
+            return res.status(400).json({ error: "Birthday cannot be in the future" });
+          }
+          
+          console.log(`[${req.requestId}] Birthday parsed as:`, date.toISOString().split('T')[0]);
+        }
+        
+        console.log(`[${req.requestId}] Birthday validation passed`);
+      } catch (error) {
+        console.error(`[${req.requestId}] Error validating birthday:`, error);
+        return res.status(400).json({ error: "Invalid birthday format" });
+      }
+    } else {
+      console.log(`[${req.requestId}] Skipping birthday validation for encrypted or missing birthday`);
+    }
+
+    console.log(`[${req.requestId}] Client data validation successful`);
+    next();
+  } catch (error) {
+    console.error(`[${req.requestId}] Error in validation middleware:`, error.message);
+    console.error(`[${req.requestId}] Error stack:`, error.stack);
+    res.status(500).json({ 
+      error: "Validation error", 
+      details: error.message,
+      requestId: req.requestId
+    });
+  }
+};
+
 module.exports = {
   validateObjectId,
   validateSession,
   sanitizeData,
   validateDate,
   validateEmail,
-  validatePhone
+  validatePhone,
+  validateClientData
 };

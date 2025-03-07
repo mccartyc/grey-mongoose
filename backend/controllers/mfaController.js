@@ -156,7 +156,7 @@ exports.generateMFACode = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ email }).select('+email');
+    const user = await User.findByEmail(email).select('+email');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -220,9 +220,13 @@ exports.verifyMFACode = async (req, res) => {
   try {
     const { email, code, isBackupCode } = req.body;
 
-    const user = await User.findOne({ email }).select('+email');
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and verification code are required' });
+    }
+
+    const user = await User.findByEmail(email).select('+email');
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(401).json({ error: 'Invalid email' });
     }
 
     if (isBackupCode) {

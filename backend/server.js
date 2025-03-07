@@ -21,7 +21,7 @@ const transcribeRoutes = require('./routes/transcribe');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const mfaRoutes = require('./routes/mfaRoutes');
 const intakeRoutes = require('./routes/intakeRoutes');
-const encryptionMiddleware = require('./middleware/encryption');
+const { encryptionMiddleware } = require('./middleware/encryption');
 
 const app = express();
 
@@ -88,7 +88,21 @@ connectDB();
 
 // Debug middleware to log all requests
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
+  const requestId = Math.random().toString(36).substring(2, 15);
+  req.requestId = requestId;
+  console.log(`[${requestId}] ${req.method} ${req.path}`);
+  next();
+});
+
+// Add request ID to all responses
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function(body) {
+    if (body && typeof body === 'object' && !Buffer.isBuffer(body)) {
+      body.requestId = req.requestId;
+    }
+    return originalSend.call(this, body);
+  };
   next();
 });
 
@@ -112,11 +126,36 @@ console.log('Registered Routes:', JSON.stringify(listEndpoints(app), null, 2));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  console.error(`[${req.requestId}] Error:`, err.message);
+  console.error(`[${req.requestId}] Stack:`, err.stack);
+  
+  // Log additional information for debugging
+  if (req.body) {
+    console.error(`[${req.requestId}] Request body:`, JSON.stringify({
+      ...req.body,
+      // Don't log sensitive information
+      email: req.body.email ? '[REDACTED]' : undefined,
+      phone: req.body.phone ? '[REDACTED]' : undefined,
+      password: req.body.password ? '[REDACTED]' : undefined,
+    }));
+  }
+  
   res.status(err.status || 500).json({
     error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message,
+    stack: process.env.NODE_ENV === 'production' ? undefined : err.stack,
     requestId: req.requestId
   });
+});
+
+// Catch unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Catch uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Keep the process alive but log the error
 });
 
 const PORT = process.env.PORT || 5001;
