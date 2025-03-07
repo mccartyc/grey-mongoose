@@ -45,6 +45,7 @@ const corsOptions = {
       'http://localhost:5001',
       // Add your Netlify domain
       'https://mindcloud-beta.netlify.app',
+      'https://mindcloud.netlify.app',
       // Add any other domains you want to allow
     ];
     
@@ -52,7 +53,7 @@ const corsOptions = {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
-      callback(null, true); // Temporarily allow all origins while debugging
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
     }
   },
   credentials: true,
