@@ -43,7 +43,7 @@ const Register = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", { name, email, password });
+      await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/register`, { name, email, password });
       setMessage("Registration successful! Redirecting...");
       setTimeout(() => navigate("/dashboard"), 2000); // Redirect to dashboard after 2 seconds
     } catch (error) {

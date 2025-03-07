@@ -48,7 +48,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       const { token } = user; // Get tenantId and userId from user context
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`,
+          `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -130,7 +130,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       console.log('Sending client data:', clientData);
 
       try {
-        const response = await axios.post('http://localhost:5001/api/clients', 
+        const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/clients`, 
           clientData,
           {
             headers: {
@@ -229,7 +229,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       });
       
       const response = await axios.put(
-        `http://localhost:5001/api/clients/${clientToDelete._id}/deactivate`,
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/clients/${clientToDelete._id}/deactivate`,
         {
           tenantId: selectedTenant._id,
           reason: 'User requested deletion'
@@ -251,7 +251,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       await fetchClients(); // Refresh the client list
     } catch (error) {
       console.error('Error deleting client:', error);
-      const errorMessage = error.response?.data?.error || 'Failed to delete client';
+      const errorMessage = error.response?.data?.error || error.response?.data?.details || 'Failed to delete client';
       showNotification(errorMessage, 'error');
       
       if (error.response?.data?.details) {
