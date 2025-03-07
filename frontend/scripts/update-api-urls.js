@@ -37,8 +37,10 @@ try {
     
     // Replace hardcoded URLs with environment variable
     const updatedContent = content
-      .replace(/http:\/\/localhost:5001/g, '${process.env.REACT_APP_API_URL || "http://localhost:5001"}')
-      .replace(/http:\/\/localhost:5000/g, '${process.env.REACT_APP_API_URL || "http://localhost:5001"}');
+      .replace(/(['"])http:\/\/localhost:5001(\/[^'"]*)?(['"])/g, '$1${process.env.REACT_APP_API_URL || "http://localhost:5001"}$2$3')
+      .replace(/(['"])http:\/\/localhost:5000(\/[^'"]*)?(['"])/g, '$1${process.env.REACT_APP_API_URL || "http://localhost:5001"}$2$3')
+      // Fix any string concatenation issues by converting to template literals
+      .replace(/(['"])\${process\.env\.REACT_APP_API_URL \|\| "http:\/\/localhost:5001"}(\/[^'"]*)?(['"])/g, '`${process.env.REACT_APP_API_URL || "http://localhost:5001"}$2`');
     
     // Only write if changes were made
     if (content !== updatedContent) {

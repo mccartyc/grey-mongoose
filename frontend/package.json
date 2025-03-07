@@ -40,7 +40,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "update-api-urls": "node scripts/update-api-urls.js",
-    "predeploy": "npm run update-api-urls && npm run build",
+    "fix-template-literals": "node scripts/fix-template-literals.js",
+    "predeploy": "npm run update-api-urls && npm run fix-template-literals && npm run build",
     "deploy": "netlify deploy --prod"
   },
   "eslintConfig": {
