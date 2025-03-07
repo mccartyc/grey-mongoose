@@ -36,13 +36,16 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && node scripts/generate-env-config.js",
+    "prebuild": "node scripts/check-env-vars.js",
+    "build": "CI=false react-scripts build && node scripts/generate-env-config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "update-api-urls": "node scripts/update-api-urls.js",
     "fix-template-literals": "node scripts/fix-template-literals.js",
     "predeploy": "npm run update-api-urls && npm run fix-template-literals && npm run build",
-    "deploy": "netlify deploy --prod"
+    "deploy": "netlify deploy --prod",
+    "deploy:netlify": "./scripts/deploy-netlify.sh",
+    "test:deployment": "node scripts/test-deployment.js"
   },
   "eslintConfig": {
     "extends": [
@@ -64,6 +67,9 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "dotenv": "^16.4.7",
     "netlify-cli": "^19.0.0-pre.fb36998"
   }
 }
