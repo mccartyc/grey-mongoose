@@ -50,11 +50,11 @@
 .client-table th:nth-child(8), .client-table td:nth-child(8) { width: 12%; } /* Client ID */
 .client-table th:nth-child(9), .client-table td:nth-child(9) { width: 5%; } /* Actions */
 
-/* Optimized column widths for user table */
-.user-table th:nth-child(1), .user-table td:nth-child(1) { width: 15%; } /* First Name */
-.user-table th:nth-child(2), .user-table td:nth-child(2) { width: 15%; } /* Last Name */
+/* Optimized column widths for user table *
+.user-table th:nth-child(1), .user-table td:nth-child(1) { width: 12%; } /* First Name */
+.user-table th:nth-child(2), .user-table td:nth-child(2) { width: 12%; } /* Last Name */
 .user-table th:nth-child(3), .user-table td:nth-child(3) { width: 20%; } /* User ID */
-.user-table th:nth-child(4), .user-table td:nth-child(4) { width: 12%; } /* Email */
+.user-table th:nth-child(4), .user-table td:nth-child(4) { width: 20%; } /* Email */
 .user-table th:nth-child(5), .user-table td:nth-child(5) { width: 10%; } /* Role */
 .user-table th:nth-child(6), .user-table td:nth-child(6) { width: 20%; } /* Created At  */
 .user-table th:nth-child(9), .user-table td:nth-child(9) { width: 5%; } /* Actions */
