@@ -10,7 +10,7 @@ EB_ENV_NAME="grey-mongoose-prod"
 EB_APP_NAME="grey-mongoose"
 
 # Update these values for your production environment
-API_URL="http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081"
+API_URL="https://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com"
 FRONTEND_URL="https://mindcloud.netlify.app"
 
 # Command to update environment variables
