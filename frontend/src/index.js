@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './styles/styles.css'; // Ensure your styles load here (optional)
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// Import secure logger to prevent sensitive info leaks
+import './utils/secureLogger';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

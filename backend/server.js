@@ -24,6 +24,7 @@ const intakeRoutes = require('./routes/intakeRoutes');
 const healthRoutes = require('./routes/health');
 const { encryptionMiddleware } = require('./middleware/encryption');
 const passport = require('./config/passport');
+const logger = require('./config/logger'); // Import secure logger
 
 const app = express();
 

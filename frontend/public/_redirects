@@ -1,1 +1,2 @@
+/api/*  http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081/api/:splat  200
 /* /index.html 200
