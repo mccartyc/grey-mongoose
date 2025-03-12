@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { createApiInstance } from '../utils/apiConfig';
+import { createApiInstance } from '../../utils/apiConfig';
 import { useAuth } from '../../context/AuthContext'; // Import AuthContext
 
 

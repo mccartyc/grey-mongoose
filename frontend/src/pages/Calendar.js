@@ -9,7 +9,6 @@ import interactionPlugin from '@fullcalendar/interaction'; // Required for event
 import { useAuth } from '../context/AuthContext'; // Import auth context
 import axios from 'axios';
 import { getApiBaseUrl, createApiInstance } from '../utils/apiConfig';
-import { createApiInstance } from '../utils/apiConfig';
 
 
 const categoryColors = {

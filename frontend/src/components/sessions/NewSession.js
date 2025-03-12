@@ -12,7 +12,7 @@ import { encryptText, decryptText } from '../../utils/encryption';
 import '../../styles/Transcript.css';
 import '../../styles/formLayout.css';
 import '../../styles/sectionStyles.css';
-import { createApiInstance } from '../utils/apiConfig';
+import { createApiInstance } from '../../utils/apiConfig';
 
 const NewSession = () => {
   const { id } = useParams();

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getApiBaseUrl, createApiInstance } from '../utils/apiConfig';
-import { createApiInstance } from '../utils/apiConfig';
 // import { FaPlus } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -288,7 +287,7 @@ const ClientPage = () => {
         );
       } else {
         // Create new client
-        response = await axios.post("/api/clients', 
+        response = await axios.post('/api/clients', 
           clientData,
           {
             headers: {

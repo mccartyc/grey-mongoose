@@ -14,7 +14,7 @@ export const useSession = () => {
     
     try {
       const response = await axios.post(
-        "/api/sessions',
+        '/api/sessions',
         {
           ...sessionData,
           tenantId: user.tenantId,
@@ -41,7 +41,7 @@ export const useSession = () => {
     
     try {
       const response = await axios.post(
-        "/api/sessions/start-transcript',
+        '/api/sessions/start-transcript',
         {},
         {
           headers: {
@@ -64,7 +64,7 @@ export const useSession = () => {
     
     try {
       const response = await axios.post(
-        "/api/sessions/stop-transcript',
+        '/api/sessions/stop-transcript',
         {},
         {
           headers: {
