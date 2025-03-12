@@ -241,7 +241,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
             <button onClick={() => setShowForm(true)} className="btn primary-btn">Create New</button>
           </div>
         </div>
-        <table className="tenant-table">
+        <table className="user-table">
           <thead>
             <tr>
               <th>First Name</th>

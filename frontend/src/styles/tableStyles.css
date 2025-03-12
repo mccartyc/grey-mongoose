@@ -1,6 +1,7 @@
 
 /* Modern Table Styling */
 .tenant-table,
+.user-table,
 .client-table,
 .session-table {
   width: 100%;
@@ -14,6 +15,7 @@
 }
 
 .tenant-table th,
+.user-table th,
 .client-table th,
 .session-table th {
   background-color: var(--surface-dark, #0F172A);
@@ -29,9 +31,17 @@
   text-overflow: ellipsis;
 }
 
+
+/* Optimized column widths for tenant table */
+.tenant-table th:nth-child(1), .tenant-table td:nth-child(1) { width: 20%; } /* Name */
+.tenant-table th:nth-child(2), .tenant-table td:nth-child(2) { width: 25%; } /* Email */
+.tenant-table th:nth-child(3), .tenant-table td:nth-child(3) { width: 15%; } /* Created At */
+.tenant-table th:nth-child(4), .tenant-table td:nth-child(4) { width: 30%; } /* Tenant ID */
+.tenant-table th:nth-child(5), .tenant-table td:nth-child(5) { width: 10%; } /* Actions */
+
 /* Optimized column widths for client table */
-.client-table th:nth-child(1), .client-table td:nth-child(1) { width: 11%; } /* First Name */
-.client-table th:nth-child(2), .client-table td:nth-child(2) { width: 11%; } /* Last Name */
+.client-table th:nth-child(1), .client-table td:nth-child(1) { width: 10%; } /* First Name */
+.client-table th:nth-child(2), .client-table td:nth-child(2) { width: 10%; } /* Last Name */
 .client-table th:nth-child(3), .client-table td:nth-child(3) { width: 5%; } /* Age */
 .client-table th:nth-child(4), .client-table td:nth-child(4) { width: 7%; } /* Gender */
 .client-table th:nth-child(5), .client-table td:nth-child(5) { width: 16%; } /* Email */
@@ -40,12 +50,15 @@
 .client-table th:nth-child(8), .client-table td:nth-child(8) { width: 12%; } /* Client ID */
 .client-table th:nth-child(9), .client-table td:nth-child(9) { width: 5%; } /* Actions */
 
-/* Optimized column widths for tenant table */
-.tenant-table th:nth-child(1), .tenant-table td:nth-child(1) { width: 20%; } /* Name */
-.tenant-table th:nth-child(2), .tenant-table td:nth-child(2) { width: 25%; } /* Email */
-.tenant-table th:nth-child(3), .tenant-table td:nth-child(3) { width: 15%; } /* Created At */
-.tenant-table th:nth-child(4), .tenant-table td:nth-child(4) { width: 30%; } /* Tenant ID */
-.tenant-table th:nth-child(5), .tenant-table td:nth-child(5) { width: 10%; } /* Actions */
+/* Optimized column widths for user table */
+.user-table th:nth-child(1), .user-table td:nth-child(1) { width: 15%; } /* First Name */
+.user-table th:nth-child(2), .user-table td:nth-child(2) { width: 15%; } /* Last Name */
+.user-table th:nth-child(3), .user-table td:nth-child(3) { width: 20%; } /* User ID */
+.user-table th:nth-child(4), .user-table td:nth-child(4) { width: 12%; } /* Email */
+.user-table th:nth-child(5), .user-table td:nth-child(5) { width: 10%; } /* Role */
+.user-table th:nth-child(6), .user-table td:nth-child(6) { width: 20%; } /* Created At  */
+.user-table th:nth-child(9), .user-table td:nth-child(9) { width: 5%; } /* Actions */
+
 
 /* Optimized column widths for session table */
 .session-table th:nth-child(1), .session-table td:nth-child(1) { width: 15%; } /* Date */
@@ -55,6 +68,7 @@
 .session-table th:nth-child(5), .session-table td:nth-child(5) { width: 15%; } /* Actions */
 
 .tenant-table td,
+.user-table td,
 .client-table td,
 .session-table td {
   padding: 8px 16px;
@@ -71,6 +85,7 @@
 
 /* Common tooltip styles for all tables */
 .tenant-table td[title]:hover::after,
+.user-table td[title]:hover::after,
 .client-table td[title]:hover::after,
 .session-table td[title]:hover::after {
   content: attr(title);
@@ -114,7 +129,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   pointer-events: none;
   margin-top: 5px;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.1s ease;
   opacity: 0.98;
   text-align: center;
 }
@@ -145,18 +160,21 @@
 }
 
 .tenant-table tr:nth-child(even),
+.user-table tr:nth-child(even),
 .client-table tr:nth-child(even),
 .session-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
 .tenant-table tr:nth-child(odd),
+.user-table tr:nth-child(odd),
 .client-table tr:nth-child(odd),
 .session-table tr:nth-child(odd) {
   background-color: #ffffff;
 }
 
 .tenant-table tr:hover,
+.user-table tr:hover,
 .client-table tr:hover,
 .session-table tr:hover {
   background-color: rgba(79, 70, 229, 0.08) !important;
@@ -165,6 +183,7 @@
 
 /* Style for selectable text */
 .tenant-table td::selection,
+.user-table td::selection,
 .client-table td::selection,
 .session-table td::selection {
   background-color: rgba(79, 70, 229, 0.2);
@@ -173,12 +192,14 @@
 
 /* Ensure action buttons remain unselectable */
 .tenant-table td.action-column,
+.user-table td.action-column,
 .client-table td.action-column,
 .session-table td.action-column {
   user-select: none;
 }
 
 .tenant-table tr.selected,
+.user-table tr.selected,
 .client-table tr.selected,
 .session-table tr.selected {
   background-color: rgba(79, 70, 229, 0.08) !important;
@@ -196,6 +217,7 @@
 
 /* Add a subtle shadow to the header */
 .tenant-table th,
+.user-table th,
 .client-table th,
 .session-table th {
   position: sticky;
@@ -205,6 +227,7 @@
 
 /* Rounded corners for the entire table */
 .tenant-table,
+.user-table,
 .client-table,
 .session-table {
   border-radius: 8px;
