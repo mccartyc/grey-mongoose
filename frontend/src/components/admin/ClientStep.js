@@ -49,7 +49,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       const { token } = user; // Get tenantId and userId from user context
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`,
+          `/api/clients?tenantId=${selectedTenant._id}&userId=${selectedUser._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -131,7 +131,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       console.log('Sending client data:', clientData);
 
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/clients`, 
+        const response = await axios.post(`/api/clients`, 
           clientData,
           {
             headers: {
@@ -230,7 +230,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
       });
       
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/clients/${clientToDelete._id}/deactivate`,
+        `/api/clients/${clientToDelete._id}/deactivate`,
         {
           tenantId: selectedTenant._id,
           reason: 'User requested deletion'

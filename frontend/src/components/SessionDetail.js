@@ -44,7 +44,7 @@ const SessionDetail = () => {
         
         // First, fetch all sessions to find the one with matching sessionId
         const allSessionsResponse = await axios.get(
-          `http://localhost:5001/api/sessions`,
+          `/api/sessions`,
           config
         );
         
@@ -97,7 +97,7 @@ const SessionDetail = () => {
         setSession(sessionData);
         
         // Fetch client details first
-        const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, config);
+        const clientResponse = await axios.get(`/api/clients/${id}`, config);
         console.log('Client data:', clientResponse.data);
         console.log('Client phone:', clientResponse.data.phone);
         console.log('Client email:', clientResponse.data.email);
@@ -140,13 +140,9 @@ const SessionDetail = () => {
       };
 
       await axios.put(
-        `http://localhost:5001/api/sessions/${session._id}`,
+        `/api/sessions/${session._id}`,
         updatedNotes,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`
-          }
-        }
+        
       );
       
       // Update the session object with the new notes

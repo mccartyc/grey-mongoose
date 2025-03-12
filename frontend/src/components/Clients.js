@@ -266,7 +266,7 @@ const ClientPage = () => {
       
       if (isEditMode && selectedClientId) {
         // Update existing client
-        response = await axios.put(`http://localhost:5001/api/clients/${selectedClientId}`, 
+        response = await axios.put(`/api/clients/${selectedClientId}`, 
           clientData,
           {
             headers: {
@@ -401,7 +401,7 @@ const ClientPage = () => {
       });
       
       const response = await axios.put(
-        `http://localhost:5001/api/clients/${clientToDelete._id}/deactivate`,
+        `/api/clients/${clientToDelete._id}/deactivate`,
         {
           tenantId: tenantId,
           reason: 'User requested deletion'

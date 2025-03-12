@@ -23,7 +23,7 @@ const TestLogin = () => {
     try {
       // Test with direct URL
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/login`, 
+        `/api/auth/login`, 
         { email, password },
         { withCredentials: true }
       );

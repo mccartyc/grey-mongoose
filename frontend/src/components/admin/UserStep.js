@@ -28,7 +28,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
       if (!selectedTenant?._id || !user?.token) return;
       
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/users?tenantId=${selectedTenant._id}`,
+        const response = await axios.get(`/api/users?tenantId=${selectedTenant._id}`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,
@@ -54,7 +54,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     const { token } = user; // Get tenantId and userId from user context
     try {
       console.log("Creating user with details:", { firstname, lastname, email, password, role, tenantId: selectedTenant._id });
-      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/users`, {
+      const response = await axios.post(`/api/users`, {
         firstname,
         lastname,
         email,
@@ -109,7 +109,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
     // event.stopPropagation(); // Prevent row selection when clicking delete
     const { token } = user; // Get tenantId and userId from user context
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/users/${userToDelete}/deactivate`,
+      await axios.put(`/api/users/${userToDelete}/deactivate`,
       {},
         {
           headers: {

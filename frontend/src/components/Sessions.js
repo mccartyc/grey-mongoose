@@ -19,9 +19,9 @@ const SessionPage = () => {
 
       try {
         setIsLoading(true);
-        const response = await axios.get(
-          `http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}&sortBy=date&order=desc`,
-          { headers: { Authorization: `Bearer ${user.token}` } }
+        const apiInstance = createApiInstance(user.token);
+        const response = await apiInstance.get(
+          `/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}&sortBy=date&order=desc`
         );
 
         const formattedSessions = response.data.map((session) => ({
@@ -45,24 +45,17 @@ const SessionPage = () => {
 
   const handleSessionUpdate = async (sessionId, updatedNotes) => {
     try {
-      await axios.put(
-        `http://localhost:5001/api/sessions/${sessionId}`,
+      const apiInstance = createApiInstance(user.token);
+      await apiInstance.put(
+        `/api/sessions/${sessionId}`,
         updatedNotes,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`
-          }
-        }
+        
       );
 
       // Refresh sessions
       const response = await axios.get(
-        `http://localhost:5001/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}&sortBy=date&order=desc`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`
-          }
-        }
+        `/api/sessions?tenantId=${user.tenantId}&userId=${user.userId}&sortBy=date&order=desc`,
+        
       );
 
       const formattedSessions = response.data.map((session) => ({

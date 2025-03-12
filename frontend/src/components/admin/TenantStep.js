@@ -27,7 +27,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
     if (!user?.token) return;
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/tenants`, {
+      const response = await axios.get(`/api/tenants`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
@@ -60,7 +60,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
     e.preventDefault();
     const { token } = user; // Get token from user context
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/tenants`, { name },
+      const response = await axios.post(`/api/tenants`, { name },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
     try {
       if (!selectedTenantId) return; // Safety check
       
-      const response = await axios.put(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/tenants/${selectedTenantId}`, { name },
+      const response = await axios.put(`/api/tenants/${selectedTenantId}`, { name },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,7 +124,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   const handleDeleteTenant = async () => {
     const { token } = user; // Get token from user context
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/tenants/${tenantToDelete}/deactivate`,{},
+      await axios.put(`/api/tenants/${tenantToDelete}/deactivate`,{},
         {
           headers: {
             Authorization: `Bearer ${token}`,

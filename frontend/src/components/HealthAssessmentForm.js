@@ -69,7 +69,7 @@ const MentalHealthIntakeAssessment = () => {
     const fetchClients = async () => {
       setIsLoading(true);
 
-      const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, {
+      const clientResponse = await axios.get(`/api/clients/${id}`, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
@@ -109,7 +109,7 @@ const MentalHealthIntakeAssessment = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5001/api/intake-forms`,
+        `/api/intake-forms`,
         { ...formData, id }, // Include the clientId in the request body
         {
           headers: {

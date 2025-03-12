@@ -96,7 +96,7 @@ const Register = () => {
       console.log('Sending registration data:', registrationData);
 
       await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/register`,
+        `/api/auth/register`,
         registrationData
       );
       

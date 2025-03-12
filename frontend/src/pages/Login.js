@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useLocation } from 'react-router-dom';
 import api from '../services/apiService';
 import "../styles/styles.css";
-import { createApiInstance } from '../utils/apiConfig';
+import { createApiInstance, getApiBaseUrl } from '../utils/apiConfig';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -97,7 +97,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+    const apiUrl = getApiBaseUrl();
     window.location.href = `${apiUrl}/api/auth/google`;
   };
 

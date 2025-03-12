@@ -38,7 +38,7 @@ const NewSession = () => {
     const fetchClients = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/clients?tenantId=${user.tenantId}&userId=${user.userId}`,
+          `/api/clients?tenantId=${user.tenantId}&userId=${user.userId}`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,
@@ -191,12 +191,7 @@ const NewSession = () => {
             tenantId: user.tenantId,
             sessionId: id || 'new'
           },
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+          
         );
         
         if (response.data.transcript) {

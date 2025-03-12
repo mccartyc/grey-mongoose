@@ -121,7 +121,7 @@ export const useHealthAssessment = (clientId) => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5001/api/assessments/${assessmentId}`,
+        `/api/assessments/${assessmentId}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,

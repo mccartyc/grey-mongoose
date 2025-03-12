@@ -91,7 +91,7 @@ const MyCalendar = () => {
     try {
       const { token } = user;
       console.log('Outgoing event change request:', updatedEvent, ' for event:',  event.id);
-      await axios.put(`http://localhost:5001/api/events/${event.id}`, updatedEvent, {
+      await axios.put(`/api/events/${event.id}`, updatedEvent, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
@@ -119,7 +119,7 @@ const MyCalendar = () => {
   
     try {
       const { token } = user;
-      await axios.delete(`http://localhost:5001/api/events/${eventId}`, {
+      await axios.delete(`/api/events/${eventId}`, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,

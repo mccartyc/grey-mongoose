@@ -69,7 +69,7 @@ useEffect(() => {
       
       // Then fetch sessions
       try {
-        const sessionsResponse = await axios.get(`http://localhost:5001/api/sessions/client/${id}`, {
+        const sessionsResponse = await axios.get(`/api/sessions/client/${id}`, {
           ...config,
           params: {
             ...config.params,
@@ -120,18 +120,14 @@ useEffect(() => {
 const handleSessionUpdate = async (sessionId, updatedNotes) => {
   try {
     await axios.put(
-      `http://localhost:5001/api/sessions/${sessionId}`,
+      `/api/sessions/${sessionId}`,
       updatedNotes,
-      {
-        headers: {
-          Authorization: `Bearer ${user.token}`
-        }
-      }
+      
     );
 
     // Refresh sessions
     const response = await axios.get(
-      `http://localhost:5001/api/sessions/client/${id}`,
+      `/api/sessions/client/${id}`,
       {
         headers: {
           Authorization: `Bearer ${user.token}`

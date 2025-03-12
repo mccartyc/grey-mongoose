@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getApiBaseUrl } from '../utils/apiConfig';
+import { createApiInstance } from '../utils/apiConfig';
 
 const api = axios.create({
   baseURL: getApiBaseUrl(),
@@ -37,7 +38,7 @@ api.interceptors.response.use(
         originalRequest.__isRetry = true; // Mark the request as retrying
 
         // Request new tokens using the same baseURL from the api instance
-        await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/refresh-token`, {}, {
+        await axios.post(`/api/auth/refresh-token`, {}, {
           withCredentials: true
         });
 

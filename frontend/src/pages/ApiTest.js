@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { createApiInstance } from '../utils/apiConfig';
+import { createApiInstance, getApiBaseUrl } from '../utils/apiConfig';
 
 const ApiTest = () => {
   const [apiUrl, setApiUrl] = useState('');
@@ -9,7 +9,7 @@ const ApiTest = () => {
 
   useEffect(() => {
     // Display the current environment variables
-    const url = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+    const url = getApiBaseUrl();
     setApiUrl(url);
   }, []);
 
