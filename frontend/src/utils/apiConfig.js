@@ -3,6 +3,8 @@
  * Ensures all API calls use the correct base URL from environment variables
  */
 
+import axios from 'axios';
+
 // Get the base API URL from environment variables or use a fallback
 export const getApiBaseUrl = () => {
   // For production, use the environment variable
@@ -16,8 +18,6 @@ export const getApiBaseUrl = () => {
 
 // Create a configured axios instance
 export const createApiInstance = (token) => {
-  const axios = require('axios');
-  
   return axios.create({
     baseURL: getApiBaseUrl(),
     timeout: 10000, // 10 seconds

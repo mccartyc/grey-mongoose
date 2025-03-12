@@ -342,7 +342,7 @@ const ClientPage = () => {
     };
 
     fetchClients();
-  }, [user, user?.tenantId, user?.userId, showNotification]); // Only re-run when tenant or user ID changes
+  }, [user?.token, showNotification]); // Only re-run when user token changes
 
   const handleRowDoubleClick = (clientId, firstName, lastName) => {
     console.log('Double Click Client:', clientId, firstName, lastName);
