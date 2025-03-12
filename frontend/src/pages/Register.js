@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/styles.css";
+import { createApiInstance } from '../utils/apiConfig';
 
 const Register = () => {
   const [formData, setFormData] = useState({

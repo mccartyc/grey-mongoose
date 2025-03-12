@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
+import { createApiInstance } from '../utils/apiConfig';
 
 export const useHealthAssessment = (clientId) => {
   const { user } = useAuth();
@@ -92,7 +93,7 @@ export const useHealthAssessment = (clientId) => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5001/api/assessments',
+        "/api/assessments',
         {
           ...formData,
           tenantId: user.tenantId,

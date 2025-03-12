@@ -2,10 +2,11 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import { getApiBaseUrl } from '../utils/apiConfig';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api`,
+  baseURL: `${getApiBaseUrl()}/api`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'

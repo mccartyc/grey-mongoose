@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useLocation } from 'react-router-dom';
 import api from '../services/apiService';
 import "../styles/styles.css";
+import { createApiInstance } from '../utils/apiConfig';
 
 const Login = () => {
   const [formData, setFormData] = useState({

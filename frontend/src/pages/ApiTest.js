@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { createApiInstance } from '../utils/apiConfig';
 
 const ApiTest = () => {
   const [apiUrl, setApiUrl] = useState('');

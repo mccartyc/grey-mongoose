@@ -6,6 +6,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { decryptText, encryptText } from '../utils/encryption';
 import '../styles/sessionDetailStyles.css';
+import { createApiInstance } from '../utils/apiConfig';
 
 const SessionDetail = () => {
   const { id } = useParams();

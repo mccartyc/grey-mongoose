@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getApiBaseUrl, createApiInstance } from '../utils/apiConfig';
 import { useAuth } from '../context/AuthContext';
 import SideNavBar from '../components/SideNavBar';
 import { Line, Pie } from 'react-chartjs-2';
@@ -26,14 +27,7 @@ const Dashboard = () => {
       return;
     }
 
-    const axiosInstance = axios.create({
-      baseURL: 'http://localhost:5001',
-      timeout: 5000,
-      headers: {
-        'Authorization': `Bearer ${user.token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const axiosInstance = createApiInstance(user.token);
 
     try {
       console.log('Fetching dashboard metrics...');

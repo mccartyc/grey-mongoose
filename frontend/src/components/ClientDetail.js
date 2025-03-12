@@ -5,6 +5,7 @@ import '../styles/clientDetailStyles.css';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SessionList from './sessions/SessionList';
+import { createApiInstance } from '../utils/apiConfig';
 
 const ClientDetail = () => {
   const { id } = useParams();
@@ -41,7 +42,13 @@ useEffect(() => {
       console.log(`Fetching data for client ID: ${id}`);
       
       // Fetch client details first
-      const clientResponse = await axios.get(`http://localhost:5001/api/clients/${id}`, config);
+      const apiInstance = createApiInstance(user.token);
+      const clientResponse = await apiInstance.get(`/api/clients/${id}`, {
+        params: {
+          tenantId: user.tenantId,
+          userId: user.userId,
+        }
+      });
       console.log('Client data received');
       
       // The backend should already return decrypted contact information
@@ -80,10 +87,10 @@ useEffect(() => {
       // Finally fetch upcoming events
       try {
         console.log(`Fetching events for client ID: ${id}`);
-        const upcomingResponse = await axios.get(`http://localhost:5001/api/events/client/${id}`, {
-          ...config,
+        const upcomingResponse = await apiInstance.get(`/api/events/client/${id}`, {
           params: {
-            ...config.params,
+            tenantId: user.tenantId,
+            userId: user.userId,
             sortBy: 'start',
             order: 'asc'
           }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import SessionList from './sessions/SessionList';
+import { createApiInstance } from '../utils/apiConfig';
 
 const SessionPage = () => {
   const [sessions, setSessions] = useState([]);

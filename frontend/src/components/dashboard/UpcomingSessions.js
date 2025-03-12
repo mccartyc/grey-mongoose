@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/dashboardStyles.css';
+import { createApiInstance } from '../../utils/apiConfig';
 
 const UpcomingSessions = () => {
   const [sessions, setSessions] = useState([]);
@@ -49,14 +50,7 @@ const UpcomingSessions = () => {
       return;
     }
 
-    const axiosInstance = axios.create({
-      baseURL: 'http://localhost:5001',
-      timeout: 5000,
-      headers: {
-        'Authorization': `Bearer ${user.token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const axiosInstance = createApiInstance(user.token);
 
     try {
       // Get current date (start of today)
@@ -149,14 +143,7 @@ const UpcomingSessions = () => {
       throw new Error('Authentication required');
     }
     
-    const axiosInstance = axios.create({
-      baseURL: 'http://localhost:5001',
-      timeout: 5000,
-      headers: {
-        'Authorization': `Bearer ${user.token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const axiosInstance = createApiInstance(user.token);
     
     try {
       // Get current date (start of today)

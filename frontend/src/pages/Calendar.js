@@ -8,6 +8,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // Required for event interaction
 import { useAuth } from '../context/AuthContext'; // Import auth context
 import axios from 'axios';
+import { getApiBaseUrl, createApiInstance } from '../utils/apiConfig';
+import { createApiInstance } from '../utils/apiConfig';
 
 
 const categoryColors = {
@@ -142,14 +144,12 @@ const MyCalendar = () => {
     const { token } = user;
 
     try {
-      const response = await axios.get(`http://localhost:5001/api/clients/`, {
+      const apiInstance = createApiInstance(token);
+      const response = await apiInstance.get(`/api/clients/`, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        }
       });
 
       setClients(response.data); // Store clients in state
@@ -164,14 +164,12 @@ const MyCalendar = () => {
     const { token } = user;
   
     try {
-      const response = await axios.get('http://localhost:5001/api/events', {
+      const apiInstance = createApiInstance(token);
+      const response = await apiInstance.get('/api/events', {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        }
       });
   
       const formattedEvents = response.data.map(event => {
@@ -276,14 +274,12 @@ const MyCalendar = () => {
 
     try {
       const { token } = user; // Ensure user authentication
-      const response = await axios.post('http://localhost:5001/api/events', newEvent, {
+      const apiInstance = createApiInstance(token);
+      const response = await apiInstance.post('/api/events', newEvent, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        }
       });
 
     setEvents((prev) => [...prev, response.data]);

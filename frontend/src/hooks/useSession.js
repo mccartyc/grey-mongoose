@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { createApiInstance } from '../utils/apiConfig';
 
 export const useSession = () => {
   const { user } = useAuth();
@@ -13,7 +14,7 @@ export const useSession = () => {
     
     try {
       const response = await axios.post(
-        'http://localhost:5001/api/sessions',
+        "/api/sessions',
         {
           ...sessionData,
           tenantId: user.tenantId,
@@ -40,7 +41,7 @@ export const useSession = () => {
     
     try {
       const response = await axios.post(
-        'http://localhost:5001/api/sessions/start-transcript',
+        "/api/sessions/start-transcript',
         {},
         {
           headers: {
@@ -63,7 +64,7 @@ export const useSession = () => {
     
     try {
       const response = await axios.post(
-        'http://localhost:5001/api/sessions/stop-transcript',
+        "/api/sessions/stop-transcript',
         {},
         {
           headers: {
