@@ -4,9 +4,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/styles.css";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    registrationType: "individual", // 'individual' or 'company'
+    tenantName: "", // for individual registration
+    tenantId: "" // for company registration
+  });
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({}); // Track validation errors
 
@@ -26,11 +32,24 @@ const Register = () => {
     window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/google`;
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const validateForm = () => {
     const newErrors = {};
+    const { firstname, lastname, email, password, registrationType, tenantName, tenantId } = formData;
 
-    if (!name.trim()) {
-      newErrors.name = "Name is required.";
+    if (!firstname.trim()) {
+      newErrors.firstname = "First name is required.";
+    }
+
+    if (!lastname.trim()) {
+      newErrors.lastname = "Last name is required.";
     }
 
     if (!email.trim()) {
@@ -45,6 +64,12 @@ const Register = () => {
       newErrors.password = "Password must be at least 6 characters.";
     }
 
+    if (registrationType === 'individual' && !tenantName.trim()) {
+      newErrors.tenantName = "Company name is required.";
+    } else if (registrationType === 'company' && !tenantId.trim()) {
+      newErrors.tenantId = "Tenant ID is required.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Return true if no errors
   };
@@ -57,9 +82,25 @@ const Register = () => {
     }
 
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/register`, { name, email, password });
+      const { firstname, lastname, email, password, registrationType, tenantName, tenantId } = formData;
+      const registrationData = {
+        firstname: firstname.trim(),
+        lastname: lastname.trim(),
+        email: email.trim(),
+        password,
+        registrationType,
+        ...(registrationType === 'individual' ? { tenantName: tenantName.trim() } : { tenantId: tenantId.trim() })
+      };
+
+      console.log('Sending registration data:', registrationData);
+
+      await axios.post(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/auth/register`,
+        registrationData
+      );
+      
       setMessage("Registration successful! Redirecting...");
-      setTimeout(() => navigate("/dashboard"), 2000); // Redirect to dashboard after 2 seconds
+      setTimeout(() => navigate("/dashboard"), 2000);
     } catch (error) {
       setMessage(error.response?.data?.error || "Registration failed");
     }
@@ -70,42 +111,94 @@ const Register = () => {
       <h1 className="form-title">Create an Account</h1>
       <p className="form-subtitle">Join MindCloud today</p>
       <form className="form" onSubmit={handleRegister}>
-        <div className="form-group">
-          {/* <label htmlFor="name">Name</label> */}
+        <div className="form-group login-form">
           <input
             type="text"
-            id="name"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="firstname"
+            name="firstname"
+            placeholder="First Name"
+            value={formData.firstname}
+            onChange={handleInputChange}
             required
           />
-          {errors.name && <p className="form-error">{errors.name}</p>}
+          {errors.firstname && <p className="form-error">{errors.firstname}</p>}
         </div>
-        <div className="form-group">
-          {/* <label htmlFor="email">Email</label> */}
+        <div className="form-group login-form">
+          <input
+            type="text"
+            id="lastname"
+            name="lastname"
+            placeholder="Last Name"
+            value={formData.lastname}
+            onChange={handleInputChange}
+            required
+          />
+          {errors.lastname && <p className="form-error">{errors.lastname}</p>}
+        </div>
+        <div className="form-group login-form">
           <input
             type="email"
             id="email"
+            name="email"
             placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleInputChange}
             required
           />
           {errors.email && <p className="form-error">{errors.email}</p>}
         </div>
-        <div className="form-group">
-          {/* <label htmlFor="password">Password</label> */}
+        <div className="form-group login-form">
           <input
             type="password"
             id="password"
+            name="password"
             placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleInputChange}
             required
           />
           {errors.password && <p className="form-error">{errors.password}</p>}
         </div>
+
+        <div className="form-group login-form">
+          <select
+            name="registrationType"
+            value={formData.registrationType}
+            onChange={handleInputChange}
+            className="form-select"
+          >
+            <option value="individual">Register as Individual/New Company</option>
+            <option value="company">Join Existing Company</option>
+          </select>
+        </div>
+
+        {formData.registrationType === 'individual' ? (
+          <div className="form-group login-form">
+            <input
+              type="text"
+              id="tenantName"
+              name="tenantName"
+              placeholder="Enter your company name"
+              value={formData.tenantName}
+              onChange={handleInputChange}
+              required
+            />
+            {errors.tenantName && <p className="form-error">{errors.tenantName}</p>}
+          </div>
+        ) : (
+          <div className="form-group login-form">
+            <input
+              type="text"
+              id="tenantId"
+              name="tenantId"
+              placeholder="Enter your company's Tenant ID"
+              value={formData.tenantId}
+              onChange={handleInputChange}
+              required
+            />
+            {errors.tenantId && <p className="form-error">{errors.tenantId}</p>}
+          </div>
+        )}
         <button type="submit" className="btn primary-btn">Register with Email</button>
 
         <div className="form-divider">

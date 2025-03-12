@@ -314,6 +314,7 @@ table td, table th {
   
   .cofirm-modal-content {
     background: white;
+    color: #0F172A;
     padding: 20px;
     border-radius: 8px;
     max-width: 400px;

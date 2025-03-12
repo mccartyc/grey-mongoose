@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
+const Tenant = require('../models/Tenant');
 const passport = require('../config/passport');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const rateLimit = require('express-rate-limit');
@@ -145,16 +146,52 @@ router.post('/change-password', authenticateToken, async (req, res) => {
 // Register route
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = req.body;
+    console.log('Registration request body:', req.body);
+    
+    const { email, password, firstname, lastname, registrationType, tenantName, tenantId } = req.body;
 
-    if (!email || !password || !firstName || !lastName) {
+    // Validate required fields without using trim()
+    if (!email || !password || !firstname || !lastname) {
+      console.log('Missing required fields:', { email: !!email, password: !!password, firstname: !!firstname, lastname: !!lastname });
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    // Check for existing user with either encrypted or unencrypted email
+    // Check for existing user
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
+    }
+
+    let userTenantId;
+
+    if (registrationType === 'individual') {
+      // Create new tenant for individual/new company
+      if (!tenantName) {
+        return res.status(400).json({ error: 'Company name is required' });
+      }
+
+      const newTenant = new Tenant({
+        name: tenantName,
+        isActive: true
+      });
+
+      await newTenant.save();
+      userTenantId = newTenant._id;
+    } else {
+      // Validate existing tenant
+      if (!tenantId) {
+        return res.status(400).json({ error: 'Tenant ID is required' });
+      }
+
+      const existingTenant = await Tenant.findOne({ tenantId });
+      if (!existingTenant) {
+        return res.status(400).json({ error: 'Invalid Tenant ID' });
+      }
+      if (!existingTenant.isActive) {
+        return res.status(400).json({ error: 'This company account is inactive' });
+      }
+
+      userTenantId = existingTenant._id;
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -163,14 +200,19 @@ router.post('/register', async (req, res) => {
     const user = new User({
       email,
       password: hashedPassword,
-      firstName,
-      lastName,
-      role: 'user'
+      firstname,
+      lastname,
+      role: registrationType === 'individual' ? 'Admin' : 'User',
+      tenantId: userTenantId,
+      isActive: true
     });
 
     await user.save();
 
-    res.status(201).json({ message: 'Registration successful' });
+    res.status(201).json({ 
+      message: 'Registration successful',
+      tenantId: registrationType === 'individual' ? user.tenantId : tenantId
+    });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ error: 'Error registering user' });

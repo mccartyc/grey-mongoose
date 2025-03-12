@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/Users');
+const Tenant = require('../models/Tenant');
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -34,8 +35,8 @@ passport.use(new GoogleStrategy({
             // Update user's Google-related information if needed
             const updates = {};
             if (!existingUser.googleId) updates.googleId = profile.id;
-            if (!existingUser.firstName) updates.firstName = profile.name.givenName;
-            if (!existingUser.lastName) updates.lastName = profile.name.familyName;
+            if (!existingUser.firstname) updates.firstname = profile.name.givenName;
+            if (!existingUser.lastname) updates.lastname = profile.name.familyName;
             
             if (Object.keys(updates).length > 0) {
                 Object.assign(existingUser, updates);
@@ -45,14 +46,23 @@ passport.use(new GoogleStrategy({
             return done(null, existingUser);
         }
 
-        // Create new user
+        // For new users, create a new tenant with their name/email as company name
+        const tenantName = profile.displayName || profile.emails[0].value.split('@')[0];
+        const newTenant = new Tenant({
+            name: tenantName,
+            isActive: true
+        });
+        await newTenant.save();
+
+        // Create new user with the new tenant
         const newUser = await new User({
             email: profile.emails[0].value,
-            firstName: profile.name.givenName,
-            lastName: profile.name.familyName,
+            firstname: profile.name.givenName,
+            lastname: profile.name.familyName,
             googleId: profile.id,
             isActive: true,
-            role: 'user',
+            role: 'Admin', // Make them admin of their own tenant
+            tenantId: newTenant._id,
             // Set a secure random password for Google users
             password: require('crypto').randomBytes(32).toString('hex')
         }).save();

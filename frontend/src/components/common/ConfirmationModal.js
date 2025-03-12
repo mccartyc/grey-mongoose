@@ -9,7 +9,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
       <div className="confirmation-modal">
         <div className="confirmation-modal-header">
           <h3>{title || 'Confirm Action'}</h3>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="secondary-btn" onClick={onClose}>×</button>
         </div>
         <div className="confirmation-modal-content">
           <p>{message || 'Are you sure you want to proceed?'}</p>

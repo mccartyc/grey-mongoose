@@ -349,7 +349,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
                 </label>
               </div>
               <div className="button-container">
-                <button onClick={handleCloseForm} className="btn close-btn">Close</button>
+                <button onClick={handleCloseForm} className="btn secondary-btn">Close</button>
                 <button type="submit" className="btn primary-btn">Create Client</button>
               </div>
             </form>
@@ -372,7 +372,7 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
               <button
                 type= "button"
                 onClick={() => setShowDeleteModal(false)}
-                className="btn close-btn"
+                className="btn secondary-btn"
               >
                 Cancel
               </button>
@@ -413,48 +413,51 @@ const ClientStep = ({ onPrevious, selectedTenant, selectedUser }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client) => (
-              <tr
-                key={client._id}
-                className={selectedClientId === client._id ? 'selected' : ''}
-                onClick={() => handleSelectClient(client)}
-              >
-                <td>{client.firstName}</td>
-                <td>{client.lastName}</td>
-                <td>{calculateAge(client.birthday)}</td>
-                <td>{client.gender}</td>
-                <td>{client.email}</td>
-                <td>{client.phone}</td>
-                <td>{client.streetAddress} {client.city}, {client.state} {client.zipcode}</td>
-                <td>{client._id}</td>
-                <td className="action-column">
-                <span
-                    role="img"
-                    aria-label="edit"
-                    className="edit-icon"
-                    onClick={(event) => {
-                      event.stopPropagation(); // Prevent row selection when clicking edit icon
-                      handleEditClient(client); // Open form to edit tenant
-                    }}
-                    style={{ cursor: 'pointer', marginRight: '10px' }}
-                  >
-                    ✏️
-                  </span>
-                  <span
-                    role="img"
-                    aria-label="delete"
-                    className="trash-icon"
-                    onClick={(event) => handleDeleteClick(client, event)}
-                  >
-                    🗑️
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {filteredClients.map((client) => {
+              const fullAddress = `${client.streetAddress} ${client.city}, ${client.state} ${client.zipcode}`;
+              return (
+                <tr
+                  key={client._id}
+                  className={selectedClientId === client._id ? 'selected' : ''}
+                  onClick={() => handleSelectClient(client)}
+                >
+                  <td title={client.firstName}>{client.firstName}</td>
+                  <td title={client.lastName}>{client.lastName}</td>
+                  <td>{calculateAge(client.birthday)}</td>
+                  <td>{client.gender}</td>
+                  <td title={client.email}>{client.email}</td>
+                  <td title={client.phone}>{client.phone}</td>
+                  <td title={fullAddress}>{fullAddress}</td>
+                  <td title={client._id}>{client._id}</td>
+                  <td className="action-column">
+                    <span
+                      role="img"
+                      aria-label="edit"
+                      className="edit-icon"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleEditClient(client);
+                      }}
+                      style={{ cursor: 'pointer', marginRight: '10px' }}
+                    >
+                      ✏️
+                    </span>
+                    <span
+                      role="img"
+                      aria-label="delete"
+                      className="trash-icon"
+                      onClick={(event) => handleDeleteClick(client, event)}
+                    >
+                      🗑️
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <div className="right-button-container">
-          <button className="btn primary-btn" onClick={onPrevious}>
+          <button className="btn secondary-btn" onClick={onPrevious}>
             Previous
           </button>
         </div>

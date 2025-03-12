@@ -4,6 +4,7 @@
 .client-table,
 .session-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 20px;
@@ -23,7 +24,35 @@
   font-size: 14px;
   cursor: default;
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+/* Optimized column widths for client table */
+.client-table th:nth-child(1), .client-table td:nth-child(1) { width: 11%; } /* First Name */
+.client-table th:nth-child(2), .client-table td:nth-child(2) { width: 11%; } /* Last Name */
+.client-table th:nth-child(3), .client-table td:nth-child(3) { width: 5%; } /* Age */
+.client-table th:nth-child(4), .client-table td:nth-child(4) { width: 7%; } /* Gender */
+.client-table th:nth-child(5), .client-table td:nth-child(5) { width: 16%; } /* Email */
+.client-table th:nth-child(6), .client-table td:nth-child(6) { width: 10%; } /* Phone */
+.client-table th:nth-child(7), .client-table td:nth-child(7) { width: 23%; } /* Address */
+.client-table th:nth-child(8), .client-table td:nth-child(8) { width: 12%; } /* Client ID */
+.client-table th:nth-child(9), .client-table td:nth-child(9) { width: 5%; } /* Actions */
+
+/* Optimized column widths for tenant table */
+.tenant-table th:nth-child(1), .tenant-table td:nth-child(1) { width: 20%; } /* Name */
+.tenant-table th:nth-child(2), .tenant-table td:nth-child(2) { width: 25%; } /* Email */
+.tenant-table th:nth-child(3), .tenant-table td:nth-child(3) { width: 15%; } /* Created At */
+.tenant-table th:nth-child(4), .tenant-table td:nth-child(4) { width: 30%; } /* Tenant ID */
+.tenant-table th:nth-child(5), .tenant-table td:nth-child(5) { width: 10%; } /* Actions */
+
+/* Optimized column widths for session table */
+.session-table th:nth-child(1), .session-table td:nth-child(1) { width: 15%; } /* Date */
+.session-table th:nth-child(2), .session-table td:nth-child(2) { width: 20%; } /* Client Name */
+.session-table th:nth-child(3), .session-table td:nth-child(3) { width: 15%; } /* Type */
+.session-table th:nth-child(4), .session-table td:nth-child(4) { width: 35%; } /* Notes */
+.session-table th:nth-child(5), .session-table td:nth-child(5) { width: 15%; } /* Actions */
 
 .tenant-table td,
 .client-table td,
@@ -33,7 +62,86 @@
   color: #333333;
   border-bottom: 1px solid #ddd;
   cursor: default;
-  user-select: none;
+  user-select: text; /* Enable text selection */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+/* Common tooltip styles for all tables */
+.tenant-table td[title]:hover::after,
+.client-table td[title]:hover::after,
+.session-table td[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  z-index: 1000;
+  max-width: 300px;
+  word-wrap: break-word;
+  white-space: normal;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  margin-top: 5px;
+  transition: opacity 0.2s ease;
+  opacity: 0.98;
+  text-align: center;
+}
+
+/* Tooltip styles */
+.client-table td[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  z-index: 1000;
+  max-width: 300px;
+  word-wrap: break-word;
+  white-space: normal;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  margin-top: 5px;
+  transition: opacity 0.2s ease;
+  opacity: 0.98;
+  text-align: center;
+}
+
+/* Add tooltip on hover for truncated content */
+.client-table td {
+  position: relative;
+}
+
+.client-table td:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  z-index: 1;
+  white-space: normal;
+  max-width: 300px;
+  word-wrap: break-word;
+  display: none;
+}
+
+.client-table td[title]:hover::after {
+  display: block;
 }
 
 .tenant-table tr:nth-child(even),
@@ -53,6 +161,21 @@
 .session-table tr:hover {
   background-color: rgba(79, 70, 229, 0.08) !important;
   transition: background-color 0.3s;
+}
+
+/* Style for selectable text */
+.tenant-table td::selection,
+.client-table td::selection,
+.session-table td::selection {
+  background-color: rgba(79, 70, 229, 0.2);
+  color: inherit;
+}
+
+/* Ensure action buttons remain unselectable */
+.tenant-table td.action-column,
+.client-table td.action-column,
+.session-table td.action-column {
+  user-select: none;
 }
 
 .tenant-table tr.selected,

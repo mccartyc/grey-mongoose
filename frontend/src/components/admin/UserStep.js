@@ -191,7 +191,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
                 </select>
               </label>
               <div className="button-container">
-                <button onClick={() => setShowForm(false)} className="btn close-btn">Close</button>
+                <button onClick={() => setShowForm(false)} className="btn secondary-btn">Close</button>
                 <button type="submit" className="btn primary-btn">Create User</button>
               </div>
             </form>
@@ -215,7 +215,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
               <button
                 type= "button"
                 onClick={() => setShowDeleteModal(false)}
-                className="btn close-btn"
+                className="btn secondary-btn"
               >
                 Cancel
               </button>
@@ -297,7 +297,7 @@ const UserStep = ({ selectedTenant, onNext, onPrevious, onSelectUser }) => {
           </tbody>
         </table>
         <div className="right-button-container">
-          <button className="btn primary-btn" onClick={onPrevious}>
+          <button className="btn secondary-btn" onClick={onPrevious}>
             Previous
           </button>
           <button className="btn primary-btn" onClick={handleNextStep} disabled={!selectedUserId}>

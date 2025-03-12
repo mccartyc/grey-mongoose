@@ -207,11 +207,11 @@ const SessionList = ({
                     }
                   }}
                 >
-                  <td>{new Date(session.date).toLocaleDateString()}</td>
-                  {!clientId && <td>{session.clientName}</td>}
-                  <td>{session.type}</td>
-                  <td>{session.length}</td>
-                  <td>{session.sessionId}</td>
+                  <td title={new Date(session.date).toLocaleDateString()}>{new Date(session.date).toLocaleDateString()}</td>
+                  {!clientId && <td title={session.clientName}>{session.clientName}</td>}
+                  <td title={session.type}>{session.type}</td>
+                  <td title={`${session.length} minutes`}>{session.length}</td>
+                  <td title={session.sessionId}>{session.sessionId}</td>
                   <td className="action-cell">
                     <i className="fa fa-chevron-right view-icon"></i>
                   </td>
@@ -278,7 +278,7 @@ const SessionList = ({
         >
           {/* <div className="sessions-panel-header">
             <p>{selectedSession.sessionId}</p>
-            <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
+            <button className="secondary-btn" onClick={() => setIsPanelOpen(false)}>×</button>
           </div> */}
 
           {/* Session Info */}

@@ -181,6 +181,9 @@ const Login = () => {
           Sign in with Google
         </button>
       </form>
+      <p className="form-footer">
+        Don't have an account? <a href="/register" className="form-link">Register</a>
+      </p>
     </div>
   );
 };

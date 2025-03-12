@@ -111,7 +111,7 @@ const DraggablePanel = ({
             // Clone the header element and replace the close button's onClick
             return React.cloneElement(child, {}, 
               React.Children.map(child.props.children, (headerChild) => {
-                if (headerChild.type === 'button' && headerChild.props.className === 'close-btn') {
+                if (headerChild.type === 'button' && headerChild.props.className === 'secondary-btn') {
                   return React.cloneElement(headerChild, { onClick: handleClose });
                 }
                 return headerChild;

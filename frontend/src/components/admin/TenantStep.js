@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext'; // Import AuthContext
 
@@ -21,38 +21,39 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
   // Check if user can see all tenants (only Internal users)
   const canSeeAllTenants = userInfo?.role === 'Internal';
 
-  useEffect(() => {
-    const fetchTenants = async () => {
-      const { token } = user; // Get token from user context
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/tenants`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-        
-        let filteredTenants = response.data.filter(tenant => tenant.isActive);
-        
-        // If not an Internal user, only show the user's own tenant
-        if (!canSeeAllTenants && userInfo?.tenantId) {
-          filteredTenants = filteredTenants.filter(tenant => tenant._id === userInfo.tenantId);
-        }
-        
-        setTenants(filteredTenants);
-        
-        // If Admin/User and only has one tenant, auto-select it
-        if (!canSeeAllTenants && filteredTenants.length === 1) {
-          setSelectedTenantId(filteredTenants[0]._id);
-          onSelectTenant(filteredTenants[0]);
-        }
-      } catch (error) {
-        console.error('Error fetching tenants:', error);
-      }
-    };
+  // Memoize the fetch tenants function to prevent unnecessary re-renders
+  const fetchTenants = useCallback(async () => {
+    if (!user?.token) return;
 
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/tenants`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      
+      let filteredTenants = response.data.filter(tenant => tenant.isActive);
+      
+      // If not an Internal user, only show the user's own tenant
+      if (!canSeeAllTenants && userInfo?.tenantId) {
+        filteredTenants = filteredTenants.filter(tenant => tenant._id === userInfo.tenantId);
+      }
+      
+      setTenants(filteredTenants);
+      
+      // If Admin/User and only has one tenant, auto-select it
+      if (!canSeeAllTenants && filteredTenants.length === 1) {
+        setSelectedTenantId(filteredTenants[0]._id);
+        onSelectTenant(filteredTenants[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching tenants:', error);
+    }
+  }, [user?.token, canSeeAllTenants, userInfo?.tenantId]); // Remove onSelectTenant from deps
+
+  useEffect(() => {
     fetchTenants();
-  }, [user, canSeeAllTenants, userInfo?.tenantId, onSelectTenant]);
+  }, [fetchTenants]);
 
   const handleCreateTenant = async (e) => {
     e.preventDefault();
@@ -170,7 +171,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
                 />
               </label>
               <div className="button-container">
-                <button type="button" onClick={resetForm} className="btn close-btn">Close</button>
+                <button type="button" onClick={resetForm} className="btn secondary-btn">Close</button>
                 <button type="submit" className="btn primary-btn">{selectedTenantId ? 'Update Tenant' : 'Create Tenant'}</button>
               </div>
             </form>
@@ -194,7 +195,7 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
               <button
                 type= "button"
                 onClick={() => setShowDeleteModal(false)}
-                className="btn close-btn"
+                className="btn secondary-btn"
               >
                 Cancel
               </button>
@@ -245,9 +246,9 @@ const TenantStep = ({ onNext, onSelectTenant }) => {
                     handleNextStep(); // Immediately move to next step
                   }}
               >
-                <td>{tenant.name}</td>
-                <td>{tenant._id}</td>
-                <td>{formatTimestamp(tenant.createdAt)}</td>
+                <td title={tenant.name}>{tenant.name}</td>
+                <td title={tenant._id}>{tenant._id}</td>
+                <td title={formatTimestamp(tenant.createdAt)}>{formatTimestamp(tenant.createdAt)}</td>
                 {canManageTenants && (
                   <td className="action-column">
                     <span

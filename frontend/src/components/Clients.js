@@ -476,7 +476,7 @@ const ClientPage = () => {
               <button
                 type= "button"
                 onClick={() => setShowDeleteModal(false)}
-                className="btn close-btn"
+                className="btn secondary-btn"
               >
                 Cancel
               </button>
