@@ -7,9 +7,16 @@
 [build.environment]
   CI = "false"
   NODE_VERSION = "18"
-  REACT_APP_API_URL = "http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081"
+  REACT_APP_API_URL = "https://mindcloud.netlify.app/api"
 
-# Redirect all routes to index.html for SPA routing
+# Proxy API requests to the backend
+[[redirects]]
+  from = "/api/*"
+  to = "http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081/api/:splat"
+  status = 200
+  force = true
+
+# Redirect all other routes to index.html for SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
