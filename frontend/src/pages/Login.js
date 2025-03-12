@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useLocation } from 'react-router-dom';
 import api from '../services/apiService';
 import "../styles/styles.css";
 
@@ -94,8 +95,23 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/google`;
+  };
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check for auth error in URL
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    if (error) {
+      setError(error === 'auth_failed' ? 'Authentication failed. Please try again.' : error);
+    }
+  }, [location]);
+
   return (
-    <div className="form-container">
+    <div className="login-form-container">
       <h1 className="form-title">Welcome Back</h1>
       <p className="form-subtitle">Login to your MindCloud account</p>
       
@@ -144,7 +160,25 @@ const Login = () => {
           className="btn primary-btn"
           disabled={isLoading}
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? 'Logging in...' : 'Login with Email'}
+        </button>
+
+        <div className="form-divider">
+          <span>OR</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="btn google-btn"
+          disabled={isLoading}
+        >
+          <img
+            src="/google-icon.svg"
+            alt="Google"
+            className="google-icon"
+          />
+          Sign in with Google
         </button>
       </form>
     </div>

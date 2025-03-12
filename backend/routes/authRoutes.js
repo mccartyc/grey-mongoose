@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
+const passport = require('../config/passport');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const rateLimit = require('express-rate-limit');
 
@@ -177,6 +178,53 @@ router.post('/register', async (req, res) => {
 });
 
 // Refresh token route
+// Google OAuth Routes
+router.get('/google',
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    prompt: 'select_account'
+  })
+);
+
+router.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  async (req, res) => {
+    try {
+      const token = jwt.sign(
+        { 
+          userId: req.user._id,
+          tenantId: req.user.tenantId,
+          role: req.user.role
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      const refreshToken = jwt.sign(
+        { 
+          userId: req.user._id,
+          tenantId: req.user.tenantId
+        },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+
+      // Redirect to frontend with token
+      res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`);
+    } catch (error) {
+      console.error('Google auth callback error:', error);
+      res.redirect('/login?error=auth_failed');
+    }
+  }
+);
+
 router.post('/refresh-token', async (req, res) => {
   try {
     const { refreshToken } = req.cookies;

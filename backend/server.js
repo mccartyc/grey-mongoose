@@ -23,6 +23,7 @@ const mfaRoutes = require('./routes/mfaRoutes');
 const intakeRoutes = require('./routes/intakeRoutes');
 const healthRoutes = require('./routes/health');
 const { encryptionMiddleware } = require('./middleware/encryption');
+const passport = require('./config/passport');
 
 const app = express();
 
@@ -32,6 +33,9 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin" },
   crossOriginEmbedderPolicy: { policy: "credentialless" }
 }));
+
+// Google OAuth
+app.use(passport.initialize());
 
 // CORS configuration
 const corsOptions = {

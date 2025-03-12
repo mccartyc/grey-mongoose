@@ -52,7 +52,7 @@ const Register = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="login-form-container">
       <h1 className="form-title">Create an Account</h1>
       <p className="form-subtitle">Join MindCloud today</p>
       <form className="form" onSubmit={handleRegister}>

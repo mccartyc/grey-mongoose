@@ -2,6 +2,8 @@
 
 /* Form Container */
 .form-container {
+  min-width: 320px;
+  width: 100%;
     max-width: 400px;
     margin: 50px auto;
     padding: 30px;
@@ -11,6 +13,19 @@
     text-align: center;
     animation: slideIn 1s ease-out;
   }
+
+  .login-form-container {
+    min-width: 150px;
+    width: 100%;
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: slideIn 1s ease-out;
+    }
   
   /* Form Titles */
   .form-title {
@@ -94,6 +109,53 @@
 
 .form-footer .form-link:hover {
     color: #012d56;
+}
+
+/* Google Button Styles */
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #ffffff;
+    color: #757575;
+    border: 1px solid #dadce0;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.google-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.google-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Form Divider */
+.form-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+}
+
+.form-divider::before,
+.form-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #dadce0;
+}
+
+.form-divider span {
+    padding: 0 10px;
+    font-size: 0.9rem;
 }
 
 /* Form Message */
