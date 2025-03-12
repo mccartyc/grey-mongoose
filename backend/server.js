@@ -65,9 +65,13 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:5001',
-      // Add your Netlify domain
+      // Netlify domains
       'https://mindcloud-beta.netlify.app',
-      // Add any other domains you want to allow
+      'https://mindcloud.netlify.app',
+      // Remove trailing slash version
+      'https://mindcloud.netlify.app/',
+      // AWS Elastic Beanstalk domain
+      'https://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com'
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
