@@ -22,30 +22,44 @@ passport.use(new GoogleStrategy({
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Check if user already exists
-        const existingUser = await User.findOne({ email: profile.emails[0].value });
+        // Check if user already exists with either email or Google ID
+        const existingUser = await User.findOne({
+            $or: [
+                { email: profile.emails[0].value },
+                { googleId: profile.id }
+            ]
+        });
         
         if (existingUser) {
-            // If user exists but hasn't used Google auth before, update their Google ID
-            if (!existingUser.googleId) {
-                existingUser.googleId = profile.id;
+            // Update user's Google-related information if needed
+            const updates = {};
+            if (!existingUser.googleId) updates.googleId = profile.id;
+            if (!existingUser.firstName) updates.firstName = profile.name.givenName;
+            if (!existingUser.lastName) updates.lastName = profile.name.familyName;
+            
+            if (Object.keys(updates).length > 0) {
+                Object.assign(existingUser, updates);
                 await existingUser.save();
             }
+
             return done(null, existingUser);
         }
 
-        // Create new user if doesn't exist
+        // Create new user
         const newUser = await new User({
             email: profile.emails[0].value,
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             googleId: profile.id,
             isActive: true,
-            role: 'user'
+            role: 'user',
+            // Set a secure random password for Google users
+            password: require('crypto').randomBytes(32).toString('hex')
         }).save();
 
         done(null, newUser);
     } catch (error) {
+        console.error('Google authentication error:', error);
         done(error, null);
     }
 }));

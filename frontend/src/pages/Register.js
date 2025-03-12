@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // For redirection
+import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/styles.css";
 
 const Register = () => {
@@ -11,6 +11,20 @@ const Register = () => {
   const [errors, setErrors] = useState({}); // Track validation errors
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check for auth error in URL
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    if (error) {
+      setMessage(error === 'auth_failed' ? 'Registration failed. Please try again.' : error);
+    }
+  }, [location]);
+
+  const handleGoogleRegister = () => {
+    window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/google`;
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -92,7 +106,24 @@ const Register = () => {
           />
           {errors.password && <p className="form-error">{errors.password}</p>}
         </div>
-        <button type="submit" className="btn primary-btn">Register</button>
+        <button type="submit" className="btn primary-btn">Register with Email</button>
+
+        <div className="form-divider">
+          <span>OR</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleRegister}
+          className="btn google-btn"
+        >
+          <img
+            src="/google-icon.svg"
+            alt="Google"
+            className="google-icon"
+          />
+          Sign up with Google
+        </button>
       </form>
       <p className="form-footer">
         Already have an account? <a href="/login" className="form-link">Login</a>
