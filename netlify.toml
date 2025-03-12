@@ -7,7 +7,7 @@
 [build.environment]
   CI = "false"
   NODE_VERSION = "18"
-  REACT_APP_API_URL = "https://mindcloud.netlify.app/api"
+  REACT_APP_API_URL = "https://mindcloud.netlify.app"
 
 # Proxy API requests to the backend
 [[redirects]]
