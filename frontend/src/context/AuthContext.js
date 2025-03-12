@@ -184,7 +184,8 @@ export const AuthContextProvider = ({ children }) => {
     loading,
     login,
     logout,
-    clearAuthData
+    clearAuthData,
+    setUserData
   };
 
   return (

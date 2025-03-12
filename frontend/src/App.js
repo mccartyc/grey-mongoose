@@ -24,6 +24,7 @@ import Settings from './pages/Settings';
 import Unauthorized from './pages/Unauthorized';
 import TestLogin from './pages/TestLogin';
 import ApiTest from './pages/ApiTest';
+import AuthCallback from './pages/AuthCallback';
 
 const App = () => (
 
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/test-login" element={<TestLogin />} />
           <Route path="/api-test" element={<ApiTest />} />
+          <Route path="/auth-callback" element={<AuthCallback />} />
 
           {/* Protected Routes */}
           <Route

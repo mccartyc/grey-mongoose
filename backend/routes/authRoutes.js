@@ -229,14 +229,23 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }),
   async (req, res) => {
     try {
+      if (!req.user) {
+        console.error('No user data in Google callback');
+        return res.redirect('/login?error=no_user_data');
+      }
+
+      // Include more user information in the token
       const token = jwt.sign(
         { 
           userId: req.user._id,
           tenantId: req.user.tenantId,
-          role: req.user.role
+          role: req.user.role,
+          email: req.user.email,
+          firstname: req.user.firstname,
+          lastname: req.user.lastname
         },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
@@ -251,6 +260,7 @@ router.get('/google/callback',
         { expiresIn: '7d' }
       );
 
+      // Set refresh token cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -258,8 +268,19 @@ router.get('/google/callback',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
       });
 
+      // Get the frontend URL from environment or use default
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      
+      // Log successful authentication
+      console.log('Google authentication successful for user:', {
+        userId: req.user._id,
+        email: req.user.email,
+        tenantId: req.user.tenantId,
+        role: req.user.role
+      });
+
       // Redirect to frontend with token
-      res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`);
+      res.redirect(`${frontendUrl}/auth-callback?token=${token}`);
     } catch (error) {
       console.error('Google auth callback error:', error);
       res.redirect('/login?error=auth_failed');
