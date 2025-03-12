@@ -64,8 +64,9 @@
 .session-table th:nth-child(1), .session-table td:nth-child(1) { width: 15%; } /* Date */
 .session-table th:nth-child(2), .session-table td:nth-child(2) { width: 20%; } /* Client Name */
 .session-table th:nth-child(3), .session-table td:nth-child(3) { width: 15%; } /* Type */
-.session-table th:nth-child(4), .session-table td:nth-child(4) { width: 35%; } /* Notes */
-.session-table th:nth-child(5), .session-table td:nth-child(5) { width: 15%; } /* Actions */
+.session-table th:nth-child(4), .session-table td:nth-child(4) { width: 5%; } /* Legthy */
+.session-table th:nth-child(5), .session-table td:nth-child(5) { width: 15%; } /* Id */
+.session-table th:nth-child(6), .session-table td:nth-child(6) { width: 5%; } /* Actions */
 
 .tenant-table td,
 .user-table td,

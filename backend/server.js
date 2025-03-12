@@ -62,10 +62,20 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps, curl, etc)
     if (!origin) return callback(null, true);
     
+    // Helper function to get frontend URL
+    const getFrontendUrl = () => {
+      return process.env.FRONTEND_URL || 'http://localhost:3000';
+    };
+    
+    // Helper function to get API URL
+    const getApiUrl = () => {
+      return process.env.API_URL || 'http://localhost:5001';
+    };
+    
     // List of allowed origins
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5001',
+      getFrontendUrl(),
+      getApiUrl(),
       // Netlify domains
       'https://mindcloud-beta.netlify.app',
       'https://mindcloud.netlify.app',

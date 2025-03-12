@@ -351,7 +351,12 @@ router.get('/google/callback',
         return res.redirect('/login?error=no_user_data');
       }
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      // Helper function to get frontend URL
+      const getFrontendUrl = () => {
+        return process.env.FRONTEND_URL || 'http://localhost:3000';
+      };
+      
+      const frontendUrl = getFrontendUrl();
 
       // If this is a new user (pendingRegistration), redirect to setup page
       if (req.user.pendingRegistration) {

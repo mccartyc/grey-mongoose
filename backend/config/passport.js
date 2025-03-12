@@ -28,10 +28,15 @@ passport.deserializeUser(async (serializedUser, done) => {
     }
 });
 
+// Helper function to get base API URL
+const getApiBaseUrl = () => {
+    return process.env.API_URL || 'http://localhost:5001';
+};
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `${process.env.API_URL || 'http://localhost:5001'}/api/auth/google/callback`,
+    callbackURL: `${getApiBaseUrl()}/api/auth/google/callback`,
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 }, async (accessToken, refreshToken, profile, done) => {
     try {
