@@ -34,8 +34,26 @@ app.use(helmet({
   crossOriginEmbedderPolicy: { policy: "credentialless" }
 }));
 
-// Google OAuth
+// Session configuration
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  name: 'sessionId',
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+};
+
+app.use(session(sessionConfig));
+
+// Initialize Passport and restore authentication state from session
 app.use(passport.initialize());
+app.use(passport.session());
 
 // CORS configuration
 const corsOptions = {
@@ -77,22 +95,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-// Session configuration
-const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  rolling: true,
-  name: 'sessionId',
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-};
 
-app.use(session(sessionConfig));
 
 // Rate limiting
 const limiter = rateLimit({

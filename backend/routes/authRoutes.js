@@ -146,13 +146,10 @@ router.post('/change-password', authenticateToken, async (req, res) => {
 // Register route
 router.post('/register', async (req, res) => {
   try {
-    console.log('Registration request body:', req.body);
-    
     const { email, password, firstname, lastname, registrationType, tenantName, tenantId } = req.body;
 
     // Validate required fields without using trim()
     if (!email || !password || !firstname || !lastname) {
-      console.log('Missing required fields:', { email: !!email, password: !!password, firstname: !!firstname, lastname: !!lastname });
       return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -219,7 +216,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Refresh token route
 // Google OAuth Routes
 router.get('/google',
   passport.authenticate('google', { 
@@ -227,6 +223,124 @@ router.get('/google',
     prompt: 'select_account'
   })
 );
+
+// Complete Google registration with tenant selection
+router.post('/google/complete-registration', async (req, res) => {
+  try {
+    const {
+      email,
+      firstname,
+      lastname,
+      googleId,
+      registrationType,
+      tenantName,
+      tenantId: requestedTenantId
+    } = req.body;
+
+    // Validate required fields
+    if (!email || !firstname || !lastname || !googleId || !registrationType) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({
+      $or: [{ email }, { googleId }]
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    let userTenantId;
+
+    if (registrationType === 'individual') {
+      // Create new tenant
+      if (!tenantName) {
+        return res.status(400).json({ error: 'Organization name is required' });
+      }
+
+      const newTenant = new Tenant({
+        name: tenantName,
+        isActive: true
+      });
+
+      await newTenant.save();
+      userTenantId = newTenant._id;
+    } else {
+      // Validate existing tenant
+      if (!requestedTenantId) {
+        return res.status(400).json({ error: 'Organization ID is required' });
+      }
+
+      const existingTenant = await Tenant.findById(requestedTenantId);
+      if (!existingTenant || !existingTenant.isActive) {
+        return res.status(400).json({ error: 'Invalid or inactive organization' });
+      }
+
+      userTenantId = existingTenant._id;
+    }
+
+    // Create new user
+    const newUser = await new User({
+      email,
+      firstname,
+      lastname,
+      googleId,
+      isActive: true,
+      role: registrationType === 'individual' ? 'Admin' : 'User',
+      tenantId: userTenantId,
+      // Set a secure random password for Google users
+      password: require('crypto').randomBytes(32).toString('hex')
+    }).save();
+
+    // Generate tokens
+    const token = jwt.sign(
+      { 
+        userId: newUser._id,
+        tenantId: newUser.tenantId,
+        role: newUser.role,
+        email: newUser.email,
+        firstname: newUser.firstname,
+        lastname: newUser.lastname
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const refreshToken = jwt.sign(
+      { 
+        userId: newUser._id,
+        tenantId: newUser.tenantId
+      },
+      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Set refresh token cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    // Return success response
+    res.json({
+      token,
+      user: {
+        _id: newUser._id,
+        email: newUser.email,
+        firstname: newUser.firstname,
+        lastname: newUser.lastname,
+        role: newUser.role,
+        tenantId: newUser.tenantId
+      }
+    });
+  } catch (error) {
+    console.error('Google registration completion error:', error);
+    res.status(500).json({ error: 'Error completing registration' });
+  }
+});
 
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }),
@@ -237,7 +351,24 @@ router.get('/google/callback',
         return res.redirect('/login?error=no_user_data');
       }
 
-      // Include more user information in the token
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+      // If this is a new user (pendingRegistration), redirect to setup page
+      if (req.user.pendingRegistration) {
+        const userData = {
+          email: req.user.email,
+          firstname: req.user.firstname,
+          lastname: req.user.lastname,
+          googleId: req.user.googleId
+        };
+
+        // Redirect to setup page with user data
+        return res.redirect(
+          `${frontendUrl}/google-auth-setup?userData=${encodeURIComponent(JSON.stringify(userData))}`
+        );
+      }
+
+      // For existing users, create token and proceed with login
       const token = jwt.sign(
         { 
           userId: req.user._id,
@@ -267,12 +398,9 @@ router.get('/google/callback',
         sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
       });
-
-      // Get the frontend URL from environment or use default
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
       
       // Log successful authentication
-      console.log('Google authentication successful for user:', {
+      console.log('Google authentication successful for existing user:', {
         userId: req.user._id,
         email: req.user.email,
         tenantId: req.user.tenantId,
@@ -288,6 +416,7 @@ router.get('/google/callback',
   }
 );
 
+// Refresh token route
 router.post('/refresh-token', async (req, res) => {
   try {
     const { refreshToken } = req.cookies;

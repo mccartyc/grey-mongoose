@@ -4,12 +4,24 @@ const User = require('../models/Users');
 const Tenant = require('../models/Tenant');
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    // For users with pending registration, serialize the temporary user data
+    if (user.pendingRegistration) {
+        done(null, { pendingRegistration: true, ...user });
+    } else {
+        done(null, user.id);
+    }
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (serializedUser, done) => {
     try {
-        const user = await User.findById(id);
+        // Handle pending registration users
+        if (typeof serializedUser === 'object' && serializedUser.pendingRegistration) {
+            done(null, serializedUser);
+            return;
+        }
+
+        // For regular users, fetch from database
+        const user = await User.findById(serializedUser);
         done(null, user);
     } catch (error) {
         done(error, null);
@@ -46,28 +58,17 @@ passport.use(new GoogleStrategy({
             return done(null, existingUser);
         }
 
-        // For new users, create a new tenant with their name/email as company name
-        const tenantName = profile.displayName || profile.emails[0].value.split('@')[0];
-        const newTenant = new Tenant({
-            name: tenantName,
-            isActive: true
-        });
-        await newTenant.save();
-
-        // Create new user with the new tenant
-        const newUser = await new User({
+        // For new users, pass their information to the frontend for tenant selection
+        const userData = {
             email: profile.emails[0].value,
             firstname: profile.name.givenName,
             lastname: profile.name.familyName,
             googleId: profile.id,
-            isActive: true,
-            role: 'Admin', // Make them admin of their own tenant
-            tenantId: newTenant._id,
-            // Set a secure random password for Google users
-            password: require('crypto').randomBytes(32).toString('hex')
-        }).save();
+            isGoogleAuth: true
+        };
 
-        done(null, newUser);
+        // Pass the user data to the done callback without creating a user yet
+        done(null, { pendingRegistration: true, ...userData });
     } catch (error) {
         console.error('Google authentication error:', error);
         done(error, null);

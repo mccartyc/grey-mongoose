@@ -25,6 +25,7 @@ import Unauthorized from './pages/Unauthorized';
 import TestLogin from './pages/TestLogin';
 import ApiTest from './pages/ApiTest';
 import AuthCallback from './pages/AuthCallback';
+import GoogleAuthSetup from './pages/GoogleAuthSetup';
 
 const App = () => (
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/test-login" element={<TestLogin />} />
           <Route path="/api-test" element={<ApiTest />} />
           <Route path="/auth-callback" element={<AuthCallback />} />
+          <Route path="/google-auth-setup" element={<GoogleAuthSetup />} />
 
           {/* Protected Routes */}
           <Route
