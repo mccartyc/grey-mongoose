@@ -13,13 +13,13 @@
 }
 
 .description-text {
-  color: var(--text-dark, #94A3B8);
+  color: var(--surface-dark, #0F172A);
   margin-bottom: 12px;
   font-size: 0.95rem;
 }
 
 .help-text {
-  color: var(--text-dark, #94A3B8);
+  color: var(--surface-dark, #0F172A);
   font-size: 0.85rem;
   margin-top: 6px;
 }
@@ -128,6 +128,69 @@ input:checked + .slider:before {
   border-radius: 8px;
   margin-bottom: 16px;
   font-size: 0.95rem;
+}
+
+/* Subscription Styles */
+.subscription-info {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.subscription-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.subscription-status.trial .status-badge {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.subscription-status.active .status-badge {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.subscription-status.expired .status-badge {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.subscription-details {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.subscription-details h4 {
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.subscription-details ul {
+  margin-top: 8px;
+  margin-left: 24px;
+  list-style-type: disc;
+}
+
+.subscription-details li {
+  margin-bottom: 6px;
 }
 
 /* Settings Styles */
@@ -240,13 +303,11 @@ input:checked + .slider:before {
 
 /* Settings Page Layout */
 .settings-container {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  width: 100%;
-  /* max-width: 800px; */
-  padding: 0 16px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+  grid-gap: 20px; /* Spacing between cards */
+  /* max-width: 800px; Adjust as needed */
+  margin: 0 auto; /* Center content */
 }
 
 .settings-card {
@@ -305,6 +366,28 @@ input:checked + .slider:before {
   padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
 }
+
+
+.description-text {
+  padding: 20px;
+  max-width: 600px;
+}
+
+
+.description-text ul {
+  /* list-style: none; Remove default bullets */
+  padding: 0;
+}
+
+.description-text li {
+  font-size: 16px;
+  padding: 3px;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+}
+
 
 
 /* Responsive Design */

@@ -21,7 +21,13 @@ const userSchema = new mongoose.Schema({
   mfaSecret: { type: String }, // TOTP secret for authenticator app
   mfaTempSecret: { type: String }, // For storing temporary verification codes
   mfaTempSecretExpiry: { type: Date }, // Expiry time for temporary codes
-  mfaBackupCodes: [{ type: String }] // Backup codes for account recovery
+  mfaBackupCodes: [{ type: String }], // Backup codes for account recovery
+  subscriptionStatus: { type: String, enum: ["trial", "active", "expired"], default: "trial" },
+  trialStartDate: { type: Date, default: Date.now },
+  trialEndDate: { type: Date, default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }, // 7 days from now
+  subscriptionId: { type: String }, // External subscription ID (e.g., from Stripe)
+  subscriptionExpiryDate: { type: Date },
+  stripeCustomerId: { type: String }, // Stripe customer ID for subscription management
 });
 
 // Method to compare passwords

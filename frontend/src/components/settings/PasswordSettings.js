@@ -146,13 +146,13 @@ const PasswordSettings = () => {
           </div>
         </div>
         
-        <p className="help-text">
+        {/* <p className="help-text">
           Password must be at least 8 characters long
         </p>
-        
+         */}
         <button 
           type="submit" 
-          className="primary-button"
+          className="btn secondary-btn"
           disabled={loading}
         >
           {loading ? 'Changing Password...' : 'Change Password'}

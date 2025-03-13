@@ -194,6 +194,11 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Set trial period dates (7 days from now)
+    const trialStartDate = new Date();
+    const trialEndDate = new Date(trialStartDate);
+    trialEndDate.setDate(trialEndDate.getDate() + 7);
+
     const user = new User({
       email,
       password: hashedPassword,
@@ -201,7 +206,11 @@ router.post('/register', async (req, res) => {
       lastname,
       role: registrationType === 'individual' ? 'Admin' : 'User',
       tenantId: userTenantId,
-      isActive: true
+      isActive: true,
+      // Subscription information
+      subscriptionStatus: 'trial',
+      trialStartDate,
+      trialEndDate
     });
 
     await user.save();
