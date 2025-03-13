@@ -60,13 +60,25 @@
 .user-table th:nth-child(9), .user-table td:nth-child(9) { width: 5%; } /* Actions */
 
 
-/* Optimized column widths for session table */
+/* Optimized column widths for main sessions page table */
 .session-table th:nth-child(1), .session-table td:nth-child(1) { width: 15%; } /* Date */
 .session-table th:nth-child(2), .session-table td:nth-child(2) { width: 20%; } /* Client Name */
 .session-table th:nth-child(3), .session-table td:nth-child(3) { width: 15%; } /* Type */
 .session-table th:nth-child(4), .session-table td:nth-child(4) { width: 10%; } /* Length */
 .session-table th:nth-child(5), .session-table td:nth-child(5) { width: 35%; } /* Id */
 .session-table th:nth-child(6), .session-table td:nth-child(6) { width: 5%; } /* Actions */
+
+/* Optimized column widths for client detail page session table */
+.client-detail-page .session-table th:nth-child(1), 
+.client-detail-page .session-table td:nth-child(1) { width: 20%; } /* Date */
+.client-detail-page .session-table th:nth-child(2), 
+.client-detail-page .session-table td:nth-child(2) { width: 20%; } /* Type */
+.client-detail-page .session-table th:nth-child(3), 
+.client-detail-page .session-table td:nth-child(3) { width: 15%; } /* Length */
+.client-detail-page .session-table th:nth-child(4), 
+.client-detail-page .session-table td:nth-child(4) { width: 40%; } /* Id */
+.client-detail-page .session-table th:nth-child(5), 
+.client-detail-page .session-table td:nth-child(5) { width: 5%; } /* Actions */
 
 /* Add specific styles for session table to handle panel open state */
 .panel-open .session-table {

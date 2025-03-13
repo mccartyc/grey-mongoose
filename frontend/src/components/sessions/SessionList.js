@@ -178,7 +178,7 @@ const SessionList = ({
           />
         </div>
 
-        <table className="session-table">
+        <table className={`session-table ${clientId ? 'client-detail-session-table' : ''}`}>
           <thead>
             <tr>
               <th>Date</th>
