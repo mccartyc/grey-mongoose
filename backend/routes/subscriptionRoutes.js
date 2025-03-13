@@ -16,7 +16,10 @@ router.post('/webhook', subscriptionController.handleWebhook);
 // Get current subscription
 router.get('/current', authenticateToken, subscriptionController.getCurrentSubscription);
 
-// Cancel subscription
+// Create customer portal session for subscription management
+router.post('/customer-portal', authenticateToken, subscriptionController.createCustomerPortalSession);
+
+// Cancel subscription (legacy method)
 router.post('/cancel', authenticateToken, subscriptionController.cancelSubscription);
 
 // Resume subscription

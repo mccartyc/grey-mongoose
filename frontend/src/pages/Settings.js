@@ -14,19 +14,32 @@ const Settings = () => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
 
+  // Use a ref to track if we've already fetched on mount
+  const [hasFetched, setHasFetched] = useState(false);
+
+  useEffect(() => {
+    // Only fetch once on initial mount
+    if (!hasFetched) {
+      fetchSubscriptionStatus();
+      setHasFetched(true);
+    }
+  }, [hasFetched]);
+  
+  // Separate effect for handling URL params
   useEffect(() => {
     // Check for subscription success/cancel in URL params
     const params = new URLSearchParams(location.search);
     const subscriptionParam = params.get('subscription');
     
-    if (subscriptionParam === 'success') {
+    if (subscriptionParam === 'success' && hasFetched) {
       // Show success message or update subscription status
       fetchSubscriptionStatus();
+      
+      // Clean up URL after processing to prevent loops
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
     }
-    
-    // Fetch subscription status on component mount
-    fetchSubscriptionStatus();
-  }, [location]);
+  }, [location.search, hasFetched]);
 
   const fetchSubscriptionStatus = async () => {
     try {
@@ -46,11 +59,12 @@ const Settings = () => {
       <div className="content-area">
         <div className="dashboard-header">
           <h1 className="page-heading">Account Settings</h1>
-          <p>Manage your account preferences and security settings</p>
+          <p className="description-text">Manage your account preferences, subscription, and security settings</p>
         </div>
         
         <div className="settings-container">
-          <div className="settings-card">
+          {/* Subscription takes full width for emphasis */}
+          <div className="settings-card" style={{ gridColumn: '1 / -1' }}>
             <h2 className="section-title">Subscription</h2>
             <SubscriptionSettings 
               subscriptionStatus={subscriptionStatus} 
@@ -59,19 +73,31 @@ const Settings = () => {
             />
           </div>
 
+          {/* Account settings */}
           <div className="settings-card">
             <h2 className="section-title">Contact Information</h2>
-            <ContactInfoSettings />
+            <div className="settings-form-container">
+              <p className="description-text">Update your contact details and notification preferences</p>
+              <ContactInfoSettings />
+            </div>
           </div>
           
-          <div className="settings-card">
-            <h2 className="section-title">Password</h2>
-            <PasswordSettings />
-          </div>
-          
+          {/* Security settings */}
           <div className="settings-card">
             <h2 className="section-title">Security</h2>
-            <MFASettings />
+            <div className="settings-form-container">
+              <p className="description-text">Manage your account security and authentication methods</p>
+              <MFASettings />
+            </div>
+          </div>
+          
+          {/* Password settings */}
+          <div className="settings-card">
+            <h2 className="section-title">Password</h2>
+            <div className="settings-form-container">
+              <p className="description-text">Change your password to keep your account secure</p>
+              <PasswordSettings />
+            </div>
           </div>
         </div>
       </div>

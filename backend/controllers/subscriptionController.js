@@ -302,7 +302,43 @@ exports.getCurrentSubscription = async (req, res) => {
   }
 };
 
-// Cancel subscription
+// Create a customer portal session for managing subscription
+exports.createCustomerPortalSession = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.stripeCustomerId) {
+      return res.status(400).json({ error: 'No Stripe customer found for this user' });
+    }
+
+    // Create a customer portal session with explicit configuration
+    try {
+      const session = await stripe.billingPortal.sessions.create({
+        customer: user.stripeCustomerId,
+        return_url: `${process.env.FRONTEND_URL}/settings`,
+        // Explicitly specify configuration
+        configuration: process.env.STRIPE_PORTAL_CONFIGURATION_ID || undefined,
+      });
+
+      // Return the URL to the customer portal
+      return res.status(200).json({ url: session.url });
+    } catch (portalError) {
+      console.error('Error creating portal session:', portalError);
+      // If we can't create a portal session, throw to fall back to cancellation
+      throw new Error('Customer portal not configured properly');
+    }
+  } catch (error) {
+    console.error('Error creating customer portal session:', error);
+    res.status(500).json({ error: 'Error creating customer portal session: ' + error.message });
+  }
+};
+
+// Legacy cancel subscription method - keeping for backward compatibility
 exports.cancelSubscription = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -312,23 +348,69 @@ exports.cancelSubscription = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Check if user has an active subscription in our database
     if (!user.subscriptionId) {
+      // Check if they have an active subscription in Stripe directly
+      if (user.stripeCustomerId) {
+        try {
+          const subscriptions = await stripe.subscriptions.list({
+            customer: user.stripeCustomerId,
+            status: 'active',
+            limit: 1
+          });
+          
+          if (subscriptions.data.length > 0) {
+            // Found an active subscription in Stripe, update our records
+            const subscription = subscriptions.data[0];
+            user.subscriptionId = subscription.id;
+            user.subscriptionStatus = 'active';
+            await user.save();
+            console.log(`Updated user subscription ID to ${subscription.id}`);
+            
+            // Now cancel this subscription
+            const updatedSubscription = await stripe.subscriptions.update(subscription.id, {
+              cancel_at_period_end: true
+            });
+            
+            return res.status(200).json({ 
+              message: 'Subscription will be canceled at the end of the billing period',
+              cancelAtPeriodEnd: updatedSubscription.cancel_at_period_end,
+              currentPeriodEnd: new Date(updatedSubscription.current_period_end * 1000)
+            });
+          }
+        } catch (stripeError) {
+          console.error('Error checking Stripe subscriptions:', stripeError);
+        }
+      }
+      
       return res.status(400).json({ error: 'No active subscription found' });
     }
 
     // Cancel at period end
-    const subscription = await stripe.subscriptions.update(user.subscriptionId, {
-      cancel_at_period_end: true
-    });
+    try {
+      const subscription = await stripe.subscriptions.update(user.subscriptionId, {
+        cancel_at_period_end: true
+      });
 
-    res.status(200).json({ 
-      message: 'Subscription will be canceled at the end of the billing period',
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000)
-    });
+      return res.status(200).json({ 
+        message: 'Subscription will be canceled at the end of the billing period',
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+      });
+    } catch (stripeError) {
+      // If the subscription doesn't exist in Stripe anymore
+      if (stripeError.code === 'resource_missing') {
+        // Clear the subscription ID from our database
+        user.subscriptionId = null;
+        user.subscriptionStatus = 'expired';
+        await user.save();
+        return res.status(400).json({ error: 'Subscription not found in Stripe. Your account has been updated.' });
+      }
+      throw stripeError; // Re-throw for the outer catch block
+    }
   } catch (error) {
     console.error('Error canceling subscription:', error);
-    res.status(500).json({ error: 'Error canceling subscription' });
+    res.status(500).json({ error: 'Error canceling subscription: ' + error.message });
   }
 };
 

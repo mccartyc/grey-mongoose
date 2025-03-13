@@ -19,20 +19,13 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
     
     if (subscriptionStatus === 'success' && sessionId) {
       setSuccessMessage('Your subscription has been successfully activated!');
-      // Refresh subscription status
-      if (onSubscriptionChange) {
-        onSubscriptionChange();
-      }
+      // Note: We don't call onSubscriptionChange() here as it's handled by the parent component
     } else if (subscriptionStatus === 'cancel') {
       setError('Subscription process was canceled. You can try again when you\'re ready.');
     }
     
-    // Clean up URL after processing
-    if (subscriptionStatus) {
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-    }
-  }, [location.search, onSubscriptionChange]);
+    // URL cleanup is now handled by the parent component
+  }, [location.search]);
 
   // Calculate days left in trial
   const getDaysLeft = () => {
@@ -75,22 +68,35 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
     }
   };
 
-  const handleCancelSubscription = async () => {
+  const handleManageSubscription = async () => {
     try {
       setIsProcessing(true);
       setError('');
       setSuccessMessage('');
       
-      const response = await api.post('/api/subscriptions/cancel');
-      setSuccessMessage(response.data.message);
-      
-      // Refresh subscription status
-      if (onSubscriptionChange) {
-        onSubscriptionChange();
+      try {
+        // First try to use the customer portal
+        const response = await api.post('/api/subscriptions/customer-portal');
+        
+        // Redirect to Stripe's customer portal if available
+        if (response.data.url) {
+          window.location.href = response.data.url;
+          return;
+        }
+      } catch (portalError) {
+        console.log('Customer portal not configured, falling back to basic cancellation');
+        // If customer portal fails, fall back to basic cancellation
+        const cancelResponse = await api.post('/api/subscriptions/cancel');
+        setSuccessMessage(cancelResponse.data.message || 'Your subscription will be canceled at the end of the billing period');
+        
+        // Refresh subscription status
+        if (onSubscriptionChange) {
+          onSubscriptionChange();
+        }
       }
     } catch (error) {
-      console.error('Error canceling subscription:', error);
-      setError(error.response?.data?.error || 'Failed to cancel subscription');
+      console.error('Error managing subscription:', error);
+      setError(error.response?.data?.error || 'Failed to manage subscription');
     } finally {
       setIsProcessing(false);
     }
@@ -119,11 +125,11 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
 
   const renderSubscriptionStatus = () => {
     if (isLoading) {
-      return <p>Loading subscription information...</p>;
+      return <div className="subscription-info"><p className="description-text">Loading subscription information...</p></div>;
     }
 
     if (!subscriptionStatus) {
-      return <p>Unable to retrieve subscription information.</p>;
+      return <div className="subscription-info"><p className="description-text">Unable to retrieve subscription information.</p></div>;
     }
 
     switch (subscriptionStatus.subscriptionStatus) {
@@ -132,18 +138,30 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
           <div className="subscription-info">
             <div className="subscription-status trial">
               <span className="status-badge">Free Trial</span>
+              <span>{getDaysLeft()} days remaining</span>
             </div>
-            <p>
-              You are currently on a free trial. Your trial will expire in <strong>{getDaysLeft()} days</strong> on {formatDate(subscriptionStatus.trialEndDate)}.
+            <p className="description-text">
+              Your trial will expire on <strong>{formatDate(subscriptionStatus.trialEndDate)}</strong>. Subscribe now to continue using all features after your trial ends.
             </p>
-            <p>Subscribe now to continue using all features after your trial ends.</p>
-            <button 
-              className="btn primary-btn" 
-              onClick={handleSubscribe}
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Processing...' : 'Subscribe Now - $15/month'}
-            </button>
+            <div className="premium-benefits">
+              <h4>Upgrade to Premium for:</h4>
+              <ul>
+                <li>✓ Full access to all MindCloud features</li>
+                <li>✓ Unlimited client sessions</li>
+                <li>✓ Transcription and analysis tools</li>
+                <li>✓ Calendar and scheduling features</li>
+                <li>✓ Client management system</li>
+              </ul>
+            </div>
+            <div style={{ marginTop: '24px' }}>
+              <button 
+                className="btn primary-btn" 
+                onClick={handleSubscribe}
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Processing...' : 'Subscribe Now - $15/month'}
+              </button>
+            </div>
           </div>
         );
       
@@ -151,30 +169,50 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
         return (
           <div className="subscription-info">
             <div className="subscription-status active">
-              <span className="status-badge">Active</span>
+              <span className="status-badge">Premium Plan</span>
+              <span>Active</span>
             </div>
-            <p>
-              Your subscription is active and will renew on {formatDate(subscriptionStatus.currentPeriodEnd || subscriptionStatus.subscriptionExpiryDate)}.
+            <p className="description-text">
+              Your premium subscription is active and will renew on <strong>{formatDate(subscriptionStatus.currentPeriodEnd || subscriptionStatus.subscriptionExpiryDate)}</strong>.
             </p>
+            
+            <div className="premium-benefits">
+              <h4>Your Premium Benefits</h4>
+              <ul>
+                <li>✓ Full access to all MindCloud features</li>
+                <li>✓ Unlimited client sessions</li>
+                <li>✓ Transcription and analysis tools</li>
+                <li>✓ Calendar and scheduling features</li>
+                <li>✓ Client management system</li>
+              </ul>
+            </div>
+            
             {subscriptionStatus.cancelAtPeriodEnd ? (
               <>
-                <p>Your subscription is set to cancel at the end of the current billing period.</p>
-                <button 
-                  className="btn secondary-btn" 
-                  onClick={handleResumeSubscription}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? 'Processing...' : 'Resume Subscription'}
-                </button>
+                <div className="error-message">
+                  Your subscription is set to cancel at the end of the current billing period.
+                  You will still have access until {formatDate(subscriptionStatus.currentPeriodEnd)}.
+                </div>
+                <div style={{ marginTop: '24px' }}>
+                  <button 
+                    className="btn secondary-btn" 
+                    onClick={handleResumeSubscription}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? 'Processing...' : 'Resume Subscription'}
+                  </button>
+                </div>
               </>
             ) : (
-              <button 
-                className="btn secondary-btn" 
-                onClick={handleCancelSubscription}
-                disabled={isProcessing}
-              >
-                {isProcessing ? 'Processing...' : 'Cancel Subscription'}
-              </button>
+              <div style={{ marginTop: '24px' }}>
+                <button 
+                  className="btn secondary-btn" 
+                  onClick={handleManageSubscription}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? 'Processing...' : 'Cancel Subscription'}
+                </button>
+              </div>
             )}
           </div>
         );
@@ -214,30 +252,33 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
       )}
       
       {successMessage && (
-        <div className="success-message" style={{ color: 'green', marginBottom: '1rem' }}>
+        <div className="success-message" style={{ color: 'green', marginBottom: '1rem', padding: '1rem', backgroundColor: '#e6f7e6', borderRadius: '4px' }}>
           {successMessage}
         </div>
       )}
       
       {renderSubscriptionStatus()}
       
-      <div className="subscription-details">
-        <h4>Subscription Information</h4>
-        <p>
-          MindCloud subscription costs <strong>$15 per month per user</strong>. 
-          Each new user gets a <strong>7-day free trial</strong> to explore all features.
-        </p>
-        <p>
-          Your subscription includes:
-        </p>
-        <ul>
-          <li>Full access to all MindCloud features</li>
-          <li>Unlimited client sessions</li>
-          <li>Transcription and analysis tools</li>
-          <li>Calendar and scheduling features</li>
-          <li>Client management system</li>
-        </ul>
-      </div>
+      {/* Only show subscription information for non-active subscriptions */}
+      {(!subscriptionStatus || subscriptionStatus.subscriptionStatus !== 'active') && (
+        <div className="subscription-details">
+          <h4>Subscription Information</h4>
+          <p>
+            MindCloud subscription costs <strong>$15 per month per user</strong>. 
+            Each new user gets a <strong>7-day free trial</strong> to explore all features.
+          </p>
+          <p>
+            Your subscription includes:
+          </p>
+          <ul>
+            <li>Full access to all MindCloud features</li>
+            <li>Unlimited client sessions</li>
+            <li>Transcription and analysis tools</li>
+            <li>Calendar and scheduling features</li>
+            <li>Client management system</li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
