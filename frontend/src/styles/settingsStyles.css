@@ -13,13 +13,13 @@
 }
 
 .description-text {
-  color: var(--text-dark, #94A3B8);
+  color: var(--surface-dark, #0F172A);
   margin-bottom: 12px;
   font-size: 0.95rem;
 }
 
 .help-text {
-  color: var(--text-dark, #94A3B8);
+  color: var(--surface-dark, #0F172A);
   font-size: 0.85rem;
   margin-top: 6px;
 }
