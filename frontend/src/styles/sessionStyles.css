@@ -90,7 +90,8 @@
   flex-direction: column;
   overflow-y: auto;
   height: 100%;
-  padding: 20px;
+  padding: 15px;
+  padding-bottom: 30px;
   scrollbar-width: thin;
 }
 
@@ -114,10 +115,10 @@
 /* Panel header - matches page-heading style */
 .sessions-panel-header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  justify-content: flex-end;
+  margin-bottom: 15px;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
   background-color: rgb(248, 247, 247); /* Exact match with content-area background */
   color: var(--surface-dark, #0F172A);
 }
@@ -132,7 +133,7 @@
 .sessions-panel-header.page-heading {
   display: flex;
   justify-content: space-between;
-  padding: 15px 20px;
+  padding: 15px;
   margin-bottom: 0;
   /* Border is already defined in the sessions-panel-header */
 }
@@ -140,9 +141,9 @@
 
 /* Session info */
 .session-info {
-  padding: 15px 20px;
+  padding: 15px;
   background-color: #f4f5f7; /* Match header background */
-  margin: 15px 20px;
+  margin: 15px;
   font-size: 0.95rem;
   border-radius: 0;
   /* No box shadow for session info */
@@ -155,12 +156,15 @@
 
 /* Panel sections */
 .panel-section {
-  /* padding: 15px 20px; */
-  margin-bottom: 20px;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 15px;
   background-color: white; /* White background for content panels */
   color: var(--surface-dark, #0F172A);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 15px;
 }
 
 .panel-section h3 {
@@ -174,30 +178,54 @@
 
 /* Content boxes */
 .content-box {
-  background-color: white;
-  border: 1px solid #e9ecef;
+  background-color: #f8f9fa;
   border-radius: 4px;
   padding: 12px;
-  max-height: 200px;
+  min-height: 100px;
+  max-height: 300px;
   overflow-y: auto;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  word-break: break-word;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .transcript-box {
-  font-family: monospace;
-  white-space: pre-wrap;
+  background-color: #f8f9fa;
+  font-style: italic;
+  color: #555;
 }
 
 /* Panel footer */
 .sessions-panel-footer {
-  margin: 0 20px 20px;
-  padding: 15px 20px;
+  margin-top: auto;
+  padding: 15px;
+  padding-bottom: 25px; /* Add more space at the bottom */
   background-color: rgb(248, 247, 247); /* Exact match with content-area background */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* No border or box shadow for buttons area */
+}
+
+/* Session section headers - consistent styling */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--surface-dark, #0F172A);
+  margin: 0 0 15px 0;
+}
+
+/* Session notes header and other section headers */
+.session-notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.session-notes-header h3 {
+  margin: 0;
 }
 
 /* Drag handle styles */
@@ -263,21 +291,6 @@
   overflow: hidden;
 }
 
-.sessions-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  background: var(--primary-color-light, #f5f5f5);
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
-}
-
-.sessions-panel-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--text-color-dark, #2c3e50);
-}
-
 
 .session-info {
   padding: 1rem 1.5rem;
@@ -322,6 +335,84 @@
   padding: 0.5rem 0;
 }
 
+/* ReactQuill Editor Styles for Sessions Panel */
+.sessions-panel-body {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sessions-panel-body .ql-container {
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.sessions-panel-body .ql-editor {
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  width: 100% !important;
+  position: relative;
+}
+
+/* Fix for ReactQuill toolbar to stay within bounds */
+.sessions-panel-body .ql-toolbar {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-sizing: border-box;
+  width: 100% !important;
+}
+
+/* Ensure ReactQuill doesn't overflow its container */
+.sessions-panel-body .quill {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Ensure content doesn't overflow in panel sections */
+.panel-section {
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Quill container to ensure editor stays within bounds */
+.quill-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+/* Fix for the specific issue with ql-editor overflowing */
+div.ql-editor {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Force containment of all ReactQuill elements */
+.ql-container, .ql-editor, .ql-toolbar, .ql-tooltip {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Quill editor styling */
 .quill {
   border-radius: 4px;
@@ -339,4 +430,75 @@
   background-color: white;
 }
 
+/* Content area adjustments for panel open state */
+.content-area.panel-open {
+  transition: margin-right 0.2s ease-out;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
 
+/* Ensure table container doesn't overflow when panel is open */
+.content-area.panel-open .content-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure session table maintains its structure when panel is open */
+.session-table.panel-open {
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* Ensure session table cells don't wrap or overflow */
+.session-table.panel-open th,
+.session-table.panel-open td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive adjustments for smaller screens with panel open */
+@media (max-width: 1200px) {
+  .content-area.panel-open .session-table th,
+  .content-area.panel-open .session-table td {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}
+
+/* Session notes section with edit controls */
+.session-notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.session-notes-header h3 {
+  margin: 0;
+}
+
+.edit-controls {
+  display: flex;
+  gap: 10px;
+}
+
+/* Notes edit controls at the bottom of the panel */
+.notes-edit-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.notes-edit-controls .edit-controls {
+  display: flex;
+  gap: 10px;
+}
+
+/* View Full Session button */
+.view-full-session {
+  padding: 10px 20px;
+  margin: 10px 0;
+  font-weight: 500;
+}
