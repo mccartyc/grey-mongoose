@@ -303,13 +303,11 @@ input:checked + .slider:before {
 
 /* Settings Page Layout */
 .settings-container {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  width: 100%;
-  /* max-width: 800px; */
-  padding: 0 16px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+  grid-gap: 20px; /* Spacing between cards */
+  /* max-width: 800px; Adjust as needed */
+  margin: 0 auto; /* Center content */
 }
 
 .settings-card {
@@ -368,6 +366,28 @@ input:checked + .slider:before {
   padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
 }
+
+
+.description-text {
+  padding: 20px;
+  max-width: 600px;
+}
+
+
+.description-text ul {
+  /* list-style: none; Remove default bullets */
+  padding: 0;
+}
+
+.description-text li {
+  font-size: 16px;
+  padding: 3px;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+}
+
 
 
 /* Responsive Design */

@@ -211,7 +211,7 @@ const MFASettings = () => {
           {mfaEnabled && mfaMethod === 'sms' && (
             <button 
               type="submit" 
-              className="primary-button"
+              className="btn secondary-btn"
               disabled={loading}
             >
               Save Settings

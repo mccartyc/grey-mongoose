@@ -143,7 +143,7 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
             <p className="description-text">
               Your trial will expire on <strong>{formatDate(subscriptionStatus.trialEndDate)}</strong>. Subscribe now to continue using all features after your trial ends.
             </p>
-            <div className="premium-benefits">
+            <div className="description-text">
               <h4>Upgrade to Premium for:</h4>
               <ul>
                 <li>✓ Full access to all MindCloud features</li>
@@ -169,21 +169,21 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
         return (
           <div className="subscription-info">
             <div className="subscription-status active">
-              <span className="status-badge">Premium Plan</span>
-              <span>Active</span>
+              <span className="status-badge">Premium Plan Active</span>
+              {/* <span className="status-badge">Active</span> */}
             </div>
             <p className="description-text">
               Your premium subscription is active and will renew on <strong>{formatDate(subscriptionStatus.currentPeriodEnd || subscriptionStatus.subscriptionExpiryDate)}</strong>.
             </p>
             
-            <div className="premium-benefits">
-              <h4>Your Premium Benefits</h4>
+            <div className="description-text">
+              <h4>Your Premium Benefits:</h4>
               <ul>
-                <li>✓ Full access to all MindCloud features</li>
-                <li>✓ Unlimited client sessions</li>
-                <li>✓ Transcription and analysis tools</li>
-                <li>✓ Calendar and scheduling features</li>
-                <li>✓ Client management system</li>
+                <li>✅ Full access to all MindCloud features</li>
+                <li>✅ Unlimited client sessions</li>
+                <li>✅ AI driven transcription and analysis tools</li>
+                <li>✅ Calendar and scheduling features</li>
+                <li>✅ Client management system</li>
               </ul>
             </div>
             
@@ -243,7 +243,6 @@ const SubscriptionSettings = ({ subscriptionStatus, isLoading, onSubscriptionCha
 
   return (
     <div className="settings-section">
-      <h3>Subscription Details</h3>
       
       {error && (
         <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>

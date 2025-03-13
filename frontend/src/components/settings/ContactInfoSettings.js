@@ -168,19 +168,15 @@ const ContactInfoSettings = () => {
               value={formData.phoneNumber}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="+1234567890"
+              placeholder="123-456-7890"
               disabled={loading}
             />
           </div>
         </div>
         
-        <p className="help-text">
-          Enter your phone number in international format (e.g., +1234567890)
-        </p>
-        
         <button 
           type="submit" 
-          className="primary-button"
+          className="btn secondary-btn"
           disabled={loading}
         >
           {loading ? 'Updating...' : 'Update Contact Information'}

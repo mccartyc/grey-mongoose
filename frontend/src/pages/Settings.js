@@ -64,7 +64,7 @@ const Settings = () => {
         
         <div className="settings-container">
           {/* Subscription takes full width for emphasis */}
-          <div className="settings-card" style={{ gridColumn: '1 / -1' }}>
+          <div className="settings-card">
             <h2 className="section-title">Subscription</h2>
             <SubscriptionSettings 
               subscriptionStatus={subscriptionStatus} 
@@ -77,7 +77,7 @@ const Settings = () => {
           <div className="settings-card">
             <h2 className="section-title">Contact Information</h2>
             <div className="settings-form-container">
-              <p className="description-text">Update your contact details and notification preferences</p>
+              {/* <p className="description-text">Update your contact details and notification preferences</p> */}
               <ContactInfoSettings />
             </div>
           </div>
@@ -86,7 +86,7 @@ const Settings = () => {
           <div className="settings-card">
             <h2 className="section-title">Security</h2>
             <div className="settings-form-container">
-              <p className="description-text">Manage your account security and authentication methods</p>
+              {/* <p className="description-text">Manage your account security and authentication methods</p> */}
               <MFASettings />
             </div>
           </div>
@@ -95,7 +95,7 @@ const Settings = () => {
           <div className="settings-card">
             <h2 className="section-title">Password</h2>
             <div className="settings-form-container">
-              <p className="description-text">Change your password to keep your account secure</p>
+              {/* <p className="description-text">Change your password to keep your account secure</p> */}
               <PasswordSettings />
             </div>
           </div>
