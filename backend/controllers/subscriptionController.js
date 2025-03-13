@@ -68,25 +68,34 @@ exports.createCheckoutSession = async (req, res) => {
       await user.save();
     }
 
-    // Create a new product if it doesn't exist yet
+    // Create a new product or retrieve existing one
     let product;
-    try {
-      product = await stripe.products.retrieve('prod_mindcloud_subscription');
-    } catch (error) {
+    const existingProducts = await stripe.products.list({
+      limit: 1,
+      active: true
+    });
+    
+    if (existingProducts.data.length > 0) {
+      product = existingProducts.data[0];
+    } else {
       product = await stripe.products.create({
-        id: 'prod_mindcloud_subscription',
         name: 'MindCloud Subscription',
         description: 'Monthly subscription to MindCloud'
       });
     }
 
-    // Create a price for the product if it doesn't exist yet
+    // Create a price for the product or retrieve existing one
     let price;
-    try {
-      price = await stripe.prices.retrieve('price_mindcloud_monthly');
-    } catch (error) {
+    const existingPrices = await stripe.prices.list({
+      limit: 1,
+      active: true,
+      product: product.id
+    });
+    
+    if (existingPrices.data.length > 0) {
+      price = existingPrices.data[0];
+    } else {
       price = await stripe.prices.create({
-        id: 'price_mindcloud_monthly',
         product: product.id,
         unit_amount: 1500, // $15.00
         currency: 'usd',
