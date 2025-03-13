@@ -276,10 +276,10 @@ const SessionList = ({
           maxWidth={800}
           onWidthChange={updateMainContentMargin}
         >
-          {/* <div className="sessions-panel-header">
-            <p>{selectedSession.sessionId}</p>
-            <button className="secondary-btn" onClick={() => setIsPanelOpen(false)}>×</button>
-          </div> */}
+          <div className="sessions-panel-header">
+            {/* <p>{selectedSession.sessionId}</p> */}
+            <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
+          </div>
 
           {/* Session Info */}
           <div className="panel-section">
