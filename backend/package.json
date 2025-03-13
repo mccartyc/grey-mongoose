@@ -37,6 +37,7 @@
     "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0",
+    "stripe": "^14.25.0",
     "twilio": "^5.4.5",
     "uuid": "^11.0.3",
     "xss-clean": "^0.1.4"

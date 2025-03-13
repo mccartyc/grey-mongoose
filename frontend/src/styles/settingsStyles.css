@@ -130,6 +130,69 @@ input:checked + .slider:before {
   font-size: 0.95rem;
 }
 
+/* Subscription Styles */
+.subscription-info {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.subscription-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.subscription-status.trial .status-badge {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.subscription-status.active .status-badge {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.subscription-status.expired .status-badge {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.subscription-details {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.subscription-details h4 {
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.subscription-details ul {
+  margin-top: 8px;
+  margin-left: 24px;
+  list-style-type: disc;
+}
+
+.subscription-details li {
+  margin-bottom: 6px;
+}
+
 /* Settings Styles */
 .settings-form-container {
   width: 100%;

@@ -22,6 +22,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const mfaRoutes = require('./routes/mfaRoutes');
 const intakeRoutes = require('./routes/intakeRoutes');
 const healthRoutes = require('./routes/health');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const { encryptionMiddleware } = require('./middleware/encryption');
 const passport = require('./config/passport');
 const logger = require('./config/logger'); // Import secure logger
@@ -105,9 +106,42 @@ app.use(cors(corsOptions));
 // Handle preflight requests
 app.options('*', cors(corsOptions));
 
+// Create a raw body parser for Stripe webhooks
+const stripeWebhookPath = '/api/subscriptions/webhook';
+app.use((req, res, next) => {
+  if (req.originalUrl === stripeWebhookPath) {
+    // For Stripe webhooks, we need the raw body for signature verification
+    let rawBody = '';
+    req.on('data', chunk => {
+      rawBody += chunk.toString();
+    });
+    req.on('end', () => {
+      req.rawBody = rawBody;
+      next();
+    });
+  } else {
+    next();
+  }
+});
+
 // Body parsing middleware with increased limits for audio data
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// Skip body parsing for Stripe webhooks to preserve the raw body
+app.use((req, res, next) => {
+  if (req.originalUrl === stripeWebhookPath) {
+    next();
+  } else {
+    express.json({ limit: '50mb' })(req, res, next);
+  }
+});
+
+app.use((req, res, next) => {
+  if (req.originalUrl === stripeWebhookPath) {
+    next();
+  } else {
+    express.urlencoded({ extended: true, limit: '50mb' })(req, res, next);
+  }
+});
+
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 
@@ -162,6 +196,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/mfa', mfaRoutes);
 app.use('/api/intake-forms', intakeRoutes);
 app.use('/api/health', healthRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // Debug: Log all registered routes
 const listEndpoints = require('express-list-endpoints');

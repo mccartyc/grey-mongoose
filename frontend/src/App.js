@@ -26,6 +26,7 @@ import TestLogin from './pages/TestLogin';
 import ApiTest from './pages/ApiTest';
 import AuthCallback from './pages/AuthCallback';
 import GoogleAuthSetup from './pages/GoogleAuthSetup';
+import TestSubscription from './pages/TestSubscription';
 
 const App = () => (
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/api-test" element={<ApiTest />} />
           <Route path="/auth-callback" element={<AuthCallback />} />
           <Route path="/google-auth-setup" element={<GoogleAuthSetup />} />
+          <Route path="/test-subscription" element={<TestSubscription />} />
 
           {/* Protected Routes */}
           <Route
