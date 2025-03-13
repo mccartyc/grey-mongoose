@@ -7,7 +7,8 @@
 [build.environment]
   CI = "false"
   NODE_VERSION = "18"
-  REACT_APP_API_URL = "http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081"
+  # Use the Netlify domain with /api path for all API requests
+  REACT_APP_API_URL = "https://mindcloud.netlify.app"
 
 # Proxy API requests to the backend
 [[redirects]]
@@ -15,6 +16,11 @@
   to = "http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081/api/:splat"
   status = 200
   force = true
+  [redirects.headers]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    Access-Control-Allow-Credentials = "true"
 
 # Redirect all other routes to index.html for SPA routing
 [[redirects]]

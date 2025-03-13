@@ -10,8 +10,11 @@ EB_ENV_NAME="grey-mongoose-prod"
 EB_APP_NAME="grey-mongoose"
 
 # Update these values for your production environment
+# For Google OAuth callback, we need to use the actual backend URL
 API_URL="http://grey-mongoose-prod.eba-asi6kjji.us-west-2.elasticbeanstalk.com:8081"
 FRONTEND_URL="https://mindcloud.netlify.app"
+# Add an additional variable for the frontend to use in API requests
+FRONTEND_API_URL="https://mindcloud.netlify.app"
 
 # Command to update environment variables
 echo "Updating environment variables for $EB_ENV_NAME..."
@@ -20,7 +23,8 @@ aws elasticbeanstalk update-environment \
   --application-name $EB_APP_NAME \
   --option-settings \
     "Namespace=aws:elasticbeanstalk:application:environment,OptionName=API_URL,Value=$API_URL" \
-    "Namespace=aws:elasticbeanstalk:application:environment,OptionName=FRONTEND_URL,Value=$FRONTEND_URL"
+    "Namespace=aws:elasticbeanstalk:application:environment,OptionName=FRONTEND_URL,Value=$FRONTEND_URL" \
+    "Namespace=aws:elasticbeanstalk:application:environment,OptionName=FRONTEND_API_URL,Value=$FRONTEND_API_URL"
 
 echo "Environment variables updated. Please allow a few minutes for the changes to take effect."
 echo "Remember to also update your Google OAuth configuration in the Google Cloud Console:"
