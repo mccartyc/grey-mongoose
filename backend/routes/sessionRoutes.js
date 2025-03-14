@@ -357,22 +357,22 @@ router.put("/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res)
       }
     }
 
-    // Find the session first to check if it exists and belongs to the user's tenant
-    const existingSession = await Session.findById(sessionId);
+    console.log(`Looking for session with sessionId: ${sessionId}`);
+    const existingSession = await Session.findOne({ sessionId: sessionId });
     
     if (!existingSession) {
-      console.log(`Session with ID ${sessionId} not found`);
+      console.log(`Session with sessionId ${sessionId} not found`);
       return res.status(404).json({ error: "Session not found" });
     }
     
     // Check if the session belongs to the user's tenant
     if (existingSession.tenantId.toString() !== tenantId) {
-      console.log(`Session with ID ${sessionId} does not belong to tenant ${tenantId}`);
+      console.log(`Session with sessionId ${sessionId} does not belong to tenant ${tenantId}`);
       return res.status(403).json({ error: "Not authorized to update this session" });
     }
 
     const updatedSession = await Session.findByIdAndUpdate(
-      sessionId,
+      existingSession._id,
       updateData,
       { new: true } // Return the updated session
     );
@@ -400,16 +400,19 @@ router.patch("/:sessionId/archive", auditSessionAction('ARCHIVE_SESSION'), async
   console.log("Request to archive session with ID:", sessionId);
 
   try {
+    console.log(`Looking for session with sessionId: ${sessionId}`);
+    const existingSession = await Session.findOne({ sessionId: sessionId });
+    
+    if (!existingSession) {
+      console.log(`Session with sessionId ${sessionId} not found`);
+      return res.status(404).json({ error: "Session not found" });
+    }
+
     const archivedSession = await Session.findByIdAndUpdate(
-      sessionId,
+      existingSession._id,
       { isActive: false },
       { new: true } // Return the updated session
     );
-
-    if (!archivedSession) {
-      console.log(`Session with ID ${sessionId} not found`);
-      return res.status(404).json({ error: "Session not found" });
-    }
 
     console.log("Session archived successfully:", archivedSession);
     res.status(200).json(archivedSession);

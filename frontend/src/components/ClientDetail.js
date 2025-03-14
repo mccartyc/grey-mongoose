@@ -69,7 +69,7 @@ useEffect(() => {
       
       // Then fetch sessions
       try {
-        const sessionsResponse = await axios.get(`/api/sessions/client/${id}`, {
+        const sessionsResponse = await apiInstance.get(`/api/sessions/client/${id}`, {
           ...config,
           params: {
             ...config.params,

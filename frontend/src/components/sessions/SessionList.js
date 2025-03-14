@@ -5,6 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import { decryptText, encryptText } from '../../utils/encryption';
 import DraggablePanel from './DraggablePanel';
 import { useNotification } from '../../context/NotificationContext';
+import { createApiInstance } from '../../utils/apiConfig';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -21,7 +22,8 @@ const SessionList = ({
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [panelWidth, setPanelWidth] = useState(500); // Track panel width for persistence
-  
+  const apiInstance = createApiInstance(user.token);
+
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
@@ -104,7 +106,7 @@ const SessionList = ({
     }
 
     try {
-      // Encrypt notes using our utility function
+      console.log('Attempting to save notes for session:', selectedSession.sessionId);
       const encryptedNotes = encryptText(selectedSession.notes);
       
       const updatedNotes = {
@@ -114,11 +116,29 @@ const SessionList = ({
         userId: user.userId
       };
 
-      await onSessionUpdate(selectedSession.sessionId, updatedNotes);
-      setIsEditing(false);
-      showNotification('Notes saved successfully', 'success');
+      const response = await apiInstance.put(
+        `/api/sessions/${selectedSession.sessionId}`,
+        updatedNotes,
+        {
+          params: {
+            tenantId: user.tenantId,
+            userId: user.userId
+          }
+        }
+      );
+      
+      if (response.status === 200) {
+        console.log('Successfully saved notes for session:', selectedSession.sessionId);
+        setIsEditing(false);
+        showNotification('Notes saved successfully', 'success');
+      } else {
+        throw new Error(`Unexpected status code: ${response.status}`);
+      }
     } catch (error) {
-      console.error('Error saving notes:', error);
+      console.error('Session update failed:', {
+        sessionId: selectedSession.sessionId,
+        error: error.response?.data || error.message
+      });
       showNotification(error.response?.data?.error || 'Failed to save notes', 'error');
     }
   };
@@ -278,7 +298,13 @@ const SessionList = ({
         >
           <div className="sessions-panel-header">
             {/* <p>{selectedSession.sessionId}</p> */}
-            <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
+            <button 
+              className="btn primary-btn"
+              onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
+            >
+              View Full Session
+            </button>
+            <button className="btn close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
           </div>
 
           {/* Session Info */}
@@ -293,6 +319,7 @@ const SessionList = ({
           {/* Notes Section */}
           <div className="panel-section">
             <h3>Session Notes</h3>
+
             <div className="sessions-panel-body">
               {isEditing ? (
                 <ReactQuill
@@ -313,6 +340,11 @@ const SessionList = ({
                   )}
                 </div>
               )}
+              {isEditing ? (
+              <button className="btn primary-btn" onClick={handleSaveNotes}>Save Changes</button>
+            ) : (
+              <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
+            )}
             </div>
           </div>
 
@@ -322,20 +354,6 @@ const SessionList = ({
             <div className="content-box transcript-box">
               <p>{selectedSession.transcript || 'No transcript available for this session.'}</p>
             </div>
-          </div>
-
-          <div className="sessions-panel-footer">
-            {isEditing ? (
-              <button className="btn primary-btn" onClick={handleSaveNotes}>Save Changes</button>
-            ) : (
-              <button className="btn secondary-btn" onClick={handleEditNotes}>Edit Notes</button>
-            )}
-            <button 
-              className="btn primary-btn"
-              onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
-            >
-              View Full Session
-            </button>
           </div>
         </DraggablePanel>
       )}

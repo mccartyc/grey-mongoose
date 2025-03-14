@@ -11,6 +11,7 @@ const MentalHealthIntakeAssessment = () => {
   const navigate = useNavigate(); // Use navigate hook
   const [client, setClient] = useState({});
   const [isLoading, setIsLoading] = useState(true); // Spinner state
+  const apiInstance = createApiInstance(user.token);
 
 
   const [medications, setMedications] = useState([
@@ -69,7 +70,7 @@ const MentalHealthIntakeAssessment = () => {
     const fetchClients = async () => {
       setIsLoading(true);
 
-      const clientResponse = await axios.get(`/api/clients/${id}`, {
+      const clientResponse = await apiInstance.get(`/api/clients/${id}`, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
@@ -145,7 +146,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Presenting Concerns */}
         <h3>Presenting Concerns</h3>
         <div className="form-group">
-          <label>Primary Concern(s):</label>
+          <label className="form-label">Primary Concern(s):</label>
           <textarea
             name="presentingConcerns.concerns"
             value={formData.presentingConcerns.concerns}
@@ -154,7 +155,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Duration of Concern(s):</label>
+          <label className="form-label">Duration of Concern(s):</label>
           <input
             type="text"
             name="presentingConcerns.duration"
@@ -164,7 +165,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Impact on Daily Functioning:</label>
+          <label className="form-label">Impact on Daily Functioning:</label>
           <textarea
             name="presentingConcerns.dailyImpact"
             value={formData.presentingConcerns.dailyImpact}
@@ -176,7 +177,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Mental Health History */}
         <h3>Mental Health History</h3>
         <div className="form-group">
-          <label>Previous Diagnoses:</label>
+          <label className="form-label">Previous Diagnoses:</label>
           <textarea
             name="mentalHealthHistory.diagnoses"
             value={formData.mentalHealthHistory.diagnoses}
@@ -185,7 +186,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Past Treatment:</label>
+          <label className="form-label">Past Treatment:</label>
           <input
             type="text"
             name="mentalHealthHistory.treatment.type"
@@ -212,7 +213,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Family History of Mental Health Issues:</label>
+          <label className="form-label">Family History of Mental Health Issues:</label>
           <textarea
             name="mentalHealthHistory.familyHistory"
             value={formData.mentalHealthHistory.familyHistory}
@@ -224,7 +225,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Medical History */}
         <h3>Medical History</h3>
         <div className="form-group">
-          <label>Current Medical Conditions:</label>
+          <label className="form-label">Current Medical Conditions:</label>
           <textarea
             name="medicalHistory.conditions"
             value={formData.medicalHistory.conditions}
@@ -283,7 +284,7 @@ const MentalHealthIntakeAssessment = () => {
   </button>
 </div>
         <div className="form-group">
-          <label>Allergies:</label>
+          <label className="form-label">Allergies:</label>
           <textarea
             name="medicalHistory.allergies"
             value={formData.medicalHistory.allergies}
@@ -292,7 +293,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Substance Use History (alcohol, drugs, etc.):</label>
+          <label className="form-label">Substance Use History (alcohol, drugs, etc.):</label>
           <textarea
             name="medicalHistory.substanceUse"
             value={formData.medicalHistory.substanceUse}
@@ -304,7 +305,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Social History */}
         <h3>Social History</h3>
         <div className="form-group">
-          <label>Living Situation:</label>
+          <label className="form-label">Living Situation:</label>
           <textarea
             name="socialHistory.livingSituation"
             value={formData.socialHistory.livingSituation}
@@ -313,7 +314,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Relationship Status:</label>
+          <label className="form-label">Relationship Status:</label>
           <textarea
             name="socialHistory.relationshipStatus"
             value={formData.socialHistory.relationshipStatus}
@@ -322,7 +323,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Support System (family, friends, community):</label>
+          <label className="form-label">Support System (family, friends, community):</label>
           <textarea
             name="socialHistory.supportSystem"
             value={formData.socialHistory.supportSystem}
@@ -331,7 +332,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Employment/Education Status:</label>
+          <label className="form-label">Employment/Education Status:</label>
           <textarea
             name="socialHistory.employmentStatus"
             value={formData.socialHistory.employmentStatus}
@@ -340,7 +341,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Hobbies/Interests:</label>
+          <label className="form-label">Hobbies/Interests:</label>
           <textarea
             name="socialHistory.hobbies"
             value={formData.socialHistory.hobbies}
@@ -352,7 +353,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Behavioral Observations */}
         <h3>Behavioral Observations</h3>
         <div className="form-group">
-          <label>Appearance (e.g., grooming, hygiene):</label>
+          <label className="form-label">Appearance (e.g., grooming, hygiene):</label>
           <textarea
             name="behavioralObservations.appearance"
             value={formData.behavioralObservations.appearance}
@@ -361,7 +362,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Mood/Affect:</label>
+          <label className="form-label">Mood/Affect:</label>
           <textarea
             name="behavioralObservations.mood"
             value={formData.behavioralObservations.mood}
@@ -370,7 +371,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Speech (e.g., rate, volume, tone):</label>
+          <label className="form-label">Speech (e.g., rate, volume, tone):</label>
           <textarea
             name="behavioralObservations.speech"
             value={formData.behavioralObservations.speech}
@@ -379,7 +380,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Thought Process/Content:</label>
+          <label className="form-label">Thought Process/Content:</label>
           <textarea
             name="behavioralObservations.thoughtProcess"
             value={formData.behavioralObservations.thoughtProcess}
@@ -388,7 +389,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Orientation (time, place, person):</label>
+          <label className="form-label">Orientation (time, place, person):</label>
           <textarea
             name="behavioralObservations.orientation"
             value={formData.behavioralObservations.orientation}
@@ -400,7 +401,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Assessment Tools */}
         <h3>Assessment Tools</h3>
         <div className="form-group">
-          <label>Screening Tools Administered:</label>
+          <label className="form-label">Screening Tools Administered:</label>
           <textarea
             name="assessmentTools.tools"
             value={formData.assessmentTools.tools}
@@ -409,7 +410,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Results:</label>
+          <label className="form-label">Results:</label>
           <textarea
             name="assessmentTools.results"
             value={formData.assessmentTools.results}
@@ -421,7 +422,7 @@ const MentalHealthIntakeAssessment = () => {
         {/* Clinician's Notes */}
         <h3>Clinician’s Notes</h3>
         <div className="form-group">
-          <label>Summary of Intake Session:</label>
+          <label className="form-label">Summary of Intake Session:</label>
           <textarea
             name="clinicianNotes.sessionSummary"
             value={formData.clinicianNotes.sessionSummary}
@@ -430,7 +431,7 @@ const MentalHealthIntakeAssessment = () => {
           />
         </div>
         <div className="form-group">
-          <label>Initial Impressions:</label>
+          <label className="form-label">Initial Impressions:</label>
           <textarea
             name="clinicianNotes.initialImpressions"
             value={formData.clinicianNotes.initialImpressions}

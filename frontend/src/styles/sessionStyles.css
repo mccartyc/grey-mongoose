@@ -156,7 +156,7 @@
 
 /* Panel sections */
 .panel-section {
-  overflow: hidden;
+  /* overflow: hidden; */
   max-width: 100%;
   box-sizing: border-box;
   margin-bottom: 15px;
@@ -303,16 +303,6 @@
   color: var(--text-color, #666);
 }
 
-.panel-section {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
-}
-
-.panel-section h3 {
-  margin: 0 0 1rem 0;
-  color: var(--text-color-dark, #2c3e50);
-  font-size: 1.2rem;
-}
 
 .content-box {
   background: var(--bg-color-light, #f8f9fa);
@@ -382,12 +372,6 @@
   box-sizing: border-box;
 }
 
-/* Ensure content doesn't overflow in panel sections */
-.panel-section {
-  overflow: hidden;
-  max-width: 100%;
-  box-sizing: border-box;
-}
 
 /* Quill container to ensure editor stays within bounds */
 .quill-container {

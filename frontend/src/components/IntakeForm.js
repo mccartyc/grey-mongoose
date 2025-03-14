@@ -15,7 +15,8 @@ const IntakeForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Form submission state
   const [submitSuccess, setSubmitSuccess] = useState(false); // Form submission success state
   const [submitError, setSubmitError] = useState(''); // Form submission error
-
+  const apiInstance = createApiInstance(user.token);
+  
   const [formData, setFormData] = useState({
     // fullName: '',
     // dateOfBirth: '',
@@ -87,7 +88,7 @@ const IntakeForm = () => {
     }
 
     try {
-      const response = await axios.post(
+      const response = await apiInstance.post(
         `/api/intake-forms`,
         { ...formData, id }, // Include the clientId in the request body
         {
@@ -115,17 +116,14 @@ const IntakeForm = () => {
   useEffect(() => {
     const fetchClients = async () => {
       setIsLoading(true);
-      const clientResponse = await axios.get(`/api/clients/${id}`, {
+      const clientResponse = await apiInstance.get(`/api/clients/${id}`, {
         params: {
           tenantId: user.tenantId,
           userId: user.userId,
         },
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-        });
-        setClient(clientResponse.data);
-        setIsLoading(false);
+      });
+      setClient(clientResponse.data);
+      setIsLoading(false);
   };
   fetchClients();
 }, [user, id]); // Re-run the effect when the user changes
