@@ -59,19 +59,18 @@
 .close-btn {
   background: none;
   border: none;
-  color: var(--surface-dark, #0F172A);
+  color: var(--primary, #4F46E5);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0 5px;
   line-height: 1;
-  transition: color 0.2s ease;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
+
 .close-btn:hover {
-  background: var(--surface-dark, #0F172A);
-  color: var(--accent-dark, #059669);
-  border-radius: 6px;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  opacity: 1;
 
 }
 

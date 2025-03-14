@@ -271,6 +271,8 @@ router.get("/", auditSessionAction('VIEW_SESSIONS'), async (req, res) => {
   }
 });
 
+
+
 // New GET: Retrieve session details for a specific client with optional sorting
 router.get("/client/:clientId", auditSessionAction('VIEW_CLIENT_SESSIONS'), async (req, res) => {
   const { tenantId, userId, sortBy, order } = req.query; // Destructure sortBy and order from req.query
@@ -420,6 +422,45 @@ router.patch("/:sessionId/archive", auditSessionAction('ARCHIVE_SESSION'), async
     console.error("Error archiving session:", error);
     res.status(500).json({ 
       error: 'Failed to archive session',
+      requestId: req.requestId
+    });
+  }
+});
+
+// GET: Retrieve a single session by sessionId
+router.get("/:sessionId", auditSessionAction('VIEW_SESSION'), async (req, res) => {
+  const { sessionId } = req.params;
+  const { tenantId, userId } = req.query;
+
+  console.log(`Request to get session with sessionId: ${sessionId}`);
+
+  if (!sessionId || !tenantId || !userId) {
+    console.error("Validation error: Missing sessionId, tenantId, or userId");
+    return res.status(400).json({ error: "Missing required parameters" });
+  }
+
+  try {
+    // Find the session by sessionId (UUID) not MongoDB _id
+    console.log(`Looking for session with sessionId: ${sessionId}`);
+    const session = await Session.findOne({ sessionId: sessionId });
+
+    if (!session) {
+      console.log(`Session with sessionId ${sessionId} not found`);
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    // Check if the session belongs to the user's tenant
+    if (session.tenantId.toString() !== tenantId) {
+      console.log(`Session with sessionId ${sessionId} does not belong to tenant ${tenantId}`);
+      return res.status(403).json({ error: "Not authorized to view this session" });
+    }
+
+    console.log("Session found:", session);
+    res.status(200).json(session);
+  } catch (error) {
+    console.error("Error retrieving session:", error);
+    res.status(500).json({ 
+      error: 'Failed to fetch session',
       requestId: req.requestId
     });
   }

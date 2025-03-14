@@ -42,20 +42,22 @@ const SessionDetail = () => {
 
         console.log(`Fetching data for session ID: ${id}`);
         
-        // First, fetch all sessions to find the one with matching sessionId
-        const allSessionsResponse = await axios.get(
-          `/api/sessions`,
-          config
-        );
+        // Create API instance with user token
+        const apiInstance = createApiInstance(user.token);
         
-        // Find the session with the matching sessionId
-        const sessionData = allSessionsResponse.data.find(
-          session => session.sessionId === id
-        );
+        // Directly fetch the specific session by ID
+        const sessionResponse = await apiInstance.get(`/api/sessions/${id}`, {
+          params: {
+            tenantId: user.tenantId,
+            userId: user.userId
+          }
+        });
         
-        if (!sessionData) {
+        if (!sessionResponse.data) {
           throw new Error('Session not found');
         }
+        
+        const sessionData = sessionResponse.data;
         
         console.log('Session data:', sessionData);
         
@@ -96,13 +98,26 @@ const SessionDetail = () => {
         
         setSession(sessionData);
         
-        // Fetch client details first
-        const clientResponse = await axios.get(`/api/clients/${id}`, config);
-        console.log('Client data:', clientResponse.data);
-        console.log('Client phone:', clientResponse.data.phone);
-        console.log('Client email:', clientResponse.data.email);
-        // Backend will return decrypted contact information
-        setClient(clientResponse.data);
+        // Fetch client details using the session's clientId
+        if (sessionData.clientId) {
+          console.log(`Fetching client data for clientId: ${sessionData.clientId}`);
+          try {
+            const clientResponse = await apiInstance.get(`/api/clients/${sessionData.clientId}`, {
+              params: {
+                tenantId: user.tenantId,
+                userId: user.userId
+              }
+            });
+            console.log('Client data:', clientResponse.data);
+            // Backend will return decrypted contact information
+            setClient(clientResponse.data);
+          } catch (clientError) {
+            console.error('Error fetching client details:', clientError);
+            // Don't fail the whole operation if client fetch fails
+          }
+        } else {
+          console.warn('No clientId found in session data');
+        }
       } catch (error) {
         console.error('Error fetching session details:', error);
         setError(error.response?.data?.error || 'Failed to fetch session details');

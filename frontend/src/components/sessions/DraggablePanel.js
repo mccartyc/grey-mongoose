@@ -105,19 +105,36 @@ const DraggablePanel = ({
       
       {/* Panel content */}
       <div className="panel-content">
-        {/* Replace the first close button with our custom close handler */}
-        {React.Children.map(children, (child, index) => {
-          if (index === 0 && React.isValidElement(child)) {
-            // Clone the header element and replace the close button's onClick
-            return React.cloneElement(child, {}, 
-              React.Children.map(child.props.children, (headerChild) => {
-                if (headerChild.type === 'button' && headerChild.props.className === 'close-btn') {
-                  return React.cloneElement(headerChild, { onClick: handleClose });
-                }
-                return headerChild;
-              })
-            );
+        {/* Process all children */}
+        {React.Children.map(children, (child) => {
+          // If this is a valid React element
+          if (React.isValidElement(child)) {
+            // Deep search for close buttons
+            const processChildren = (element) => {
+              if (!React.isValidElement(element)) return element;
+              
+              // If this is a close button, replace its onClick
+              if (element.type === 'button' && 
+                  element.props.className && 
+                  element.props.className.includes('close-btn')) {
+                return React.cloneElement(element, { 
+                  onClick: handleClose 
+                });
+              }
+              
+              // If it has children, process them recursively
+              if (element.props.children) {
+                return React.cloneElement(element, {}, 
+                  React.Children.map(element.props.children, processChildren)
+                );
+              }
+              
+              return element;
+            };
+            
+            return processChildren(child);
           }
+          
           return child;
         })}
       </div>

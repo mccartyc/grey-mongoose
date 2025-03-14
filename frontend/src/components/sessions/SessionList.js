@@ -6,6 +6,7 @@ import { decryptText, encryptText } from '../../utils/encryption';
 import DraggablePanel from './DraggablePanel';
 import { useNotification } from '../../context/NotificationContext';
 import { createApiInstance } from '../../utils/apiConfig';
+import { FaExpand } from 'react-icons/fa';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -297,14 +298,14 @@ const SessionList = ({
           onWidthChange={updateMainContentMargin}
         >
           <div className="sessions-panel-header">
-            {/* <p>{selectedSession.sessionId}</p> */}
-            <button 
-              className="btn primary-btn"
-              onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
-            >
-              View Full Session
-            </button>
-            <button className="btn close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
+            <div className="panel-header-actions">
+              <FaExpand 
+                className="panel-icon" 
+                onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
+                title="View Full Session"
+              />
+              <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
+            </div>
           </div>
 
           {/* Session Info */}
