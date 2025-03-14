@@ -91,12 +91,12 @@ const SideNavBar = () => {
             {!collapsed && <span className="nav-text">Calendar</span>}
           </NavLink>
         </li>
-        <li>
+        {/* <li>
           <NavLink to="/invoicing" className={({ isActive }) => isActive ? "active-link" : ""}>
             <FaFileInvoice className="nav-icon" />
             {!collapsed && <span className="nav-text">Invoicing</span>}
           </NavLink>
-        </li>
+        </li> */}
       </ul>
       <div className="bottom-links">
         <ul className="nav-links">
