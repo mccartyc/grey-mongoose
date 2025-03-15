@@ -267,6 +267,9 @@ const SessionList = ({
             Next
           </button>
         </div>
+
+
+        
       </div>
 
       {/* Notes Side Panel */}
@@ -301,7 +304,7 @@ const SessionList = ({
             <div className="panel-header-actions">
               <FaExpand 
                 className="panel-icon" 
-                onClick={() => navigate(`/sessions/detail/${selectedSession.sessionId}`)}
+                onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
                 title="View Full Session"
               />
               <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
