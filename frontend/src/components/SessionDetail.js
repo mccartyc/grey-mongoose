@@ -144,11 +144,10 @@ const SessionDetail = () => {
 
     try {
       console.log(`Attempting to save notes for session: ${session.sessionId}`);
-      // Encrypt the notes using our utility function
-      const encryptedNotes = encryptText(notesContent);
       
+      // Send notes as plain text and let the backend handle encryption
       const updatedNotes = {
-        notes: encryptedNotes,
+        notes: notesContent,
         tenantId: user.tenantId,
         userId: user.userId
       };
@@ -202,7 +201,7 @@ const SessionDetail = () => {
 
           {client && (
             <div className="client-info-card">
-              <h3>Client Information</h3>
+              <h3 className="section-title">Client Information</h3>
               <div className="info-grid">
               <div className="info-item">
                   <span className="info-label">Client ID:</span>
@@ -229,7 +228,7 @@ const SessionDetail = () => {
           )}
 
           <div className="session-info-card">
-            <h3>Session Information</h3>
+            <h3 className="section-title">Session Information</h3>
             <div className="info-grid">
             <div className="info-item">
                 <span className="info-label">Session ID:</span>
@@ -253,7 +252,7 @@ const SessionDetail = () => {
 
         <div className="session-notes-section">
           <div className="notes-header">
-            <h3>Session Notes</h3>
+            <h3 className="section-title">Session Notes</h3>
             {isEditing ? (
               <button className="btn primary-btn" onClick={handleSaveNotes}>Save Notes</button>
             ) : (
@@ -283,7 +282,7 @@ const SessionDetail = () => {
 
         <div className="session-transcript-section">
           <div className="notes-header">
-            <h3>Session Transcript</h3>
+            <h3 className="section-title">Session Transcript</h3>
           </div>
           <div className="content-box transcript-box">
             <p>{session.transcript || 'No transcript available for this session.'}</p>

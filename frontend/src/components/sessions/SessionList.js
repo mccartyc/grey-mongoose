@@ -108,17 +108,16 @@ const SessionList = ({
 
     try {
       console.log('Attempting to save notes for session:', selectedSession.sessionId);
-      const encryptedNotes = encryptText(selectedSession.notes);
       
+      // Send notes as plain text and let the backend handle encryption
       const updatedNotes = {
-        notes: encryptedNotes,
-        sessionId: selectedSession.sessionId,
+        notes: selectedSession.notes,
         tenantId: user.tenantId,
         userId: user.userId
       };
 
       const response = await apiInstance.put(
-        `/api/sessions/${selectedSession.sessionId}`,
+        `/api/sessions/detail/${selectedSession.sessionId}`,
         updatedNotes,
         {
           params: {
@@ -322,7 +321,7 @@ const SessionList = ({
 
           {/* Notes Section */}
           <div className="panel-section">
-            <h3>Session Notes</h3>
+            <h3 className="section-title">Session Notes</h3>
 
             <div className="sessions-panel-body">
               {isEditing ? (
@@ -354,7 +353,7 @@ const SessionList = ({
 
           {/* Transcript Section */}
           <div className="panel-section">
-            <h3>Session Transcript</h3>
+            <h3 className="section-title">Session Transcript</h3>
             <div className="content-box transcript-box">
               <p>{selectedSession.transcript || 'No transcript available for this session.'}</p>
             </div>

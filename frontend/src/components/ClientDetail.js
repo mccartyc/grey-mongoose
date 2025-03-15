@@ -165,7 +165,7 @@ return (
   <div className="client-detail-page">
     <div className="top-section">
       <div className="client-details">
-        <h3>Client Details</h3>
+        <h3 className="section-title">Client Details</h3>
         <p><strong>Id:</strong> {id}</p>
         <p><strong>First Name:</strong> {client.firstName}</p>
         <p><strong>Last Name:</strong> {client.lastName}</p>
@@ -177,7 +177,7 @@ return (
       </div>
 
       <div className="upcoming-appointments">
-        <h3>Upcoming Appointments</h3>
+        <h3 className="section-title">Upcoming Appointments</h3>
         {upcomingAppointments.length > 0 ? (
           <ul className="appointment-list">
             {upcomingAppointments.map((appointment) => {
