@@ -46,7 +46,7 @@ const SessionDetail = () => {
         const apiInstance = createApiInstance(user.token);
         
         // Directly fetch the specific session by ID
-        const sessionResponse = await apiInstance.get(`/api/sessions/${id}`, {
+        const sessionResponse = await apiInstance.get(`/api/sessions/detail/${id}`, {
           params: {
             tenantId: user.tenantId,
             userId: user.userId

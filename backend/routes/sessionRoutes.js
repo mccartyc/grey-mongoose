@@ -321,7 +321,7 @@ router.get("/client/:clientId", auditSessionAction('VIEW_CLIENT_SESSIONS'), asyn
 });
 
 // PUT: Edit an existing session
-router.put("/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res) => {
+router.put("/detail/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res) => {
   const { sessionId } = req.params;
   const { notes, tenantId, userId } = req.body;
 
@@ -396,7 +396,7 @@ router.put("/:sessionId", auditSessionAction('UPDATE_SESSION'), async (req, res)
 });
 
 // PATCH: Archive a session (set isActive to false)
-router.patch("/:sessionId/archive", auditSessionAction('ARCHIVE_SESSION'), async (req, res) => {
+router.patch("/detail/:sessionId/archive", auditSessionAction('ARCHIVE_SESSION'), async (req, res) => {
   const { sessionId } = req.params;
 
   console.log("Request to archive session with ID:", sessionId);
@@ -428,7 +428,7 @@ router.patch("/:sessionId/archive", auditSessionAction('ARCHIVE_SESSION'), async
 });
 
 // GET: Retrieve a single session by sessionId
-router.get("/:sessionId", auditSessionAction('VIEW_SESSION'), async (req, res) => {
+router.get("/detail/:sessionId", auditSessionAction('VIEW_SESSION'), async (req, res) => {
   const { sessionId } = req.params;
   const { tenantId, userId } = req.query;
 
