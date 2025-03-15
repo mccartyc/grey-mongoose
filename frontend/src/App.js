@@ -129,7 +129,7 @@ const App = () => (
             }
           />
           <Route
-            path="/sessions/:id"
+            path="/sessions/detail/:id"
             element={
               <ProtectedRoute>
                 <SessionDetailPage />
