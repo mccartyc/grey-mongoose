@@ -304,7 +304,7 @@ const SessionList = ({
             <div className="panel-header-actions">
               <FaExpand 
                 className="panel-icon" 
-                onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
+                onClick={() => navigate(`/sessions/detail/${selectedSession.sessionId}`)}
                 title="View Full Session"
               />
               <button className="close-btn" onClick={() => setIsPanelOpen(false)}>×</button>
