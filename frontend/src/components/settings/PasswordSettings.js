@@ -113,7 +113,7 @@ const PasswordSettings = () => {
           <input
             type="password"
             name="currentPassword"
-            value={formData.currentPassword}
+            value=""
             onChange={handleInputChange}
             className="form-input"
             disabled={loading}

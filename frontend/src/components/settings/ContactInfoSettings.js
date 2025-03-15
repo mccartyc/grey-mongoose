@@ -9,8 +9,8 @@ const ContactInfoSettings = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
-    phoneNumber: ''
+    email: ''
+    // phoneNumber: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,8 +22,8 @@ const ContactInfoSettings = () => {
       setFormData({
         firstName: userInfo.firstname || '',
         lastName: userInfo.lastname || '',
-        email: userInfo.email || '',
-        phoneNumber: userInfo.phoneNumber || ''
+        email: userInfo.email || ''
+        // phoneNumber: userInfo.phoneNumber || ''
       });
     }
   }, [userInfo]);
@@ -47,10 +47,10 @@ const ContactInfoSettings = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) return 'Please enter a valid email address';
     
-    if (formData.phoneNumber) {
-      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-      if (!phoneRegex.test(formData.phoneNumber)) return 'Please enter a valid phone number';
-    }
+    // if (formData.phoneNumber) {
+    //   const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    //   if (!phoneRegex.test(formData.phoneNumber)) return 'Please enter a valid phone number';
+    // }
     
     return null;
   };
@@ -88,7 +88,7 @@ const ContactInfoSettings = () => {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          phoneNumber: formData.phoneNumber,
+          // phoneNumber: formData.phoneNumber,
           tenantId: user.tenantId
         },
         {
@@ -160,7 +160,7 @@ const ContactInfoSettings = () => {
             />
           </div>
           
-          <div className="form-group">
+          {/* <div className="form-group">
             <label className="form-label">Phone Number</label>
             <input
               type="tel"
@@ -171,7 +171,7 @@ const ContactInfoSettings = () => {
               placeholder="123-456-7890"
               disabled={loading}
             />
-          </div>
+          </div> */}
         </div>
         
         <button 

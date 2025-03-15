@@ -18,6 +18,7 @@ const SessionDetail = () => {
   const [message, setMessage] = useState('');
   const [notesContent, setNotesContent] = useState('');
   const { user } = useAuth();
+  const apiInstance = createApiInstance(user.token);
 
   useEffect(() => {
     const fetchSessionDetails = async () => {
@@ -42,8 +43,6 @@ const SessionDetail = () => {
 
         console.log(`Fetching data for session ID: ${id}`);
         
-        // Create API instance with user token
-        const apiInstance = createApiInstance(user.token);
         
         // Directly fetch the specific session by ID
         const sessionResponse = await apiInstance.get(`/api/sessions/detail/${id}`, {
