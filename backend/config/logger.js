@@ -18,7 +18,7 @@ const level = () => {
 };
 
 // Define sanitization function to remove sensitive data
-const sanitizeData = (data) => {
+const sanitizeData = (data, visited = new WeakSet()) => {
   if (!data) return data;
   
   // If data is a string, check for sensitive patterns
@@ -34,6 +34,19 @@ const sanitizeData = (data) => {
   
   // If data is an object, recursively sanitize its properties
   if (typeof data === 'object' && data !== null) {
+    // Handle circular references
+    if (visited.has(data)) {
+      return '[Circular Reference]';
+    }
+    
+    // Add current object to visited set
+    visited.add(data);
+    
+    // Handle arrays
+    if (Array.isArray(data)) {
+      return data.map(item => sanitizeData(item, visited));
+    }
+    
     const sanitized = { ...data };
     
     // List of sensitive keys to redact
@@ -48,7 +61,7 @@ const sanitizeData = (data) => {
       if (sensitiveKeys.some(sk => key.toLowerCase().includes(sk.toLowerCase()))) {
         sanitized[key] = '[REDACTED]';
       } else if (typeof sanitized[key] === 'object' && sanitized[key] !== null) {
-        sanitized[key] = sanitizeData(sanitized[key]);
+        sanitized[key] = sanitizeData(sanitized[key], visited);
       }
     });
     
