@@ -143,20 +143,19 @@ const SessionDetail = () => {
     }
 
     try {
+      console.log(`Attempting to save notes for session: ${session.sessionId}`);
       // Encrypt the notes using our utility function
       const encryptedNotes = encryptText(notesContent);
       
       const updatedNotes = {
         notes: encryptedNotes,
-        sessionId: session.sessionId,
         tenantId: user.tenantId,
         userId: user.userId
       };
 
-      await axios.put(
-        `/api/sessions/${session._id}`,
-        updatedNotes,
-        
+      await apiInstance.put(
+        `/api/sessions/detail/${session.sessionId}`,
+        updatedNotes
       );
       
       // Update the session object with the new notes
